@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>ApplyHub SA — Local enquiry queue</title>
+  <style>
+    :root { color-scheme: light; font-family: Arial, sans-serif; color: #18233a; background: #f4f6fa; }
+    body { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
+    h1 { margin: 0; font-size: 1.6rem; }
+    h2 { font-size: 1.1rem; }
+    .warning, .status, .institution { margin-top: 16px; padding: 14px; border: 1px solid #d8dfed; border-radius: 10px; background: white; }
+    .warning { border-color: #f0d98a; color: #58491c; background: #fff9e7; }
+    .warning p, .status p { margin: 6px 0; }
+    .institution h2 { margin: 0 0 8px; }
+    .learner { padding: 10px 0; border-top: 1px solid #e5e9f1; }
+    .learner:first-of-type { border-top: 0; }
+    .learner p { margin: 4px 0; }
+    button, a { display: inline-block; margin: 8px 8px 0 0; padding: 10px 13px; border: 0; border-radius: 8px; color: white; background: #2454c6; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+    a { color: #2454c6; background: transparent; }
+    button:focus-visible, a:focus-visible { outline: 3px solid #88aaff; outline-offset: 2px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ApplyHub SA — Local enquiry queue</h1>
+    <div class="warning" role="alert">
+      <strong>Not secure or shared:</strong>
+      <p>This GitHub Pages page has no server authentication. Its password is visible in the public source code and can be bypassed. The local queue below only shows records saved in this browser; it does not collect submissions from other devices.</p>
+      <p>Application details, proof uploads and three text application summaries submitted from learners' devices are sent to the configured Formspree account. Review/download them there, verify each bank payment, and submit applications manually through official institution portals. This app does not apply automatically or guarantee a turnaround time.</p>
+      <a href="https://formspree.io/forms/mnppjadn/submissions" target="_blank" rel="noopener noreferrer">Open Formspree submissions inbox</a>
+      <p>Local batch copying prepares text only; it does not send email or submit an application. Verify requirements and addresses on official institution websites.</p>
+    </div>
+  </header>
+  <main>
+    <section id="locked" class="status">
+      <p id="auth-message" role="status">Enter the local dashboard password to view this browser's queue.</p>
+      <form id="unlock-form">
+        <label for="admin-password">Dashboard password</label>
+        <input id="admin-password" type="password" autocomplete="current-password" required>
+        <button type="submit">Unlock dashboard</button>
+      </form>
+      <a href="./index.html">Return to ApplyNow</a>
+    </section>
+    <section id="dashboard" hidden>
+      <p class="status" id="queue-status" role="status"></p>
+      <div id="queue-groups"></div>
+      <button id="refresh-queue" type="button">Refresh queue</button>
+      <button id="lock-dashboard" type="button">Lock dashboard</button>
+      <a href="./index.html">Return to ApplyNow</a>
+    </section>
+  </main>
+  <script>
+    (() => {
+      "use strict";
+      const ADMIN_PASSWORD = "ApplyHub2026!";
+      const $ = (selector) => document.querySelector(selector);
+
+      function lockDashboard(message = "Dashboard locked.") {
+        $("#dashboard").hidden = true;
+        $("#locked").hidden = false;
+        $("#auth-message").textContent = message;
+      }
+
+      function readQueue() {
+        const stored = localStorage.getItem("applynow-batch-queue");
+        if (!stored) return [];
+        const queue = JSON.parse(stored);
+        if (!Array.isArray(queue)) throw new Error("The saved local queue is not a list. It was not changed.");
+        return queue;
+      }
+
+      function makeBatchEmail(institution, learners) {
+        const subject = `Course enquiry batch — ${institution}`;
+        const entries = learners.map((learner, index) =>
+          `${index + 1}. ${learner.learner} | APS ${learner.aps} | ${learner.course} | Contact: ${learner.phone}`
+        );
+        return [
+          `To: Look up the official admissions email for ${institution}`,
+          `From: info@applyhubsa.co.za`,
+          `Subject: ${subject}`,
+          "",
+          `Dear Admissions Team at ${institution},`,
+          "",
+          "Please advise whether space is available and confirm the exact requirements and application dates for these learner course enquiries:",
+          "",
+          ...entries,
+          "",
+          "Please reply to info@applyhubsa.co.za. These enquiries were prepared by ApplyHub SA; no message has been sent by the app.",
+          "",
+          "Regards,",
+          "ApplyHub SA",
+          "info@applyhubsa.co.za"
+        ].join("\n");
+      }
+
+      async function copyText(text) {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return;
+        }
+        const temporary = document.createElement("textarea");
+        temporary.value = text;
+        temporary.setAttribute("readonly", "");
+        temporary.style.position = "fixed";
+        temporary.style.opacity = "0";
+        document.body.append(temporary);
+        temporary.select();
+        const copied = document.execCommand("copy");
+        temporary.remove();
+        if (!copied) throw new Error("Clipboard access is unavailable. Open this page on a secure site or copy the text manually.");
+      }
+
+      function renderQueue() {
+        const container = $("#queue-groups");
+        container.replaceChildren();
+        let queue;
+        try {
+          queue = readQueue();
+          queue.forEach((item) => {
+            if (!item || typeof item.institution !== "string" || typeof item.learner !== "string" ||
+                typeof item.course !== "string" || typeof item.phone !== "string") {
+              throw new Error("One or more queue entries are invalid. No records were removed.");
+            }
+          });
+        } catch (error) {
+          console.error("ApplyHub could not read the local enquiry queue:", error);
+          $("#queue-status").textContent = `Could not read the local queue: ${error.message}`;
+          return;
+        }
+        if (queue.length === 0) {
+          $("#queue-status").textContent = "No enquiries are saved in this browser. Learner submissions from other devices will not appear here.";
+          return;
+        }
+        const groups = new Map();
+        queue.forEach((item) => {
+          if (!groups.has(item.institution)) groups.set(item.institution, []);
+          groups.get(item.institution).push(item);
+        });
+        $("#queue-status").textContent = `${queue.length} local ${queue.length === 1 ? "enquiry" : "enquiries"} saved in this browser.`;
+        groups.forEach((learners, institution) => {
+          const section = document.createElement("section");
+          section.className = "institution";
+          const heading = document.createElement("h2");
+          heading.textContent = `${institution} (${learners.length})`;
+          section.append(heading);
+          learners.forEach((learner) => {
+            const row = document.createElement("div");
+            row.className = "learner";
+            const text = document.createElement("p");
+            text.textContent = `${learner.learner} — APS ${learner.aps} — ${learner.course} — ${learner.phone}`;
+            const date = document.createElement("p");
+            date.textContent = `Saved: ${learner.createdAt ? new Date(learner.createdAt).toLocaleString() : "Date not recorded"}; Status: ${learner.status || "Awaiting manual enquiry"}`;
+            row.append(text, date);
+            section.append(row);
+          });
+          const copy = document.createElement("button");
+          copy.type = "button";
+          copy.textContent = `Copy batch email for ${institution}`;
+          copy.addEventListener("click", async () => {
+            try {
+              await copyText(makeBatchEmail(institution, learners));
+              $("#queue-status").textContent = `Batch email for ${institution} copied. Paste, review, add the official admissions address, and send manually from info@applyhubsa.co.za.`;
+            } catch (error) {
+              console.error("ApplyHub could not copy the batch email:", error);
+              $("#queue-status").textContent = error.message;
+            }
+          });
+          section.append(copy);
+          container.append(section);
+        });
+      }
+
+      function unlockDashboard(event) {
+        event.preventDefault();
+        const entered = $("#admin-password").value;
+        if (entered !== ADMIN_PASSWORD) {
+          $("#admin-password").value = "";
+          lockDashboard("Incorrect password. Dashboard remains locked.");
+          $("#admin-password").focus();
+          return;
+        }
+        $("#admin-password").value = "";
+        $("#locked").hidden = true;
+        $("#dashboard").hidden = false;
+        renderQueue();
+      }
+
+      $("#unlock-form").addEventListener("submit", unlockDashboard);
+      $("#refresh-queue").addEventListener("click", renderQueue);
+      $("#lock-dashboard").addEventListener("click", () => lockDashboard());
+      lockDashboard("Enter the local dashboard password to view this browser's queue.");
+    })();
+  </script>
+</body>
+</html>

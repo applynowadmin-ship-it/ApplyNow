@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /ApplyNow/admin.html
+Sitemap: https://applynowadmin-ship-it.github.io/ApplyNow/sitemap.xml

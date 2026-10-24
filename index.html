@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1a73e8">
+  <meta name="description" content="Use a preliminary guide to compare your school results with a sample of South African course options.">
+  <meta name="google-site-verification" content="xZMRL9ZdV4Tr6fJo8EZHjhjtXwR1ZNzKLbW03cQfugg">
+  <link rel="manifest" href="manifest.json">
+  <title>ApplyNow — Preliminary course guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --blue: #1746d1;
+      --blue-dark: #1238a8;
+      --ink: #18233a;
+      --muted: #68748a;
+      --line: #e1e7f1;
+      --page: #ffffff;
+      --green: #147b47;
+      --green-bg: #e7f7ee;
+      --red: #a93636;
+      --red-bg: #fff0f0;
+      --shadow: 0 12px 36px rgba(21, 45, 99, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--page);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .site-header {
+      color: white;
+      background: linear-gradient(125deg, #1238a8, #1746d1 62%, #4284ed);
+      padding: 20px 16px 24px;
+    }
+    .header-inner, main { width: min(850px, 100%); margin-inline: auto; }
+    .free-banner {
+      display: inline-block;
+      margin: 0 0 12px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      color: #1238a8;
+      background: #ffffff;
+      font-size: .8rem;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+    .brand { margin: 0; font-size: 1.35rem; font-weight: 850; letter-spacing: -.04em; }
+    .header-subtitle { margin: 2px 0 16px; color: #e0eaff; font-size: .86rem; }
+    .install-actions { margin: 0 0 16px; }
+    .button[hidden] { display: none; }
+    .progress-steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .progress-item { min-width: 0; text-align: center; color: #d7e4ff; font-size: .68rem; }
+    .progress-dot { height: 7px; margin-bottom: 6px; border-radius: 99px; background: rgba(255,255,255,.25); }
+    .progress-item.active .progress-dot, .progress-item.complete .progress-dot { background: white; }
+    .progress-item.active { color: white; font-weight: 800; }
+    main { padding: 18px 14px 45px; }
+    .panel {
+      padding: clamp(18px, 4vw, 28px);
+      border: 1px solid rgba(225,231,241,.9);
+      border-radius: 18px;
+      background: white;
+      box-shadow: var(--shadow);
+    }
+    .step[hidden] { display: none; }
+    h1, h2, h3 { line-height: 1.2; letter-spacing: -.025em; }
+    h1 { margin: 0; font-size: clamp(1.35rem, 5vw, 1.8rem); }
+    .intro { margin: 8px 0 20px; color: var(--muted); font-size: .92rem; }
+    .form-grid { display: grid; gap: 14px; }
+    .field label { display: block; margin-bottom: 6px; color: #35415a; font-size: .84rem; font-weight: 750; }
+    .field input, .field select {
+      display: block;
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid #d6deeb;
+      border-radius: 10px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+    }
+    .field input:focus, .field select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,70,209,.12); }
+    .consent-box { margin-top: 16px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #f8faff; }
+    .consent-box h2 { margin: 0 0 8px; font-size: 1rem; }
+    .consent-box p { margin: 7px 0; color: #536078; font-size: .82rem; }
+    .consent-check { display: flex; gap: 9px; align-items: flex-start; margin-top: 12px; font-size: .84rem; font-weight: 700; }
+    .consent-check input { flex: 0 0 auto; width: 18px; height: 18px; margin: 2px 0 0; }
+    .payment-box { margin: 14px 0; }
+    .payment-box > input[type="file"] { display: block; width: 100%; margin: 8px 0; }
+    .institution-picker { margin: 14px 0; padding: 12px; border: 1px solid var(--line); border-radius: 10px; }
+    .institution-picker legend { padding: 0 5px; font-size: .87rem; font-weight: 800; }
+    .institution-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 12px; max-height: 230px; overflow-y: auto; }
+    .institution-option { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; font-size: .8rem; }
+    .institution-option input { flex: 0 0 auto; width: 17px; height: 17px; margin: 1px 0 0; }
+    .subject-row select, .subject-row input {
+      display: block;
+      width: 100%;
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 1px solid #d6deeb;
+      border-radius: 10px;
+      color: var(--ink);
+      background: white;
+      outline: none;
+    }
+    .subject-row select:focus, .subject-row input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23,70,209,.12); }
+    .actions { display: flex; gap: 10px; margin-top: 20px; }
+    .button {
+      display: inline-flex;
+      min-height: 46px;
+      align-items: center;
+      justify-content: center;
+      padding: 11px 17px;
+      border: 0;
+      border-radius: 10px;
+      color: white;
+      background: var(--blue);
+      font-weight: 800;
+      text-align: center;
+      text-decoration: none;
+      transition: background .15s, transform .15s;
+    }
+    .button:hover { background: var(--blue-dark); }
+    .button:active { transform: translateY(1px); }
+    .button.secondary { border: 1px solid var(--line); color: #3b4963; background: white; }
+    .button.secondary:hover { background: #f4f6fa; }
+    .button.soft { color: var(--blue); background: #edf2ff; }
+    .button.full { width: 100%; }
+    .button:disabled { cursor: not-allowed; opacity: .55; }
+    .subject-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 95px;
+      gap: 8px;
+      align-items: end;
+      margin: 8px 0;
+    }
+    .subject-row select, .subject-row input { min-width: 0; }
+    .subject-row label { display: block; margin: 0 0 4px 2px; color: var(--muted); font-size: .72rem; font-weight: 700; }
+    .subject-row .remove-subject {
+      grid-column: 1 / -1;
+      justify-self: end;
+      padding: 3px 5px;
+      border: 0;
+      color: var(--red);
+      background: transparent;
+      font-size: .77rem;
+      font-weight: 700;
+    }
+    @media (min-width: 520px) {
+      .subject-row { grid-template-columns: minmax(0, 1fr) 110px 76px; }
+      .subject-row .remove-subject { grid-column: auto; align-self: center; justify-self: center; }
+    }
+    .aps-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 16px;
+      padding: 14px 16px;
+      border: 1px solid #dbe5ff;
+      border-radius: 12px;
+      background: #f2f6ff;
+    }
+    .aps-box strong { color: #263c77; }
+    .aps-number { color: var(--blue); font-size: 1.8rem; font-weight: 900; }
+    .hint { color: var(--muted); font-size: .79rem; }
+    .status { min-height: 1.2em; margin: 8px 0 0; color: var(--red); font-size: .82rem; }
+    .results-heading { margin: 22px 0 12px; }
+    .results-heading h2 { margin: 0; font-size: 1.2rem; }
+    .results-heading p { margin: 5px 0 0; color: var(--muted); font-size: .86rem; }
+    .course-grid { display: grid; gap: 11px; }
+    @media (min-width: 650px) { .course-grid { grid-template-columns: 1fr 1fr; } }
+    .course-card { padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: white; }
+    .course-card h3 { margin: 0 0 5px; font-size: .98rem; }
+    .course-university { margin: 0 0 11px; color: var(--muted); font-size: .83rem; }
+    .course-details { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; color: #536078; font-size: .77rem; }
+    .course-details strong { color: #293650; }
+    .dream-results { display: grid; gap: 12px; }
+    .dream-card { padding: 15px; border: 1px solid var(--line); border-radius: 13px; background: #fff; }
+    .dream-card h3 { margin: 0 0 10px; font-size: 1rem; }
+    .dream-match { padding: 11px 0; border-top: 1px solid var(--line); }
+    .dream-match:first-of-type { border-top: 0; }
+    .dream-match p { margin: 5px 0 0; color: var(--muted); font-size: .84rem; }
+    .course-requirements { grid-column: 1 / -1; }
+    .course-actions { margin-top: 13px; }
+    .application-success { padding: 15px; border-radius: 12px; color: #145b38; background: var(--green-bg); }
+    .application-success h2 { margin: 0 0 7px; }
+    .application-success p { margin: 6px 0; }
+    .application-links { display: grid; gap: 10px; margin-top: 12px; }
+    .section-subtitle { margin: 5px 0 0; color: var(--muted); font-size: .86rem; }
+    .personal-summary { display: grid; grid-template-columns: 1fr; gap: 9px 18px; margin: 16px 0; padding: 15px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcff; }
+    .personal-summary p { margin: 0; color: var(--muted); font-size: .85rem; overflow-wrap: anywhere; }
+    .personal-summary strong { color: var(--ink); }
+    @media (min-width: 560px) { .personal-summary { grid-template-columns: 1fr 1fr; } }
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      color: var(--green);
+      background: var(--green-bg);
+      font-size: .72rem;
+      font-weight: 850;
+      letter-spacing: .025em;
+    }
+    .badge.not-qualified { color: var(--red); background: var(--red-bg); }
+    .badge.borderline { color: #775900; background: #fff3c4; }
+    .badge.not-assessed { color: #536078; background: #edf0f5; }
+    .intake-status { margin: 10px 0 0; padding: 10px 12px; border-radius: 9px; font-size: .82rem; font-weight: 750; }
+    .intake-status.open { color: #145b38; background: var(--green-bg); }
+    .intake-status.closed { color: var(--red); background: var(--red-bg); }
+    .intake-status.verify { color: #58491c; background: #fff9e7; }
+    .reminder-confirmation { margin-top: 10px; color: var(--muted); font-size: .82rem; }
+    .reminder-calendar { display: inline-block; margin-top: 7px; color: var(--blue); font-size: .82rem; font-weight: 750; }
+    .eligibility-reasons { margin: 7px 0 0; padding-left: 20px; color: var(--red); font-size: .84rem; }
+    .university-group { margin: 0 0 18px; }
+    .university-group > h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    .results-list { margin-top: 22px; }
+    .results-list > h2 { margin: 0 0 12px; font-size: 1.08rem; }
+    .aps-disclaimer { margin: 12px 0 0; padding: 12px 14px; border: 1px solid #f0d98a; border-radius: 10px; color: #58491c; background: #fff9e7; font-size: .82rem; }
+    .pathway-note { margin: 16px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: #f8faff; }
+    .pathway-note h2 { margin: 0 0 8px; font-size: 1rem; }
+    .pathway-note p { margin: 6px 0; color: #536078; font-size: .84rem; }
+    .course-source { display: inline-block; margin-top: 8px; color: var(--blue); font-size: .8rem; font-weight: 700; }
+    .empty { padding: 14px; border-radius: 10px; color: var(--muted); background: #f4f6fa; font-size: .88rem; }
+    .fine-print { margin: 18px 0 0; color: #738097; font-size: .73rem; }
+    :focus-visible { outline: 3px solid #88aaff; outline-offset: 2px; }
+    @media (max-width: 420px) {
+      .progress-item { font-size: .63rem; }
+      .actions { flex-direction: column-reverse; }
+      .actions .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="brand">ApplyNow</p>
+      <p class="header-subtitle">Indicative catalogue for guidance only. Course details and APS estimates are not guaranteed or complete. Verify each programme, admission requirement and current prospectus on the institution's official website before applying.</p>
+      <div class="install-actions" hidden>
+        <button class="button secondary" id="install-app" type="button" hidden>Install ApplyNow</button>
+      </div>
+      <nav class="progress-steps" aria-label="Application progress">
+        <div class="progress-item active" data-progress="1"><div class="progress-dot"></div>Personal</div>
+        <div class="progress-item" data-progress="2"><div class="progress-dot"></div>Marks</div>
+        <div class="progress-item" data-progress="3"><div class="progress-dot"></div>Courses</div>
+        <div class="progress-item" data-progress="4"><div class="progress-dot"></div>Qualify</div>
+        <div class="progress-item" data-progress="5"><div class="progress-dot"></div>Apply for me</div>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="panel step" id="step1" aria-labelledby="step1-title">
+      <h1 id="step1-title">Personal Information</h1>
+      <p class="intro">Complete all fields to continue. Your details are used in this browser for results. Uploaded payment proof sends the details described in the privacy notice to Formspree.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="full-names">Full Names (as per ID)</label>
+          <input id="full-names" name="given-name" autocomplete="given-name" maxlength="120" required>
+        </div>
+        <div class="field">
+          <label for="surname">Surname</label>
+          <input id="surname" name="family-name" autocomplete="family-name" maxlength="80" required>
+        </div>
+        <div class="field">
+          <label for="id-number">ID Number</label>
+          <input id="id-number" name="id-number" autocomplete="off" inputmode="numeric" maxlength="13" pattern="[0-9]{13}" title="Enter exactly 13 digits" required>
+          <p class="hint">The ID format, checksum and date of birth are checked on this device. This cannot confirm official registration.</p>
+        </div>
+        <div class="field">
+          <label for="date-of-birth">Date of Birth</label>
+          <input id="date-of-birth" name="birthdate" type="text" inputmode="none" autocomplete="bday" placeholder="YYYY/MM/DD" readonly required>
+        </div>
+        <div class="field">
+          <label for="gender">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="">Select gender</option>
+            <option>Male</option><option>Female</option><option>Other</option>
+          </select>
+          <p class="hint">Gender is filled from the ID number. Check it and change it if needed.</p>
+        </div>
+        <div class="field">
+          <label for="phone">Phone Number (WhatsApp number)</label>
+          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="30" required>
+        </div>
+        <div class="field">
+          <label for="alternative-phone">Alternative Phone Number</label>
+          <input id="alternative-phone" name="alternative-phone" type="tel" inputmode="tel" maxlength="30" required>
+        </div>
+        <div class="field">
+          <label for="email">Email Address</label>
+          <input id="email" name="email" type="email" autocomplete="email" maxlength="150" required>
+        </div>
+        <div class="field">
+          <label for="province">Province</label>
+          <select id="province" name="province" required>
+            <option value="">Select province</option>
+            <option>Limpopo</option><option>Gauteng</option><option>KwaZulu-Natal (KZN)</option>
+            <option>Eastern Cape</option><option>Western Cape</option><option>Free State</option>
+            <option>Mpumalanga</option><option>North West</option><option>Northern Cape</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="district">District / Municipality</label>
+          <input id="district" name="district" maxlength="120" placeholder="e.g. Capricorn, Mopani" required>
+        </div>
+        <div class="field">
+          <label for="city-village">City / Village</label>
+          <input id="city-village" name="city-village" maxlength="120" placeholder="e.g. Polokwane" required>
+        </div>
+        <div class="field">
+          <label for="school-name">Current School Name</label>
+          <input id="school-name" name="school" autocomplete="organization" maxlength="150" required>
+        </div>
+        <div class="field">
+          <label for="grade">Current Grade</label>
+          <select id="grade" name="grade" required>
+            <option value="">Select current grade</option>
+            <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+            <option>Finished Matric</option><option>Gap Year</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="matric-year">Year of Matric</label>
+          <select id="matric-year" name="matric-year" required>
+            <option value="">Select year of matric</option>
+          </select>
+        </div>
+      </div>
+      <aside class="consent-box" aria-labelledby="privacy-title">
+        <h2 id="privacy-title">Privacy and consent</h2>
+        <p>This independent guide is not a university, college, NSFAS or government service. Your profile and marks are processed in this browser to calculate an estimate. Results cover only the sample courses currently included in this guide, not every South African institution or course.</p>
+        <p>When you submit R25 proof, your name, phone, email and receipt file are sent to Formspree. When you submit R100 proof, your personal details (including ID number), school marks, selected institutions and receipt file are sent to Formspree and may be stored in that service/account. Formspree file uploads may require a paid plan. Only submit information if you and, where applicable, your parent/guardian agree to this external processing. Do not use a shared or public device.</p>
+        <p>This MVP unlocks features after Formspree accepts a proof submission; it does not verify that a bank transfer happened. The unlock is stored in this browser and can be bypassed or lost. ApplyHub SA must verify payment and manually submit any application. No application is filed automatically and no 24-hour turnaround is guaranteed.</p>
+        <p>For privacy questions, or to request correction or deletion of details you have sent, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>. Messages already sent may remain in your or the recipient's email/WhatsApp account and cannot be removed by this page. Only provide information you are comfortable sharing.</p>
+        <label class="consent-check" for="privacy-consent">
+          <input id="privacy-consent" type="checkbox" required>
+          <span>I have read this notice and consent to using my details for these results.</span>
+        </label>
+        <label class="consent-check" id="guardian-consent-wrap" for="guardian-consent" hidden>
+          <input id="guardian-consent" type="checkbox">
+          <span>I am under 18 and confirm that my parent or legal guardian has read this notice and agrees to my use of this service and sharing my details and uploaded payment proof with Formspree and ApplyHub SA.</span>
+        </label>
+      </aside>
+      <p class="status" id="personal-status" role="alert"></p>
+      <div class="actions"><button class="button full" id="personal-next" type="button">NEXT</button></div>
+    </section>
+
+    <section class="panel step" id="step2" aria-labelledby="step2-title" hidden>
+      <h1 id="step2-title">Enter your marks</h1>
+      <p class="intro">Enter marks from 0 to 100 for at least seven subjects. Life Orientation is excluded from your best six subjects for APS.</p>
+      <div class="aps-box" aria-live="polite">
+        <strong>Your estimated APS <span class="hint">(best 6, excluding Life Orientation)</span></strong>
+        <span class="aps-number" id="aps-show">0</span>
+      </div>
+      <div id="subjects-box"></div>
+      <button class="button soft" id="add-subject" type="button">+ Add Subject</button>
+      <p class="hint">APS bands: 80%+ = 7, 70%+ = 6, 60%+ = 5, 50%+ = 4, 40%+ = 3, 30%+ = 2, below 30% = 1.</p>
+      <p class="status" id="marks-status" role="alert"></p>
+      <div class="actions">
+        <button class="button secondary" type="button" data-back="1">Back</button>
+        <button class="button full" id="marks-next" type="button">NEXT</button>
+      </div>
+    </section>
+
+    <section class="panel step" id="step3" aria-labelledby="step3-title" hidden>
+      <h1 id="step3-title">What do you want to study? Choose 3 courses</h1>
+      <p class="intro">Enter your three dream courses and we’ll compare them with the course guide.</p>
+      <div class="form-grid">
+        <div class="field">
+          <label for="dream1">Course 1</label>
+          <input id="dream1" maxlength="100" placeholder="e.g. Nursing" required>
+        </div>
+        <div class="field">
+          <label for="dream2">Course 2</label>
+          <input id="dream2" maxlength="100" placeholder="e.g. Teaching" required>
+        </div>
+        <div class="field">
+          <label for="dream3">Course 3</label>
+          <input id="dream3" maxlength="100" placeholder="e.g. Information Technology" required>
+        </div>
+      </div>
+      <p class="status" id="courses-status" role="alert"></p>
+      <div class="actions">
+        <button class="button secondary" type="button" data-back="2">Back</button>
+        <button class="button full" id="check-qualifications" type="button">CHECK MY FREE GUIDE RESULTS</button>
+      </div>
+    </section>
+
+    <section class="panel step" id="step4" aria-labelledby="step4-title" hidden>
+      <h1 id="step4-title">Your preliminary course guide results</h1>
+      <section class="consent-box payment-box" id="r25-payment-box" aria-labelledby="r25-title">
+        <h2 id="r25-title">Unlock Results — R25</h2>
+        <p>Transfer R25 to Capitec account <strong>2615455962</strong>, branch code <strong>470010</strong>. Use your full name as the payment reference.</p>
+        <button class="button secondary" id="copy-capitec-r25" type="button">Copy Capitec account number</button>
+        <p class="hint">Select your receipt, then submit it to unlock results in this browser. This MVP does not confirm that money reached the account; the owner must check the transfer. Do not upload a receipt containing information you do not want Formspree to receive.</p>
+        <label class="field" for="proof-r25">Upload R25 proof (JPG, PNG or PDF; max 10 MB)</label>
+        <input id="proof-r25" type="file" accept="image/jpeg,image/png,application/pdf">
+        <label class="consent-check" for="r25-consent">
+          <input id="r25-consent" type="checkbox">
+          <span>I agree to send my name, phone, email and receipt file to Formspree and ApplyHub SA for this R25 proof submission.</span>
+        </label>
+        <button class="button full" id="submit-r25-proof" type="button">Upload R25 Proof &amp; Unlock Results</button>
+        <p class="status" id="r25-status" role="status" aria-live="polite"></p>
+      </section>
+      <p class="aps-disclaimer" id="r25-unlocked-message" role="status" aria-live="polite" hidden></p>
+      <div id="paid-results" hidden>
+        <p class="intro" id="results-intro"></p>
+        <p class="aps-disclaimer" id="catalogue-status-banner"></p>
+        <div class="personal-summary" id="personal-results" aria-label="Your personal information"></div>
+      <div class="field">
+        <label for="course-category-filter">Filter courses by category</label>
+        <select id="course-category-filter">
+          <option value="">All categories</option>
+          <option>Social Work</option><option>Teaching</option><option>Nursing</option>
+          <option>Policing</option><option>IT</option><option>Agriculture</option>
+          <option>Engineering</option><option>Law</option><option>Business</option>
+          <option>Health Sciences</option><option>Hospitality</option><option>Tourism</option><option>Other</option>
+        </select>
+        <p class="hint">All listed course levels remain visible. Lower minimum-APS certificates can still appear as qualified when you meet their listed checks.</p>
+      </div>
+      <div class="actions" role="group" aria-label="Course source filter">
+        <button class="button secondary" id="show-all-courses" type="button" aria-pressed="true">Show All Entries</button>
+        <button class="button secondary" id="show-verified-courses" type="button" aria-pressed="false">Show Official-Source Names Only</button>
+      </div>
+      <p class="hint">Official-source status confirms the course name appears in a linked source; it does not confirm APS, admission or current availability.</p>
+      <div class="results-heading">
+        <h2>A) Your 3 dream courses</h2>
+        <p class="section-subtitle">Each match is checked against the preliminary APS and subject rules shown below.</p>
+      </div>
+      <div class="dream-results" id="dream-results"></div>
+      <div class="results-heading">
+        <h2>B) Course-by-course results from the sample catalogue</h2>
+        <p class="section-subtitle" id="catalogue-scope">Each course is checked independently. A failed subject does not disqualify you from unrelated courses.</p>
+      </div>
+      <p class="aps-disclaimer">Indicative catalogue for guidance only; this is a limited sample, not a complete national list or a 500+ course catalogue. Some APS estimates have not been independently verified. Linked official sources are shown where available. Confirm each programme and entry requirement in the institution's current prospectus before applying. Admission is not guaranteed.</p>
+      <aside class="pathway-note" id="pathway-note" hidden aria-live="polite">
+        <h2>Study pathway information</h2>
+        <p>An APS score of 15–22 by itself does not confirm entry to a TVET N4–N6 programme or a diploma. Programmes can require specific prior qualifications, subjects and marks; check the official requirements for each course.</p>
+        <p>Do not assume a single nursing pathway applies to every institution. Check the institution's current nursing qualification, APS calculation and subject requirements.</p>
+      </aside>
+      <section class="results-list" aria-labelledby="qualified-results-title">
+        <h2 id="qualified-results-title">✅ YOU QUALIFY FOR THESE COURSES (0 found):</h2>
+        <div id="qualified-results"></div>
+      </section>
+      <section class="results-list" aria-labelledby="not-qualified-results-title">
+        <h2 id="not-qualified-results-title">❌ NOT QUALIFIED OR NEEDS OFFICIAL VERIFICATION (0 found):</h2>
+        <div id="not-qualified-results"></div>
+      </section>
+      <p class="fine-print">This is an APS comparison guide, not an admission decision. Course availability, APS scores and subject requirements can change. Confirm current entry criteria directly with each institution.</p>
+      <div class="actions">
+        <button class="button secondary" type="button" data-back="3">Back to courses</button>
+        <button class="button secondary" id="edit-application" type="button">Edit my information</button>
+      </div>
+      </div>
+    </section>
+
+    <section class="panel step" id="step5" aria-labelledby="step5-title" hidden>
+      <h1 id="step5-title">Request application assistance</h1>
+      <p class="intro" id="application-course-title"></p>
+      <section class="consent-box payment-box" id="r100-payment-box" aria-labelledby="r100-title">
+        <h2 id="r100-title">R100 — Apply for me</h2>
+        <p>Transfer R100 to Capitec account <strong>2615455962</strong>, branch code <strong>470010</strong>. Use your full name as the payment reference.</p>
+        <button class="button secondary" id="copy-capitec-r100" type="button">Copy Capitec account number</button>
+        <p>Choose the public universities/TVET colleges you want help with, and whether you want NSFAS assistance. Select a receipt and submit it. The details and receipt will be sent to Formspree.</p>
+        <fieldset class="institution-picker">
+          <legend>Universities to apply to (select all that apply)</legend>
+          <div class="institution-options" id="university-options"></div>
+        </fieldset>
+        <div class="field">
+          <label for="other-university">Other university (optional)</label>
+          <input id="other-university" maxlength="120" placeholder="Enter another institution">
+        </div>
+        <fieldset class="institution-picker">
+          <legend>TVET colleges to apply to (select all that apply)</legend>
+          <div class="institution-options" id="college-options"></div>
+        </fieldset>
+        <div class="field">
+          <label for="other-college">Other college (optional)</label>
+          <input id="other-college" maxlength="120" placeholder="Enter another college">
+        </div>
+        <label class="consent-check" for="nsfas-requested">
+          <input id="nsfas-requested" type="checkbox">
+          <span>I also want help with an NSFAS funding application.</span>
+        </label>
+        <label class="field" for="proof-r100">Upload R100 proof (JPG, PNG or PDF; max 10 MB)</label>
+        <input id="proof-r100" type="file" accept="image/jpeg,image/png,application/pdf">
+        <label class="consent-check" for="r100-consent">
+          <input id="r100-consent" type="checkbox">
+          <span>I consent to sending my full learner details (including ID number), marks, selected institutions and receipt file to Formspree and ApplyHub SA for this assistance request. If I am under 18, my parent/guardian has agreed.</span>
+        </label>
+        <button class="button full" id="submit-r100-proof" type="button">Pay R100 &amp; Send My Application Details</button>
+        <p class="status" id="r100-status" role="status" aria-live="polite"></p>
+      </section>
+      <p class="aps-disclaimer" id="r100-unlocked-message" role="status" aria-live="polite" hidden></p>
+      <div class="personal-summary" id="application-personal" aria-label="Your application information"></div>
+      <div id="application-confirmation" hidden></div>
+      <div class="actions" id="application-actions">
+        <button class="button secondary" type="button" data-back="4">Back to results</button>
+        <button class="button full" id="confirm-application" type="button" hidden>Prepare My Applications</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (() => {
+    "use strict";
+    const APPLICATION_WHATSAPP = "27798375864";
+    const APPLICATION_EMAIL = "info@applyhubsa.co.za";
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mnppjadn";
+    const PUBLIC_UNIVERSITIES = [
+      "Cape Peninsula University of Technology (CPUT)", "Central University of Technology (CUT)",
+      "Durban University of Technology (DUT)", "Mangosuthu University of Technology (MUT)",
+      "Nelson Mandela University (NMU)", "North-West University (NWU)",
+      "Rhodes University", "Sefako Makgatho Health Sciences University (SMU)",
+      "Sol Plaatje University", "Stellenbosch University", "University of Cape Town (UCT)",
+      "University of Fort Hare (UFH)", "University of the Free State (UFS)",
+      "University of Johannesburg (UJ)", "University of KwaZulu-Natal (UKZN)",
+      "University of Limpopo (UL)", "University of Mpumalanga (UMP)",
+      "University of Pretoria (UP)", "University of South Africa (UNISA)",
+      "University of the Western Cape (UWC)", "University of the Witwatersrand (Wits)",
+      "University of Venda (UNIVEN)", "University of Zululand (UniZulu)",
+      "Vaal University of Technology (VUT)", "Walter Sisulu University (WSU)",
+      "Tshwane University of Technology (TUT)"
+    ];
+    const PUBLIC_TVET_COLLEGES = [
+      "Buffalo City TVET College", "Eastcape Midlands TVET College", "Ikhala TVET College",
+      "Ingwe TVET College", "King Hintsa TVET College", "King Sabata Dalindyebo TVET College",
+      "Lovedale TVET College", "Port Elizabeth TVET College", "Flavius Mareka TVET College",
+      "Goldfields TVET College", "Maluti TVET College", "Motheo TVET College",
+      "Central Johannesburg TVET College", "Ekurhuleni East TVET College",
+      "Ekurhuleni West TVET College", "Sedibeng TVET College", "South West Gauteng TVET College",
+      "Tshwane North TVET College", "Tshwane South TVET College", "Western TVET College",
+      "Coastal KZN TVET College", "Elangeni TVET College", "Esayidi TVET College",
+      "Majuba TVET College", "Mnambithi TVET College", "Mthashana TVET College",
+      "Thekwini TVET College", "Umfolozi TVET College", "Umgungundlovu TVET College",
+      "Capricorn TVET College", "Lephalale TVET College", "Letaba TVET College",
+      "Mopani South East TVET College", "Sekhukhune TVET College", "Vhembe TVET College",
+      "Waterberg TVET College", "Ehlanzeni TVET College", "Gert Sibande TVET College",
+      "Nkangala TVET College", "Orbit TVET College", "Taletso TVET College",
+      "Vuselela TVET College", "Northern Cape Rural TVET College",
+      "Northern Cape Urban TVET College", "Boland TVET College", "College of Cape Town",
+      "False Bay TVET College", "Northlink TVET College", "South Cape TVET College",
+      "West Coast TVET College"
+    ];
+
+    const SA_COURSES = [
+      {uni:"University of Limpopo (TEST CLOSED)",city:"Polokwane",sourceUrl:"https://www.ul.ac.za/",courses:[
+        {n:"Bachelor of Education - TEST CLOSED COURSE",aps:24,courseCategory:"Education",fac:"Education",status:"closed",openingDate:"2027-03-01",closingDate:"2026-09-30"}
+      ]},
+      {uni:"University of Limpopo (UL)",city:"Polokwane",sourceUrl:"https://www.ul.ac.za/",courses:[
+        {n:"Bachelor of Nursing",aps:26},{n:"MBChB Medicine",aps:35},{n:"BPharm Pharmacy",aps:32},{n:"BEd Foundation Teaching",aps:24},{n:"BEd Senior Phase",aps:24},{n:"BSc Computer Science",aps:30},{n:"Diploma IT",aps:22},{n:"BSc Agriculture",aps:24},{n:"LLB Law",aps:32},{n:"Bachelor of Social Work",aps:24,courseCategory:"Social Work",englishMinimum:50},{n:"Diploma Nursing",aps:24},{n:"BA Psychology",aps:24,courseCategory:"Health Sciences"}
+      ]},
+      {uni:"University of Venda (UNIVEN)",city:"Thohoyandou",sourceUrl:"https://www.univen.ac.za/",courses:[
+        {n:"Bachelor of Nursing",aps:24},{n:"BEd Teaching",aps:23},{n:"BSc Agriculture",aps:22},{n:"LLB Law",aps:30},{n:"BSc IT",aps:25},{n:"Bachelor of Social Work",aps:26,courseCategory:"Social Work",englishMinimum:50,closeTry:true},{n:"Bachelor of Arts (BA)",aps:24,courseCategory:"Other",pathwayNote:"Consider a Sociology major followed by Social Work Honours; confirm the pathway with the institution."}
+      ]},
+      {uni:"Tshwane University of Technology (TUT)",city:"Pretoria",sourceUrl:"https://www.tut.ac.za/",courses:[
+        {n:"Diploma IT Systems Development",aps:22},{n:"BEd Foundation Teaching",aps:24},{n:"Diploma Nursing",aps:24},{n:"Diploma Business Management",aps:20},{n:"Diploma Electrical Engineering",aps:24},{n:"Diploma in Logistics Management",aps:20}
+      ]},
+      {uni:"University of Pretoria (UP)",city:"Pretoria",sourceUrl:"https://www.up.ac.za/",courses:[
+        {n:"MBChB Medicine",aps:35},{n:"LLB Law",aps:32},{n:"BSc Computer Science",aps:32},{n:"BEd Teaching",aps:28}
+      ]},
+      {uni:"University of Johannesburg (UJ)",city:"Johannesburg",sourceUrl:"https://www.uj.ac.za/",courses:[
+        {n:"Bachelor of Nursing",aps:26},{n:"BEd Teaching",aps:26},{n:"BCom Accounting",aps:30},{n:"Diploma in Logistics Management",aps:20}
+      ]},
+      {uni:"Cape Peninsula University of Technology (CPUT)",city:"Cape Town",sourceUrl:"https://www.cput.ac.za/",courses:[
+        {n:"Diploma in Logistics Management",aps:20}
+      ]},
+      {uni:"Wits (WITS)",city:"Johannesburg",sourceUrl:"https://www.wits.ac.za/",courses:[
+        {n:"MBChB Medicine",aps:35},{n:"LLB Law",aps:34},{n:"BSc Computer Science",aps:32}
+      ]},
+      {uni:"Capricorn TVET College",city:"Polokwane",sourceUrl:"https://www.capricorncollege.edu.za/",courses:[
+        {n:"N4 Business Management",aps:15},{n:"N4 HR Management",aps:15},{n:"N4 IT",aps:16},{n:"N4 Educare",aps:15},{n:"NCV Primary Health",aps:15},{n:"N4 Electrical Engineering",aps:16}
+      ]},
+      {uni:"Waterberg TVET College",city:"Mokopane",sourceUrl:"https://www.waterbergcollege.co.za/",courses:[
+        {n:"N4 Business Management",aps:15},{n:"N4 IT Systems Development",aps:16},{n:"N4 Electrical Engineering",aps:16},{n:"N4 Educare",aps:15}
+      ]},
+      {uni:"Vhembe TVET College",city:"Thohoyandou",sourceUrl:"https://www.vhembecollege.edu.za/",courses:[
+        {n:"N4 Business Management",aps:15},{n:"N4 Educare",aps:15},{n:"N4 Electrical Engineering",aps:16},{n:"N4 Tourism",aps:15}
+      ]},
+      {uni:"Sekhukhune TVET College",city:"Motetema",sourceUrl:"https://www.sekhukhunetvet.edu.za/",courses:[
+        {n:"N4 Business Management",aps:15},{n:"N4 Electrical Engineering",aps:16},{n:"N4 Engineering Design",aps:16}
+      ]},
+      {uni:"Lephalale TVET College",city:"Lephalale",sourceUrl:"",courses:[
+        {n:"N4 IT Systems Development",aps:16},{n:"N4 Educare",aps:15},{n:"N4 Office Admin",aps:15}
+      ]},
+      {uni:"Mopani TVET College",city:"Phalaborwa",sourceUrl:"https://www.mopanicollege.edu.za/",courses:[
+        {n:"N4 Business Management",aps:15},{n:"N4 Hospitality",aps:15},{n:"N4 Electrical Engineering",aps:16}
+      ]},
+      {uni:"Ekurhuleni East TVET College",city:"Springs",sourceUrl:"https://www.eec.edu.za/",courses:[
+        {n:"N4 Business Management",aps:15},{n:"N4 Electrical Engineering",aps:16},{n:"N4 Educare",aps:15}
+      ]},
+      {uni:"Tshwane North TVET College",city:"Pretoria",sourceUrl:"https://www.tnc.edu.za/",courses:[
+        {n:"N4 IT",aps:16},{n:"N4 Business Management",aps:15}
+      ]},
+      {uni:"Walter Sisulu University (WSU)",city:"Eastern Cape",sourceUrl:"https://www.wsu.ac.za/",courses:[
+        {n:"Bachelor of Social Work",aps:23,courseCategory:"Social Work",englishMinimum:50}
+      ]},
+      {uni:"University of South Africa (UNISA)",city:"Distance learning",sourceUrl:"https://www.unisa.ac.za/",courses:[
+        {n:"Bachelor of Arts in Social Work",aps:20,courseCategory:"Social Work",englishMinimum:50}
+      ]},
+      {uni:"University of Mpumalanga (UMP)",city:"Mbombela",sourceUrl:"https://www.ump.ac.za/",courses:[
+        {n:"Bachelor of Arts (BA)",aps:22,courseCategory:"Other",pathwayNote:"Consider a Sociology major followed by Social Work Honours; confirm the pathway with the institution."}
+      ]},
+      {uni:"Ehlanzeni TVET College",city:"Mpumalanga",sourceUrl:"https://www.ehlanzenicollege.co.za/",courses:[
+        {n:"NC(V) Office Administration",aps:null,apsApplicable:false,courseCategory:"Business",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/office-administration-and-management"},
+        {n:"NC(V) Information Technology & Computer Science",aps:null,apsApplicable:false,courseCategory:"IT",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/information-technology-and-computer-science"},
+        {n:"NC(V) Engineering and Related Design",aps:null,apsApplicable:false,courseCategory:"Engineering",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/engineering-and-related-design"},
+        {n:"NC(V) Finance, Economics and Accounting",aps:null,apsApplicable:false,courseCategory:"Business",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/finance-economics-and-accounting"},
+        {n:"NC(V) Civil Engineering and Building Construction",aps:null,apsApplicable:false,courseCategory:"Engineering",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/civil-engineering-and-building-construction"},
+        {n:"NC(V) Electrical Infrastructure Construction",aps:null,apsApplicable:false,courseCategory:"Engineering",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/electrical-infrastructure-construction"},
+        {n:"NC(V) Hospitality",aps:null,apsApplicable:false,courseCategory:"Hospitality",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/hospitality"},
+        {n:"NC(V) Tourism",aps:null,apsApplicable:false,courseCategory:"Tourism",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/tourism"},
+        {n:"NC(V) Primary Agriculture",aps:null,apsApplicable:false,courseCategory:"Agriculture",admissionNote:"Official college page lists NC(V) levels 2–4; Level 2 requires Grade 9 results with Mathematics passed or NQF Level 1, plus placement assessment.",link:"https://www.ehlanzenicollege.co.za/courses/primary-agriculture"}
+      ]}
+    ];
+    const TUT_PROSPECTUS_COURSES = [
+      {
+        faculty:"Arts and Design",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part2_Arts-and-Design_Prospectus.pdf",
+        courses:[
+          "Diploma in Fashion Design and Technology","Diploma in Fine and Applied Arts",
+          "Diploma in Jewellery Design and Manufacture","Diploma in Interior Design",
+          "Higher Certificate in Music","Diploma in Performing Arts",
+          "Diploma in Commercial Photography","Diploma in Integrated Communication Design",
+          "Diploma in Motion Picture Production"
+        ]
+      },
+      {
+        faculty:"Economics and Finance",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part3_Economics-and-Finance_Prospectus.pdf",
+        courses:[
+          "Higher Certificate in Accounting","Diploma in Accounting","Diploma in Internal Auditing",
+          "Diploma in Economics","Diploma in Financial Management","Diploma in Financial Planning",
+          "Diploma in Public Finance"
+        ]
+      },
+      {
+        faculty:"Engineering and the Built Environment",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part4_FEBE_Prospectus.pdf",
+        courses:[
+          "Bachelor of Architecture","Diploma in Industrial Design","Diploma in Building Science",
+          "Diploma in Geomatics","Bachelor of Geomatics",
+          "Bachelor of Engineering Technology in Chemical Engineering",
+          "Bachelor of Engineering Technology in Materials Engineering",
+          "Bachelor of Engineering Technology in Metallurgical Engineering",
+          "Higher Certificate in Construction Engineering","Diploma in Civil Engineering",
+          "Bachelor of Engineering Technology in Civil Engineering",
+          "Higher Certificate in Electrical Engineering","Bachelor of Engineering Technology in Electrical Engineering",
+          "Higher Certificate in Industrial Engineering",
+          "Bachelor of Engineering Technology in Industrial Engineering",
+          "Higher Certificate in Mechanical Engineering",
+          "Bachelor of Engineering Technology in Mechanical Engineering",
+          "Bachelor of Engineering Technology in Mechatronic Engineering","Diploma in Building"
+        ]
+      },
+      {
+        faculty:"Humanities",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/PART_5_Humanities_Prospectus_-2026.pdf",
+        courses:[
+          "Diploma in Language Practice","Diploma in Integrated Communication","Diploma in Journalism",
+          "Diploma in Correctional and Rehabilitation Studies","Diploma in Law","Diploma in Legal Support",
+          "Diploma in Policing","Diploma in Traffic Safety and Municipal Police Management",
+          "Diploma in Public Affairs","Diploma in Adult and Community Education and Training",
+          "Bachelor of Education in Intermediate Phase Teaching"
+        ]
+      },
+      {
+        faculty:"Information and Communication Technology",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part6_ICT_Prospectus.pdf",
+        courses:[
+          "Diploma in Computer Science","Diploma in Multimedia Computing",
+          "Diploma in Computer Systems Engineering","Diploma in Informatics",
+          "Diploma in Information Technology"
+        ]
+      },
+      {
+        faculty:"Management Sciences",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part7_Management-Sciences_Prospectus.pdf",
+        courses:[
+          "Higher Certificate in Administrative Information Management",
+          "Diploma in Administrative Information Management",
+          "Higher Certificate in Contact Centre Management","Diploma in Contact Centre Management",
+          "Diploma in Food Operations Management","Diploma in Hospitality Management",
+          "Diploma in Administrative Management","Diploma in Credit Management",
+          "Diploma in Entrepreneurship","Diploma in Marketing","Diploma in Retail Business Management",
+          "Diploma in Sport Management","Diploma in Supply Chain Management",
+          "Diploma in Operations Management","Diploma in Work Study",
+          "Diploma in Human Resource Management","Diploma in Adventure Tourism Management",
+          "Diploma in Casino Resort Management","Diploma in Ecotourism Management",
+          "Diploma in Event Management","Diploma in Tourism Management"
+        ]
+      },
+      {
+        faculty:"Science",
+        source:"https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part8_Science.pdf",
+        courses:[
+          "Bachelor of Nursing","Diploma in Animal Sciences","Diploma in Equine Science",
+          "Bachelor of Health Science in Clinical Technology",
+          "Bachelor of Health Science in Medical Laboratory Science",
+          "Bachelor of Health Science in Veterinary Technology","Diploma in Biotechnology",
+          "Diploma in Food Technology","Bachelor of Science in Industrial Chemistry",
+          "Diploma in Analytical Chemistry","Higher Certificate in Forestry Management",
+          "Diploma in Crop Production","Bachelor of Environmental Health",
+          "Diploma in Environmental Sciences","Diploma in Geology",
+          "Higher Certificate in Resource and Waste Management","Higher Certificate in Water Treatment",
+          "Diploma in Water Science and Technology","Diploma in Horticulture",
+          "Diploma in Landscape Technology","Bachelor of Health Science in Biokinetics",
+          "Diploma in Kinesiology and Coaching Science","Diploma in Somatic Therapy",
+          "Diploma in Nature Conservation","Diploma in Wildlife Management","Bachelor of Pharmacy",
+          "Diploma in Fire Technology","Diploma in Industrial Physics",
+          "Bachelor of Health Science in Medical Orthotics and Prosthetics",
+          "Higher Certificate in Dental Assisting","Diploma in Dental Technology"
+        ]
+      }
+    ];
+    const getCourseCategory = (name) => {
+      const courseName = name.toLocaleLowerCase();
+      if (/social work|social auxiliary/.test(courseName)) return "Social Work";
+      if (/teaching|education|\bbed\b|educare/.test(courseName)) return "Teaching";
+      if (/nursing/.test(courseName)) return "Nursing";
+      if (/policing/.test(courseName)) return "Policing";
+      if (/\bit\b|information technology|computer science/.test(courseName)) return "IT";
+      if (/agriculture/.test(courseName)) return "Agriculture";
+      if (/engineering/.test(courseName)) return "Engineering";
+      if (/\blaw\b|\bllb\b/.test(courseName)) return "Law";
+      if (/business|bcom|accounting|logistics|hr management/.test(courseName)) return "Business";
+      if (/medicine|pharm|health|primary health|psychology/.test(courseName)) return "Health Sciences";
+      return "Other";
+    };
+    const ALL_COURSES = [
+      ...SA_COURSES.flatMap(({uni,city,sourceUrl,courses}) =>
+        courses.map(({n,aps,apsApplicable,courseCategory,englishMinimum,closeTry,pathwayNote,infoNote,admissionNote,link,status,openingDate,closingDate,fac,apsExact,apsNote,verificationStatus,sourceNote,disclaimer}) => ({
+        n, aps, minimumAPS:aps, uni, campus:city, courseCategory:courseCategory || getCourseCategory(n),
+        apsApplicable:apsApplicable !== false, englishMinimum, closeTry, pathwayNote, infoNote, admissionNote,
+        apsExact, apsNote, verificationStatus:verificationStatus || (link ? "verified" : "unverified"),
+        status:status || "open", openingDate:openingDate || "2026-04-01", closingDate:closingDate || "2026-09-30",
+        source:link || sourceUrl,
+        sourceNote:sourceNote || (link ? "Official course page" : "Official institution homepage; course and APS details not verified"),
+        disclaimer:disclaimer || "Indicative guide entry; verify current course availability and entry requirements with the institution.",
+        type:n.startsWith("N4") || n.startsWith("NCV") || n.startsWith("NC(V)") ? "TVET" :
+          n.startsWith("Higher Certificate") ? "Higher Certificate" :
+            n.startsWith("Diploma") ? "Diploma" :
+              /^(Bachelor|BA\b)/.test(n) ? "Bachelor" : "Degree",
+        fac:fac || "Check official prospectus", link:link || sourceUrl
+      }))
+      ),
+      ...TUT_PROSPECTUS_COURSES.flatMap(({faculty,source,courses}) => courses.map((n) => ({
+        n, aps:null, minimumAPS:null, apsApplicable:true, apsExact:false,
+        apsNote:"Indicative - verify on official prospectus - ApplyHub SA catalogue preliminary",
+        apsDisplayNote:"Check Prospectus",
+        verificationStatus:"verified",
+        uni:"Tshwane University of Technology (TUT)", campus:"Pretoria",
+        courseCategory:getCourseCategory(n), faculty, fac:faculty,
+        status:"open", openingDate:"2026-04-01", closingDate:"2026-09-30",
+        source, link:source,
+        sourceNote:"Official TUT 2026 faculty prospectus; course name verified, APS not assessed",
+        disclaimer:"Course name verified from the linked TUT 2026 prospectus. APS and subject requirements are not assessed; check the current official prospectus.",
+        type:n.startsWith("Higher Certificate") ? "Higher Certificate" :
+          n.startsWith("Diploma") ? "Diploma" :
+            n.startsWith("Bachelor") ? "Bachelor" : "Degree"
+      })))
+    ];
+    const GUIDE_DISCLAIMER =
+      `INDICATIVE CATALOGUE FOR GUIDANCE ONLY. This catalogue has ${ALL_COURSES.length} entries and is not a complete national catalogue. Some course names are linked to official prospectuses, but APS and admission requirements are not assessed for those entries. Check each institution's current prospectus before applying.`;
+    const getMinimumAPS = (course) => course.minimumAPS;
+    const getCourseAPSDisplay = (course) => {
+      if (!course.apsApplicable) return "Not used for NC(V)";
+      if (course.apsExact === false) return "Check Prospectus";
+      return String(getMinimumAPS(course) ?? "Not supplied");
+    };
+    const getCourseDisplayStatus = (course, today = new Date()) => {
+      const openingDate = new Date(`${course.openingDate}T00:00:00`);
+      const closingDate = new Date(`${course.closingDate}T23:59:59`);
+      if (course.status === "closed") {
+        return {
+          state: "closed",
+          text: `Applications Closed for this institution${course.openingDate ? ` - Opens: ${formatIntakeDate(course.openingDate)}` : ""}`
+        };
+      }
+      if (today < openingDate) {
+        return { state: "closed", text: `Applications are not open yet - Opens: ${formatIntakeDate(course.openingDate)}` };
+      }
+      if (today > closingDate) {
+        return {
+          state: "verify",
+          text: `Indicative closing date passed (${formatIntakeDate(course.closingDate)}). Late applications may still be considered - enquire with the institution.`
+        };
+      }
+      return { state: "open", text: "Applications Open (Indicative - verify on official website)" };
+    };
+    const formatIntakeDate = (dateValue) => new Date(`${dateValue}T00:00:00`)
+      .toLocaleDateString("en-ZA", { day: "numeric", month: "long", year: "numeric" });
+
+    const SUBJECTS = [
+      "English Home Language", "English First Additional Language", "Sepedi Home Language",
+      "Sepedi First Additional Language", "Afrikaans Home Language",
+      "Afrikaans First Additional Language", "Mathematics (Maths)", "Mathematical Literacy (Maths Lit)",
+      "Technical Mathematics", "Life Orientation", "Life Sciences", "Physical Sciences",
+      "Geography", "History", "Accounting", "Business Studies", "Economics",
+      "Computer Applications Technology (CAT)", "Information Technology (IT)",
+      "Agricultural Sciences", "Tourism", "Consumer Studies", "Visual Arts",
+      "Dramatic Arts", "Engineering Graphics and Design", "Other"
+    ];
+    let personalInfo = null;
+    let studentAPS = 0;
+    let subjectSequence = 0;
+    let selectedCourse = null;
+    let verificationFilter = "all";
+    const sessionPaymentUnlocks = new Set();
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+    const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    })[char]);
+
+    function showStep(step) {
+      $$(".step").forEach((section) => { section.hidden = section.id !== `step${step}`; });
+      $$(".progress-item").forEach((item) => {
+        const number = Number(item.dataset.progress);
+        item.classList.toggle("active", number === step);
+        item.classList.toggle("complete", number < step);
+      });
+      if (step === 4) updateResultsPaymentUI();
+      if (step === 5) updateApplicationPaymentUI();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function hasPaymentUnlock(key) {
+      if (sessionPaymentUnlocks.has(key)) return true;
+      try {
+        return localStorage.getItem(key) === "true";
+      } catch (error) {
+        console.error(`ApplyNow could not read ${key} from local storage:`, error);
+        return false;
+      }
+    }
+
+    function savePaymentUnlock(key) {
+      sessionPaymentUnlocks.add(key);
+      try {
+        localStorage.setItem(key, "true");
+        return true;
+      } catch (error) {
+        console.error(`ApplyNow could not save ${key} in local storage:`, error);
+        return false;
+      }
+    }
+
+    function updateResultsPaymentUI() {
+      const unlocked = hasPaymentUnlock("paidR25");
+      $("#r25-payment-box").hidden = unlocked;
+      $("#r25-unlocked-message").hidden = !unlocked;
+      $("#paid-results").hidden = !unlocked;
+      if (unlocked && !$("#r25-unlocked-message").textContent) {
+        updatePaymentStatus("#r25-unlocked-message", "Results are marked unlocked in this browser. This is not confirmation that payment was received.");
+      }
+    }
+
+    function updateApplicationPaymentUI() {
+      const unlocked = hasPaymentUnlock("paidR100");
+      $("#r100-payment-box").hidden = unlocked;
+      $("#r100-unlocked-message").hidden = !unlocked;
+      $("#confirm-application").hidden = !unlocked;
+      if (unlocked && !$("#r100-unlocked-message").textContent) {
+        updatePaymentStatus("#r100-unlocked-message", "Application preparation is marked unlocked in this browser. This is not confirmation that payment was received.");
+      }
+    }
+
+    function renderInstitutionOptions(containerSelector, institutions, groupName) {
+      const container = $(containerSelector);
+      container.replaceChildren();
+      institutions.forEach((institution, index) => {
+        const label = document.createElement("label");
+        label.className = "institution-option";
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.name = groupName;
+        checkbox.value = institution;
+        checkbox.id = `${groupName}-${index}`;
+        const text = document.createElement("span");
+        text.textContent = institution;
+        label.append(checkbox, text);
+        container.append(label);
+      });
+    }
+
+    function getSelectedInstitutions() {
+      const universities = $$('input[name="universities"]:checked').map((input) => input.value);
+      const colleges = $$('input[name="colleges"]:checked').map((input) => input.value);
+      const otherUniversity = $("#other-university").value.trim();
+      const otherCollege = $("#other-college").value.trim();
+      if (otherUniversity) universities.push(otherUniversity);
+      if (otherCollege) colleges.push(otherCollege);
+      return {
+        universities,
+        colleges,
+        nsfas: $("#nsfas-requested").checked
+      };
+    }
+
+    function getLearnerSummary() {
+      if (!personalInfo || !selectedCourse) throw new Error("Complete learner details and choose a course first.");
+      return [
+        `Full name: ${personalInfo.fullNames} ${personalInfo.surname}`,
+        `South African ID number: ${personalInfo.idNumber}`,
+        `Date of birth: ${personalInfo.dateOfBirth}`,
+        `Gender: ${personalInfo.gender}`,
+        `Phone / WhatsApp: ${personalInfo.phone}`,
+        `Alternative phone: ${personalInfo.alternativePhone}`,
+        `Email: ${personalInfo.email}`,
+        `Province: ${personalInfo.province}`,
+        `District / municipality: ${personalInfo.district}`,
+        `Town / village: ${personalInfo.cityVillage}`,
+        `School: ${personalInfo.schoolName}`,
+        `Grade: ${personalInfo.grade}`,
+        `Matric year: ${personalInfo.matricYear}`,
+        `Estimated APS: ${studentAPS}`,
+        `Course requested: ${selectedCourse.n}`,
+        `Institution shown for course: ${selectedCourse.uni}`,
+        `ApplyHub SA support: ${APPLICATION_EMAIL}`,
+        `Other requested courses: ${[$("#dream1").value.trim(), $("#dream2").value.trim(), $("#dream3").value.trim()].filter(Boolean).join("; ")}`,
+        `Subject results: ${getSubjects().map(({ name, mark }) => `${name}: ${mark}%`).join("; ")}`
+      ].join("\n");
+    }
+
+    function getApplicationSelectionsText() {
+      const selections = getSelectedInstitutions();
+      return [
+        `Universities: ${selections.universities.join("; ") || "None selected"}`,
+        `TVET colleges: ${selections.colleges.join("; ") || "None selected"}`,
+        `NSFAS assistance requested: ${selections.nsfas ? "Yes" : "No"}`
+      ].join("\n");
+    }
+
+    function buildApplicationSummaries() {
+      const learnerSummary = getLearnerSummary();
+      const selections = getSelectedInstitutions();
+      const common = [
+        "APPLYHUB SA - LEARNER APPLICATION ASSISTANCE SUMMARY",
+        "PRIVATE PERSONAL INFORMATION - handle securely and only use with learner/guardian permission",
+        "",
+        learnerSummary,
+        "",
+        "APPLICATION STATUS: Preparation document only. No portal application has been submitted.",
+        "Payment receipt submission is not bank verification. Confirm payment before starting any application.",
+        "Verify institution, programme, eligibility, deadlines and required documents on official sources."
+      ].join("\n");
+      const safeName = `${personalInfo.surname}-${personalInfo.fullNames}`.toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "learner";
+      return [
+        {
+          filename: `${safeName}-university-application-summary.txt`,
+          content: [
+            common, "", "UNIVERSITY APPLICATIONS",
+            ...selections.universities.map((name) => `- ${name}`),
+            selections.universities.length ? "" : "No university selected."
+          ].join("\n")
+        },
+        {
+          filename: `${safeName}-college-application-summary.txt`,
+          content: [
+            common, "", "TVET COLLEGE APPLICATIONS",
+            ...selections.colleges.map((name) => `- ${name}`),
+            selections.colleges.length ? "" : "No TVET college selected."
+          ].join("\n")
+        },
+        {
+          filename: `${safeName}-nsfas-application-summary.txt`,
+          content: [
+            common, "", "NSFAS APPLICATION",
+            `NSFAS assistance requested: ${selections.nsfas ? "Yes" : "No"}`,
+            selections.nsfas
+              ? `Preferred study institutions: ${[...selections.universities, ...selections.colleges].join("; ") || "Not selected"}`
+              : "No NSFAS request was selected."
+          ].join("\n")
+        }
+      ];
+    }
+
+    function updatePaymentStatus(selector, message, isError = false) {
+      const status = $(selector);
+      status.textContent = message;
+      status.style.color = isError ? "var(--red)" : "var(--green)";
+    }
+
+    async function copyCapitecAccount(statusSelector) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText("2615455962");
+        } else {
+          const input = document.createElement("textarea");
+          input.value = "2615455962";
+          input.setAttribute("readonly", "");
+          input.style.position = "fixed";
+          input.style.opacity = "0";
+          document.body.append(input);
+          input.select();
+          const copied = document.execCommand("copy");
+          input.remove();
+          if (!copied) throw new Error("Clipboard access is unavailable.");
+        }
+        updatePaymentStatus(statusSelector, "Capitec account number copied.");
+      } catch (error) {
+        console.error("ApplyNow could not copy the Capitec account number:", error);
+        updatePaymentStatus(statusSelector, `Could not copy the account number: ${error.message}`, true);
+      }
+    }
+
+    async function submitPaymentProof(amount) {
+      const isR25 = amount === 25;
+      const fileInput = isR25 ? $("#proof-r25") : $("#proof-r100");
+      const consent = isR25 ? $("#r25-consent") : $("#r100-consent");
+      const button = isR25 ? $("#submit-r25-proof") : $("#submit-r100-proof");
+      const statusSelector = isR25 ? "#r25-status" : "#r100-status";
+      const unlockKey = isR25 ? "paidR25" : "paidR100";
+      const file = fileInput.files[0];
+      if (!file) {
+        updatePaymentStatus(statusSelector, "Choose a JPG, PNG or PDF receipt before submitting.", true);
+        fileInput.focus();
+        return;
+      }
+      if (!["image/jpeg", "image/png", "application/pdf"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+        updatePaymentStatus(statusSelector, "Receipt must be a JPG, PNG or PDF file no larger than 10 MB.", true);
+        fileInput.focus();
+        return;
+      }
+      if (!consent.checked) {
+        updatePaymentStatus(statusSelector, "Confirm consent to send the receipt and stated learner details to Formspree.", true);
+        consent.focus();
+        return;
+      }
+      if (!isR25) {
+        const selections = getSelectedInstitutions();
+        if (!selections.universities.length && !selections.colleges.length && !selections.nsfas) {
+          updatePaymentStatus(statusSelector, "Select at least one university, college, or NSFAS assistance.", true);
+          $("#university-options input").focus();
+          return;
+        }
+      }
+      if (hasPaymentUnlock(unlockKey)) {
+        updatePaymentStatus(statusSelector, "This browser already has this access unlocked.");
+        isR25 ? updateResultsPaymentUI() : updateApplicationPaymentUI();
+        return;
+      }
+
+      button.disabled = true;
+      updatePaymentStatus(statusSelector, `Submitting the R${amount} proof to Formspree…`);
+      const fullName = `${personalInfo.fullNames} ${personalInfo.surname}`;
+      const formData = new FormData();
+      formData.append("_subject", isR25
+        ? `R25 RESULTS PROOF - ${fullName}`
+        : `NEW APPLICATION - ${fullName} - ${selectedCourse.n}`);
+      formData.append("_replyto", personalInfo.email);
+      formData.append("payment_amount", `R${amount}`);
+      formData.append("payment_reference", fullName);
+      formData.append("learner_name", fullName);
+      formData.append("learner_phone", personalInfo.phone);
+      formData.append("learner_email", personalInfo.email);
+      formData.append("support_email", APPLICATION_EMAIL);
+      formData.append("payment_proof", file, file.name);
+      if (isR25) {
+        formData.append("submission_type", "R25 results unlock proof - not bank verified");
+      } else {
+        formData.append("submission_type", "R100 application assistance proof - not bank verified");
+        formData.append("learner_id_number", personalInfo.idNumber);
+        formData.append("date_of_birth", personalInfo.dateOfBirth);
+        formData.append("gender", personalInfo.gender);
+        formData.append("alternative_phone", personalInfo.alternativePhone);
+        formData.append("province", personalInfo.province);
+        formData.append("district", personalInfo.district);
+        formData.append("town_or_village", personalInfo.cityVillage);
+        formData.append("school", personalInfo.schoolName);
+        formData.append("grade", personalInfo.grade);
+        formData.append("matric_year", personalInfo.matricYear);
+        formData.append("aps", String(studentAPS));
+        formData.append("course_requested", selectedCourse.n);
+        formData.append("course_institution", selectedCourse.uni);
+        formData.append("other_courses", [$("#dream1").value.trim(), $("#dream2").value.trim(), $("#dream3").value.trim()].join("; "));
+        formData.append("subject_results", getSubjects().map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
+        formData.append("university_selections", getSelectedInstitutions().universities.join("; "));
+        formData.append("college_selections", getSelectedInstitutions().colleges.join("; "));
+        formData.append("nsfas_requested", getSelectedInstitutions().nsfas ? "Yes" : "No");
+        formData.append("application_summary", `${getLearnerSummary()}\n\n${getApplicationSelectionsText()}`);
+        buildApplicationSummaries().forEach((summary) => {
+          formData.append("application_summary_file", new Blob([summary.content], { type: "text/plain" }), summary.filename);
+        });
+      }
+
+      try {
+        const response = await fetch(FORMSPREE_ENDPOINT, {
+          method: "POST",
+          headers: { Accept: "application/json" },
+          body: formData
+        });
+        let result = null;
+        try {
+          result = await response.json();
+        } catch (error) {
+          console.error("ApplyNow received a non-JSON Formspree response:", error);
+        }
+        if (!response.ok || !result || result.ok !== true) {
+          const details = result?.errors?.map((item) => item.message).filter(Boolean).join(" ") ||
+            `Formspree did not confirm receipt (HTTP ${response.status}).`;
+          throw new Error(details);
+        }
+        const saved = savePaymentUnlock(unlockKey);
+        if (isR25) {
+          updatePaymentStatus("#r25-unlocked-message", saved
+            ? "Proof submission received. Results are unlocked in this browser. Payment is not independently verified."
+            : "Proof submission received. Results are unlocked for this session, but this browser could not remember the unlock.");
+          updateResultsPaymentUI();
+        } else {
+          updatePaymentStatus("#r100-unlocked-message", saved
+            ? "Application details and proof were sent to Formspree. Access is unlocked in this browser; payment is not independently verified. The owner must review and manually apply."
+            : "Application details and proof were sent to Formspree. Access is unlocked for this session, but this browser could not remember the unlock. The owner must review and manually apply.");
+          updateApplicationPaymentUI();
+        }
+      } catch (error) {
+        console.error(`ApplyNow could not submit the R${amount} proof:`, error);
+        updatePaymentStatus(statusSelector, `Could not submit the proof, so access was not unlocked: ${error.message}`, true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    function downloadTextFile(filename, content) {
+      const file = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(file);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.hidden = true;
+      document.body.append(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 60000);
+    }
+
+    function prepareApplicationFiles() {
+      if (!hasPaymentUnlock("paidR100")) {
+        updatePaymentStatus("#r100-status", "Submit the R100 proof before preparing application files.", true);
+        return;
+      }
+      const selections = getSelectedInstitutions();
+      buildApplicationSummaries().forEach((summary) => downloadTextFile(summary.filename, summary.content));
+
+      const whatsappText = [
+        `New application assistance request: ${personalInfo.fullNames} ${personalInfo.surname}.`,
+        `Course: ${selectedCourse.n}; estimated APS: ${studentAPS}.`,
+        `Selected universities: ${selections.universities.join(", ") || "none"}.`,
+        `Selected colleges: ${selections.colleges.join(", ") || "none"}.`,
+        `NSFAS assistance: ${selections.nsfas ? "yes" : "no"}.`,
+        "Details and receipt were submitted through Formspree; please verify payment before applying."
+      ].join(" ");
+      const confirmation = $("#application-confirmation");
+      confirmation.replaceChildren();
+      const notice = document.createElement("div");
+      notice.className = "application-success";
+      const heading = document.createElement("h2");
+      heading.textContent = "Application preparation files are ready";
+      const explanation = document.createElement("p");
+      explanation.textContent = "Three summary files were downloaded to this device and attached to the Formspree submission for the owner. That submission is not proof that payment reached the account, and this app has not submitted applications to any portal. ApplyHub SA must verify payment and complete each application manually; timing is not guaranteed.";
+      const whatsappLink = document.createElement("a");
+      whatsappLink.className = "button full";
+      whatsappLink.href = `https://wa.me/${APPLICATION_WHATSAPP}?text=${encodeURIComponent(whatsappText)}`;
+      whatsappLink.target = "_blank";
+      whatsappLink.rel = "noopener noreferrer";
+      whatsappLink.textContent = "Open WhatsApp notification draft";
+      notice.append(heading, explanation, whatsappLink);
+      confirmation.append(notice);
+      confirmation.hidden = false;
+      $("#confirm-application").hidden = true;
+    }
+
+    function addSubjectRow() {
+      const row = document.createElement("div");
+      row.className = "subject-row";
+      const subjectId = `subject-${++subjectSequence}`;
+      const markId = `${subjectId}-mark`;
+      const options = ['<option value="">Select subject</option>']
+        .concat(SUBJECTS.map((subject) => `<option value="${escapeHTML(subject)}">${escapeHTML(subject)}</option>`))
+        .join("");
+      row.innerHTML = `
+        <div><label for="${subjectId}">Subject</label><select id="${subjectId}" class="subject-name" required>${options}</select></div>
+        <div><label for="${markId}">Mark (%)</label><input id="${markId}" class="subject-mark" type="number" min="0" max="100" step="1" inputmode="numeric" placeholder="0–100" required></div>
+        <button class="remove-subject" type="button" aria-label="Remove subject">Remove</button>`;
+      $(".remove-subject", row).addEventListener("click", () => {
+        row.remove();
+        calculateAPS();
+      });
+      $$(".subject-name, .subject-mark", row).forEach((field) => {
+        field.addEventListener("input", calculateAPS);
+        field.addEventListener("change", calculateAPS);
+      });
+      $("#subjects-box").append(row);
+    }
+
+    function markToPoints(mark) {
+      if (mark >= 80) return 7;
+      if (mark >= 70) return 6;
+      if (mark >= 60) return 5;
+      if (mark >= 50) return 4;
+      if (mark >= 40) return 3;
+      if (mark >= 30) return 2;
+      return 1;
+    }
+
+    function getSubjects() {
+      return $$(".subject-row").map((row) => ({
+        name: $(".subject-name", row).value,
+        rawMark: $(".subject-mark", row).value,
+        mark: Number($(".subject-mark", row).value)
+      })).filter((subject) => subject.name && subject.rawMark !== "" &&
+        Number.isFinite(subject.mark) && subject.mark >= 0 && subject.mark <= 100);
+    }
+
+    function calculateAPS() {
+      const seenSubjects = new Set();
+      const eligibleMarks = getSubjects()
+        .filter((subject) => {
+          if (subject.name === "Life Orientation" || seenSubjects.has(subject.name)) return false;
+          seenSubjects.add(subject.name);
+          return true;
+        })
+        .map((subject) => subject.mark)
+        .sort((a, b) => b - a)
+        .slice(0, 6);
+      studentAPS = eligibleMarks.reduce((total, mark) => total + markToPoints(mark), 0);
+      $("#aps-show").textContent = String(studentAPS);
+      return studentAPS;
+    }
+
+    function validateSubjects() {
+      const rows = $$(".subject-row");
+      let completeRows = 0;
+      const enteredSubjects = new Set();
+      for (const row of rows) {
+        const subject = $(".subject-name", row);
+        const mark = $(".subject-mark", row);
+        const hasAnyValue = subject.value !== "" || mark.value !== "";
+        if (!hasAnyValue) continue;
+        if (!subject.value) {
+          subject.reportValidity();
+          return false;
+        }
+        if (mark.value === "" || !mark.checkValidity()) {
+          mark.reportValidity();
+          return false;
+        }
+        if (enteredSubjects.has(subject.value)) {
+          $("#marks-status").textContent = `You entered ${subject.value} more than once. Each subject can only be entered once.`;
+          subject.focus();
+          return false;
+        }
+        enteredSubjects.add(subject.value);
+        completeRows += 1;
+      }
+      if (completeRows < 7) {
+        $("#marks-status").textContent = `Enter a subject name and mark for at least 7 subjects. You have entered ${completeRows}.`;
+        return false;
+      }
+      $("#marks-status").textContent = "";
+      return true;
+    }
+
+    function validateRequiredFields(fields, statusSelector, message) {
+      for (const field of fields) {
+        if (!field.value.trim()) {
+          $(statusSelector).textContent = message;
+          field.focus();
+          return false;
+        }
+      }
+      $(statusSelector).textContent = "";
+      return true;
+    }
+
+    function hasValidSouthAfricanIdChecksum(idNumber) {
+      let sum = 0;
+      let doubleDigit = true;
+      for (let index = idNumber.length - 2; index >= 0; index -= 1) {
+        let digit = Number(idNumber[index]);
+        if (doubleDigit) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+        doubleDigit = !doubleDigit;
+      }
+      return (sum + Number(idNumber[idNumber.length - 1])) % 10 === 0;
+    }
+
+    function getBirthDateFromId(idNumber) {
+      const match = /^(\d{2})(\d{2})(\d{2})/.exec(idNumber);
+      if (!match) return null;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const shortYear = Number(match[1]);
+      let year = Math.floor(today.getFullYear() / 100) * 100 + shortYear;
+      let date = new Date(year, Number(match[2]) - 1, Number(match[3]));
+      if (
+        date.getFullYear() !== year ||
+        date.getMonth() !== Number(match[2]) - 1 ||
+        date.getDate() !== Number(match[3])
+      ) return null;
+      if (date > today) {
+        year -= 100;
+        date = new Date(year, Number(match[2]) - 1, Number(match[3]));
+      }
+      return date;
+    }
+
+    function formatDateOfBirth(date) {
+      return `${date.getFullYear()}/${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}`;
+    }
+
+    function parseDateOfBirth(value) {
+      const match = /^(\d{4})\/(\d{2})\/(\d{2})$/.exec(value);
+      if (!match) return new Date(NaN);
+      const year = Number(match[1]);
+      const month = Number(match[2]) - 1;
+      const day = Number(match[3]);
+      const date = new Date(year, month, day);
+      return date.getFullYear() === year && date.getMonth() === month && date.getDate() === day
+        ? date
+        : new Date(NaN);
+    }
+
+    function validatePersonalInfo() {
+      const fields = [
+        $("#full-names"), $("#surname"), $("#id-number"), $("#date-of-birth"), $("#gender"),
+        $("#phone"), $("#alternative-phone"), $("#email"), $("#province"), $("#district"),
+        $("#city-village"), $("#school-name"), $("#grade"), $("#matric-year")
+      ];
+      if (!validateRequiredFields(
+        fields,
+        "#personal-status",
+        "Complete every personal information field to continue."
+      )) return false;
+      const idNumber = $("#id-number");
+      if (!/^\d{13}$/.test(idNumber.value.trim())) {
+        $("#personal-status").textContent = "ID Number must contain exactly 13 digits.";
+        idNumber.focus();
+        return false;
+      }
+      if (!hasValidSouthAfricanIdChecksum(idNumber.value.trim())) {
+        $("#personal-status").textContent = "ID Number is not valid. Check the number and try again.";
+        idNumber.focus();
+        return false;
+      }
+      const dateOfBirth = parseDateOfBirth($("#date-of-birth").value);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (!Number.isFinite(dateOfBirth.getTime()) || dateOfBirth > today) {
+        $("#personal-status").textContent = "Enter a valid date of birth that is not in the future.";
+        $("#date-of-birth").focus();
+        return false;
+      }
+      const idBirthDate = getBirthDateFromId(idNumber.value.trim());
+      if (!idBirthDate || formatDateOfBirth(dateOfBirth) !== formatDateOfBirth(idBirthDate)) {
+        $("#personal-status").textContent = "Date of birth must match the date encoded in the ID number.";
+        $("#date-of-birth").focus();
+        return false;
+      }
+      if (!$("#privacy-consent").checked) {
+        $("#personal-status").textContent = "Read the privacy notice and confirm consent before continuing.";
+        $("#privacy-consent").focus();
+        return false;
+      }
+      const age = getAge(dateOfBirth, today);
+      if (age < 18 && !$("#guardian-consent").checked) {
+        $("#personal-status").textContent = "A parent or legal guardian must read the notice and confirm permission for learners under 18.";
+        $("#guardian-consent").focus();
+        return false;
+      }
+      const invalidField = fields.find((field) => !field.checkValidity());
+      if (invalidField) {
+        $("#personal-status").textContent = "Enter a valid email address and check your information.";
+        invalidField.reportValidity();
+        return false;
+      }
+      personalInfo = {
+        fullNames: $("#full-names").value.trim(),
+        surname: $("#surname").value.trim(),
+        idNumber: $("#id-number").value.trim(),
+        dateOfBirth: $("#date-of-birth").value,
+        gender: $("#gender").value,
+        phone: $("#phone").value.trim(),
+        alternativePhone: $("#alternative-phone").value.trim(),
+        email: $("#email").value.trim(),
+        province: $("#province").value,
+        district: $("#district").value.trim(),
+        cityVillage: $("#city-village").value.trim(),
+        schoolName: $("#school-name").value.trim(),
+        grade: $("#grade").value,
+        matricYear: $("#matric-year").value
+      };
+      return true;
+    }
+
+    function getAge(dateOfBirth, today = new Date()) {
+      const currentDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      const birthDate = new Date(dateOfBirth.getFullYear(), dateOfBirth.getMonth(), dateOfBirth.getDate());
+      let age = currentDate.getFullYear() - birthDate.getFullYear();
+      const birthdayHasNotOccurred =
+        currentDate.getMonth() < birthDate.getMonth() ||
+        (currentDate.getMonth() === birthDate.getMonth() && currentDate.getDate() < birthDate.getDate());
+      if (birthdayHasNotOccurred) age -= 1;
+      return age;
+    }
+
+    function renderPersonalInfo() {
+      const container = $("#personal-results");
+      container.replaceChildren();
+      [
+        ["Full Names", personalInfo.fullNames],
+        ["Surname", personalInfo.surname],
+        ["ID Number", personalInfo.idNumber],
+        ["APS", String(studentAPS)]
+      ].forEach(([label, value]) => {
+        const item = document.createElement("p");
+        const strong = document.createElement("strong");
+        strong.textContent = `${label}: `;
+        item.append(strong, document.createTextNode(value));
+        container.append(item);
+      });
+    }
+
+    function editDistance(left, right) {
+      const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+      for (let row = 1; row <= left.length; row += 1) {
+        let diagonal = previous[0];
+        previous[0] = row;
+        for (let column = 1; column <= right.length; column += 1) {
+          const above = previous[column];
+          previous[column] = Math.min(
+            previous[column] + 1,
+            previous[column - 1] + 1,
+            diagonal + (left[row - 1] === right[column - 1] ? 0 : 1)
+          );
+          diagonal = above;
+        }
+      }
+      return previous[right.length];
+    }
+
+    function normalizeDreamQuery(dream) {
+      const vocabulary = [
+        "engineering", "teaching", "logistics", "nursing", "mathematics",
+        "information", "technology", "business", "management", "tourism"
+      ];
+      return dream.toLocaleLowerCase().trim().replace(/[a-z]+/g, (word) => {
+        if (vocabulary.includes(word) || word.length < 6) return word;
+        const closest = vocabulary
+          .map((candidate) => ({ candidate, distance: editDistance(word, candidate) }))
+          .filter(({ candidate, distance }) =>
+            Math.abs(candidate.length - word.length) <= 2 && distance <= 2
+          )
+          .sort((a, b) => a.distance - b.distance)[0];
+        return closest ? closest.candidate : word;
+      });
+    }
+
+    function correctDreamSpelling(dream) {
+      const normalized = normalizeDreamQuery(dream);
+      if (dream === dream.toLocaleUpperCase()) return normalized.toLocaleUpperCase();
+      return normalized.replace(/\b[a-z]/g, (letter) => letter.toLocaleUpperCase());
+    }
+
+    function courseMatchesDream(course, dream) {
+      const searchTerms = {
+        teaching: "teaching",
+        nursing: "nursing",
+        maths: "mathematics",
+        "maths lit": "mathematical literacy",
+        "maths literacy": "mathematical literacy",
+        it: "information technology",
+        logistics: "logistics"
+      };
+      const query = normalizeDreamQuery(dream);
+      const searchableQuery = (searchTerms[query] || query).replace(/\binformation technology\b/g, "it");
+      if (searchableQuery === "teaching") {
+        return /teaching|education|\bbed\b/.test(`${course.n} ${course.fac}`.toLocaleLowerCase());
+      }
+      const terms = searchableQuery.split(/\s+/).filter((term) => !["in", "of", "and", "the"].includes(term));
+      const courseName = `${course.n} ${course.fac}`.toLocaleLowerCase();
+      const courseWords = courseName.match(/[a-z0-9]+/g) || [];
+      return terms.length > 0 && terms.every((term) => {
+        if (term === "it") return /\bit\b/.test(courseName);
+        if (courseName.includes(term)) return true;
+        return courseWords.some((word) =>
+          Math.abs(word.length - term.length) <= 2 &&
+          editDistance(word, term) <= (term.length >= 7 ? 2 : 1)
+        );
+      });
+    }
+
+    function getLearnerSubjectMarks() {
+      const marks = new Map();
+      getSubjects().forEach(({ name, mark }) => marks.set(name, mark));
+      const firstMark = (names) => {
+        for (const name of names) {
+          if (marks.has(name)) return { mark: marks.get(name), missing: false };
+        }
+        return { mark: 0, missing: true };
+      };
+      const english = getSubjects()
+        .filter(({ name }) => name.startsWith("English "))
+        .sort((a, b) => b.mark - a.mark)[0];
+      const pureMaths = firstMark(["Mathematics (Maths)"]);
+      const mathsLit = firstMark(["Mathematical Literacy (Maths Lit)"]);
+      const technicalMaths = firstMark(["Technical Mathematics"]);
+      return {
+        english: english ? { mark: english.mark, missing: false } : { mark: 0, missing: true },
+        pureMaths,
+        mathsLit,
+        technicalMaths,
+        anyMaths: [pureMaths, mathsLit, technicalMaths].filter((subject) => !subject.missing)
+          .sort((a, b) => b.mark - a.mark)[0] || { mark: 0, missing: true },
+        lifeSciences: firstMark(["Life Sciences"]),
+        physicalSciences: firstMark(["Physical Sciences"])
+      };
+    }
+
+    function getCourseSubjectRequirements(course) {
+      const name = course.n.toLocaleLowerCase();
+      const isTvet = course.type === "TVET";
+      const isDiploma = course.type === "Diploma";
+      const isMedicine = /mbchb|medicine/.test(name);
+      const isNursingDegree = /nursing/.test(name) && !isTvet && !isDiploma;
+      const isEngineering = /engineering|engineering design/.test(name);
+      const isBSc = /\bbsc\b/.test(name);
+      const isBachelor = !isTvet && !isDiploma &&
+        /\b(bachelor|bsc|bed|bcom|ba|llb|bpharm|mbchb)\b/.test(name);
+      const isPureMathsCourse = isEngineering || isMedicine || isBSc ||
+        /pharmacy|dentistry|vet|computer science|accounting|\bbcom\b|architecture|actuarial/.test(name) ||
+        (isNursingDegree && /\bbachelor\b/.test(name)) ||
+        (/information technology|\bit\b/.test(name) && isBachelor);
+      const isLifeScienceCourse = isMedicine || isNursingDegree || /pharmacy|dentistry|vet|agriculture|physiotherapy|occupational therapy|science teaching/.test(name);
+      const needsPhysicalScience = isEngineering || isMedicine || isNursingDegree || isBSc ||
+        /pharmacy|dentistry|vet|physics|chemistry/.test(name);
+      let englishMinimum = 40;
+      if (!isTvet && !isDiploma && /law|education|nursing|engineering|medicine/.test(name)) {
+        englishMinimum = 60;
+      } else if (isBachelor) {
+        englishMinimum = 50;
+      }
+      const physicalScienceMinimum = isEngineering || isMedicine ? 60 : 50;
+      const lifeScienceMinimum = isMedicine ? 60 : 50;
+      return {
+        englishMinimum: course.englishMinimum ?? englishMinimum,
+        pureMaths: isPureMathsCourse,
+        generalMathsMinimum: isTvet ? 40 : null,
+        lifeScienceMinimum: isLifeScienceCourse ? lifeScienceMinimum : null,
+        physicalScienceMinimum: needsPhysicalScience ? physicalScienceMinimum : null
+      };
+    }
+
+    function getCourseEligibility(course) {
+      if (course.apsExact === false) {
+        return {
+          passes: false,
+          failures: ["APS and subject requirements are not assessed; check the official prospectus."],
+          apsBorderline: false,
+          notAssessed: true
+        };
+      }
+      if (!course.apsApplicable) {
+        return {
+          passes: false,
+          failures: ["NC(V) entry is based on school results and placement assessment, not APS."],
+          apsBorderline: false
+        };
+      }
+      const subjects = getLearnerSubjectMarks();
+      const requirements = getCourseSubjectRequirements(course);
+      const failures = [];
+      const subjectFailure = (subjectName, minimum, result) => {
+        if (result.mark >= minimum) return;
+        const absent = result.missing ? ` - Missing ${subjectName}` : "";
+        failures.push(`FAIL: Need ${subjectName} ${minimum}%, you have ${result.mark}%${absent}`);
+      };
+
+      subjectFailure("English", requirements.englishMinimum, subjects.english);
+      if (requirements.pureMaths) {
+        if (!subjects.pureMaths.missing && subjects.pureMaths.mark < 40) {
+          if (subjects.pureMaths.mark < 30) {
+            failures.push("FAIL: Level 1 Maths FAIL, even TVET needs Level 3 (40%)");
+          } else {
+            subjectFailure("Pure Maths", 40, subjects.pureMaths);
+          }
+        } else if (subjects.pureMaths.missing) {
+          if (!subjects.mathsLit.missing) {
+            failures.push("FAIL: Maths Lit not allowed, need Pure Maths");
+          } else {
+            subjectFailure("Pure Maths", 40, subjects.pureMaths);
+          }
+        }
+      } else if (requirements.generalMathsMinimum !== null) {
+        if (subjects.anyMaths.mark < requirements.generalMathsMinimum) {
+          if (subjects.anyMaths.mark < 30) {
+            failures.push("FAIL: Level 1 Maths FAIL, even TVET needs Level 3 (40%)");
+          } else {
+            subjectFailure("Maths", requirements.generalMathsMinimum, subjects.anyMaths);
+          }
+        }
+      }
+      if (requirements.lifeScienceMinimum !== null) {
+        subjectFailure("Life Sciences", requirements.lifeScienceMinimum, subjects.lifeSciences);
+      }
+      if (requirements.physicalScienceMinimum !== null) {
+        subjectFailure("Physical Science", requirements.physicalScienceMinimum, subjects.physicalSciences);
+      }
+      const minimumAPS = getMinimumAPS(course);
+      if (minimumAPS !== null && studentAPS < minimumAPS) {
+        failures.push(`FAIL: Need APS ${minimumAPS}, you have ${studentAPS}`);
+      }
+      if (minimumAPS === null) {
+        failures.push("Official APS requirement not provided; check the institution's current prospectus.");
+      }
+      return {
+        passes: failures.length === 0,
+        failures,
+        apsBorderline: studentAPS === minimumAPS
+      };
+    }
+
+    function getEligibilityLabel(result, course) {
+      if (course.apsExact === false) {
+        return { className: "not-assessed", label: "NOT ASSESSED - CHECK PROSPECTUS" };
+      }
+      if (!course.apsApplicable) {
+        return { className: "not-assessed", label: "APS NOT USED - CHECK ENTRY REQUIREMENTS" };
+      }
+      if (course.closeTry && studentAPS === getMinimumAPS(course) - 1) {
+        return { className: "borderline", label: "CLOSE - TRY (CHECK WITH INSTITUTION)" };
+      }
+      if (!result.passes) return { className: "not-qualified", label: "NOT QUALIFIED - GUIDE CHECKS ONLY" };
+      if (result.apsBorderline) {
+        return { className: "borderline", label: "QUALIFIED BORDERLINE - GUIDE CHECKS ONLY" };
+      }
+      return { className: "", label: "QUALIFIED - GUIDE CHECKS ONLY" };
+    }
+
+    function getCourseRequirementSummary(course) {
+      if (course.apsExact === false) {
+        return course.apsNote || "APS and subject requirements have not been assessed.";
+      }
+      if (!course.apsApplicable) return course.admissionNote;
+      const requirements = getCourseSubjectRequirements(course);
+      const summary = [`English ${requirements.englishMinimum}%`];
+      if (requirements.pureMaths) summary.push("Pure Maths 40%");
+      else if (requirements.generalMathsMinimum !== null) summary.push(`Maths ${requirements.generalMathsMinimum}% (Pure, Lit or Technical)`);
+      if (requirements.lifeScienceMinimum !== null) summary.push(`Life Sciences ${requirements.lifeScienceMinimum}%`);
+      if (requirements.physicalScienceMinimum !== null) summary.push(`Physical Science ${requirements.physicalScienceMinimum}%`);
+      return summary.join("; ");
+    }
+
+    function createIntakeStatus(course) {
+      const status = getCourseDisplayStatus(course);
+      const notice = document.createElement("p");
+      notice.className = `intake-status ${status.state}`;
+      notice.textContent = status.text;
+      return notice;
+    }
+
+    function getFilteredCourses() {
+      const category = $("#course-category-filter").value;
+      return ALL_COURSES.filter((course) =>
+        (!category || course.courseCategory === category) &&
+        (verificationFilter === "all" || course.verificationStatus === "verified")
+      );
+    }
+
+    function renderDreamResults() {
+      const container = $("#dream-results");
+      container.replaceChildren();
+      [$("#dream1").value, $("#dream2").value, $("#dream3").value].forEach((dream) => {
+        const card = document.createElement("article");
+        card.className = "dream-card";
+        const heading = document.createElement("h3");
+        heading.textContent = correctDreamSpelling(dream.trim());
+        card.append(heading);
+        const matches = ALL_COURSES.filter((course) => courseMatchesDream(course, dream));
+        if (matches.length === 0) {
+          const result = document.createElement("div");
+          result.className = "dream-match";
+          const badge = document.createElement("span");
+          badge.className = "badge not-assessed";
+          badge.textContent = "NO MATCHING ENTRY IN THIS SAMPLE";
+          const reason = document.createElement("p");
+          reason.textContent = `No matching entry for "${correctDreamSpelling(dream.trim())}" appears in this sample catalogue. Check the institution's current prospectus or contact it directly.`;
+          result.append(badge, reason);
+          card.append(result);
+        } else {
+          matches.forEach((course) => {
+            const eligibility = getCourseEligibility(course);
+            const status = getEligibilityLabel(eligibility, course);
+            const result = document.createElement("div");
+            result.className = "dream-match";
+            const institution = document.createElement("strong");
+            institution.textContent = `${course.n} — ${course.uni} (${course.courseCategory})`;
+            const badge = document.createElement("span");
+            badge.className = `badge ${status.className}`.trim();
+            badge.textContent = status.label;
+            result.append(institution, document.createElement("br"), badge);
+            result.append(createIntakeStatus(course));
+            if (eligibility.failures.length) {
+              const reasons = document.createElement("ul");
+              reasons.className = "eligibility-reasons";
+              eligibility.failures.forEach((failure) => {
+                const item = document.createElement("li");
+                item.textContent = failure;
+                reasons.append(item);
+              });
+              result.append(reasons);
+            } else {
+              const reason = document.createElement("p");
+              reason.textContent = "Meets this guide's APS and listed preliminary subject checks. Other official entry requirements may apply.";
+              result.append(reason, createApplyButton(course));
+            }
+            if (getCourseDisplayStatus(course).state === "closed") {
+              result.append(createReminderButton(course));
+            }
+            card.append(result);
+          });
+        }
+        container.append(card);
+      });
+    }
+
+    function createCourseCard(course) {
+      const card = document.createElement("article");
+      card.className = "course-card";
+      const title = document.createElement("h3");
+      title.textContent = course.n;
+      const university = document.createElement("p");
+      university.className = "course-university";
+      university.textContent = course.uni;
+      const details = document.createElement("div");
+      details.className = "course-details";
+      [
+        ["Campus", course.campus],
+        ["Type", course.type],
+        ["Category", course.courseCategory],
+        ["Faculty", course.fac],
+        ["APS Needed", getCourseAPSDisplay(course)]
+      ].forEach(([label, value]) => {
+        const item = document.createElement("div");
+        const strong = document.createElement("strong");
+        strong.textContent = `${label}: `;
+        item.append(strong, document.createTextNode(value));
+        details.append(item);
+      });
+      const requirements = document.createElement("div");
+      requirements.className = "course-requirements";
+      const requirementsLabel = document.createElement("strong");
+      requirementsLabel.textContent = "Requirements: ";
+      requirements.append(requirementsLabel, document.createTextNode(
+        `${course.apsExact === false ? getCourseAPSDisplay(course) : course.apsApplicable ? `APS ${getMinimumAPS(course)}` : "APS is not used for NC(V)"}; ${getCourseRequirementSummary(course)}`
+      ));
+      details.append(requirements);
+      card.append(createIntakeStatus(course));
+      if (course.source) {
+        const source = document.createElement("a");
+        source.href = course.source;
+        source.target = "_blank";
+        source.rel = "noopener noreferrer";
+        source.textContent = course.sourceNote;
+        details.append(source);
+      }
+      const disclaimer = document.createElement("p");
+      disclaimer.className = "hint";
+      disclaimer.textContent = course.disclaimer;
+      details.append(disclaimer);
+      if (course.infoNote) {
+        const note = document.createElement("p");
+        note.className = "hint";
+        note.textContent = course.infoNote;
+        details.append(note);
+      }
+      if (course.pathwayNote) {
+        const pathway = document.createElement("p");
+        pathway.className = "hint";
+        pathway.textContent = course.pathwayNote;
+        details.append(pathway);
+      }
+      const eligibility = getCourseEligibility(course);
+      const status = getEligibilityLabel(eligibility, course);
+      const badge = document.createElement("span");
+      badge.className = `badge ${status.className}`.trim();
+      badge.textContent = status.label;
+      card.append(title, university, details, badge);
+      if (eligibility.failures.length) {
+        const reasons = document.createElement("ul");
+        reasons.className = "eligibility-reasons";
+        eligibility.failures.forEach((failure) => {
+          const item = document.createElement("li");
+          item.textContent = failure;
+          reasons.append(item);
+        });
+        card.append(reasons);
+      } else {
+        card.append(createApplyButton(course));
+      }
+      if (getCourseDisplayStatus(course).state === "closed") {
+        card.append(createReminderButton(course));
+      }
+      return card;
+    }
+
+    function escapeICSText(value) {
+      return String(value).replace(/\\/g, "\\\\").replace(/;/g, "\\;")
+        .replace(/,/g, "\\,").replace(/\r?\n/g, "\\n");
+    }
+
+    function createCalendarReminder(course) {
+      const openingDate = course.openingDate.replace(/-/g, "");
+      const nextDay = new Date(`${course.openingDate}T00:00:00Z`);
+      nextDay.setUTCDate(nextDay.getUTCDate() + 1);
+      const endDate = `${nextDay.getUTCFullYear()}${String(nextDay.getUTCMonth() + 1).padStart(2, "0")}${String(nextDay.getUTCDate()).padStart(2, "0")}`;
+      const eventId = `${Date.now()}-${Math.random().toString(36).slice(2)}@applynow`;
+      const description = escapeICSText(`Check whether applications have opened for ${course.n} at ${course.uni}. ApplyNow cannot send an automatic WhatsApp reminder.`);
+      const calendar = [
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//ApplyNow//Course opening reminder//EN",
+        "BEGIN:VEVENT",
+        `UID:${eventId}`,
+        `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}/, "")}`,
+        `DTSTART;VALUE=DATE:${openingDate}`,
+        `DTEND;VALUE=DATE:${endDate}`,
+        `SUMMARY:${escapeICSText(`Check course opening: ${course.n}`)}`,
+        `DESCRIPTION:${description}`,
+        `LOCATION:${escapeICSText(course.uni)}`,
+        "END:VEVENT",
+        "END:VCALENDAR"
+      ].join("\r\n");
+      return new Blob([calendar], { type: "text/calendar;charset=utf-8" });
+    }
+
+    function createReminderButton(course) {
+      const actions = document.createElement("div");
+      actions.className = "course-actions";
+      const button = document.createElement("button");
+      button.className = "button secondary full";
+      button.type = "button";
+      button.textContent = `Notify Me When Opens on ${formatIntakeDate(course.openingDate)}`;
+      button.addEventListener("click", () => {
+        const confirmation = document.createElement("p");
+        confirmation.className = "reminder-confirmation";
+        confirmation.setAttribute("role", "status");
+        try {
+          const stored = localStorage.getItem("applynow-reminders");
+          const reminders = stored ? JSON.parse(stored) : [];
+          if (!Array.isArray(reminders)) {
+            throw new Error("Saved reminder data is invalid. Clear ApplyNow reminders in browser storage and try again.");
+          }
+          const learnerPhone = personalInfo ? personalInfo.phone : "";
+          const reminder = {
+            course: course.n,
+            institution: course.uni,
+            openingDate: course.openingDate,
+            learnerPhone
+          };
+          const alreadySaved = reminders.some((item) =>
+            item.course === reminder.course &&
+            item.institution === reminder.institution &&
+            item.openingDate === reminder.openingDate &&
+            item.learnerPhone === reminder.learnerPhone
+          );
+          if (!alreadySaved) {
+            reminders.push(reminder);
+            localStorage.setItem("applynow-reminders", JSON.stringify(reminders));
+          }
+          confirmation.textContent = `${alreadySaved ? "Reminder already saved" : "Reminder saved on this device"} for ${learnerPhone || "the learner"} on ${formatIntakeDate(course.openingDate)}. This app cannot send automatic WhatsApp messages; import the calendar reminder below to receive a device notification.`;
+          const calendarLink = document.createElement("a");
+          const calendarURL = URL.createObjectURL(createCalendarReminder(course));
+          calendarLink.className = "reminder-calendar";
+          calendarLink.href = calendarURL;
+          calendarLink.download = `applynow-${course.openingDate}-${course.courseCategory.toLowerCase().replace(/[^a-z0-9]+/g, "-")}.ics`;
+          calendarLink.textContent = "Download calendar reminder (.ics)";
+          calendarLink.addEventListener("click", () => {
+            window.setTimeout(() => URL.revokeObjectURL(calendarURL), 60000);
+          }, { once: true });
+          actions.append(confirmation, calendarLink);
+          button.disabled = true;
+        } catch (error) {
+          console.error("ApplyNow could not save the local reminder:", error);
+          confirmation.textContent = `Could not save this reminder: ${error.message}`;
+          actions.append(confirmation);
+        }
+      });
+      actions.append(button);
+      return actions;
+    }
+
+    function createApplyButton(course) {
+      const actions = document.createElement("div");
+      actions.className = "course-actions";
+      const button = document.createElement("button");
+      button.className = "button full";
+      button.type = "button";
+      const intakeStatus = getCourseDisplayStatus(course);
+      if (intakeStatus.state === "closed") {
+        button.textContent = `Applications Closed - Opens on ${formatIntakeDate(course.openingDate)}`;
+        button.disabled = true;
+      } else {
+        button.textContent = "Request ApplyHub application assistance";
+        button.addEventListener("click", () => showApplication(course));
+      }
+      actions.append(button);
+      return actions;
+    }
+
+    function renderCourseGroups(container, courses, emptyMessage) {
+      container.replaceChildren();
+      if (!courses.length) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = emptyMessage;
+        container.append(empty);
+        return;
+      }
+      const groups = new Map();
+      courses.forEach((course) => {
+        if (!groups.has(course.uni)) groups.set(course.uni, []);
+        groups.get(course.uni).push(course);
+      });
+      groups.forEach((institutionCourses, university) => {
+        const group = document.createElement("section");
+        group.className = "university-group";
+        const heading = document.createElement("h3");
+        heading.textContent = university;
+        const cards = document.createElement("div");
+        cards.className = "course-grid";
+        institutionCourses.forEach((course) => cards.append(createCourseCard(course)));
+        group.append(heading, cards);
+        container.append(group);
+      });
+    }
+
+    function renderOtherResults() {
+      const orderedCourses = getFilteredCourses().sort((a, b) =>
+        a.uni.localeCompare(b.uni) || (getMinimumAPS(a) ?? 0) - (getMinimumAPS(b) ?? 0) || a.n.localeCompare(b.n)
+      );
+      const qualified = orderedCourses.filter((course) => getCourseEligibility(course).passes);
+      const notQualified = orderedCourses.filter((course) => !getCourseEligibility(course).passes);
+      $("#qualified-results-title").textContent =
+        `✅ YOU QUALIFY FOR THESE COURSES (${qualified.length} found):`;
+      $("#not-qualified-results-title").textContent =
+        `❌ NOT QUALIFIED OR NEEDS OFFICIAL VERIFICATION (${notQualified.length} found):`;
+      $("#pathway-note").hidden = studentAPS < 15 || studentAPS > 22;
+      renderCourseGroups(
+        $("#qualified-results"),
+        qualified,
+        "No courses in this preliminary catalogue pass every listed APS and subject check."
+      );
+      renderCourseGroups(
+        $("#not-qualified-results"),
+        notQualified,
+        "Every course in this preliminary catalogue passes the listed checks."
+      );
+    }
+
+    function showResults() {
+      studentAPS = calculateAPS();
+      $("#catalogue-status-banner").textContent =
+        `Note: Showing ${ALL_COURSES.length} indicative course entries; this is not yet a 500+ catalogue. Dates shown are indicative 2026 intake dates. The listed closing date has passed, so some courses may be closed. Late applications may still be considered; verify directly on the institution's official website.`;
+      $("#results-intro").textContent = `${personalInfo.fullNames} ${personalInfo.surname}, your estimated APS is ${studentAPS}. ${GUIDE_DISCLAIMER} Admission is not guaranteed.`;
+      renderPersonalInfo();
+      renderDreamResults();
+      renderOtherResults();
+      showStep(4);
+    }
+
+    function showApplication(course) {
+      selectedCourse = course;
+      $("#application-course-title").textContent = `Application assistance for: ${course.n} at ${course.uni}`;
+      $("#r100-consent").checked = false;
+      $("#proof-r100").value = "";
+      $("#r100-status").textContent = "";
+      $("#r100-unlocked-message").textContent = "";
+      $("#r100-unlocked-message").style.color = "";
+      $("#other-university").value = "";
+      $("#other-college").value = "";
+      $("#nsfas-requested").checked = false;
+      $$('input[name="universities"], input[name="colleges"]').forEach((input) => { input.checked = false; });
+      const container = $("#application-personal");
+      container.replaceChildren();
+      [
+        ["Full Names", personalInfo.fullNames],
+        ["Surname", personalInfo.surname],
+        ["ID Number", personalInfo.idNumber],
+        ["Date of Birth", personalInfo.dateOfBirth],
+        ["Gender", personalInfo.gender],
+        ["WhatsApp Number", personalInfo.phone],
+        ["Alternative Phone", personalInfo.alternativePhone],
+        ["Email", personalInfo.email],
+        ["Province", personalInfo.province],
+        ["District / Municipality", personalInfo.district],
+        ["Village / City", personalInfo.cityVillage],
+        ["School", personalInfo.schoolName],
+        ["Grade", personalInfo.grade],
+        ["Matric Year", personalInfo.matricYear],
+        ["APS", String(studentAPS)],
+        ["Course APS minimum", getCourseAPSDisplay(course)],
+        ["Application status", getCourseDisplayStatus(course).text],
+        ["Dream course 1", $("#dream1").value.trim()],
+        ["Dream course 2", $("#dream2").value.trim()],
+        ["Dream course 3", $("#dream3").value.trim()],
+        ["Subject marks", getSubjects().map(({ name, mark }) => `${name}: ${mark}%`).join("; ")]
+      ].forEach(([label, value]) => {
+        const item = document.createElement("p");
+        const strong = document.createElement("strong");
+        strong.textContent = `${label}: `;
+        item.append(strong, document.createTextNode(value));
+        container.append(item);
+      });
+      $("#application-confirmation").hidden = true;
+      $("#application-confirmation").replaceChildren();
+      $("#application-actions").hidden = false;
+      updateApplicationPaymentUI();
+      showStep(5);
+    }
+
+    function confirmApplication() {
+      try {
+        prepareApplicationFiles();
+      } catch (error) {
+        console.error("ApplyNow could not prepare the application summaries:", error);
+        updatePaymentStatus("#r100-unlocked-message", `Could not prepare application files: ${error.message}`, true);
+        $("#r100-unlocked-message").hidden = false;
+      }
+    }
+
+    function initialize() {
+      $("#catalogue-scope").textContent =
+        `${GUIDE_DISCLAIMER} It is not a complete list of South African options. Each course is checked independently, so a failed subject does not disqualify you from unrelated courses.`;
+      renderInstitutionOptions("#university-options", PUBLIC_UNIVERSITIES, "universities");
+      renderInstitutionOptions("#college-options", PUBLIC_TVET_COLLEGES, "colleges");
+      updateResultsPaymentUI();
+      updateApplicationPaymentUI();
+      $("#submit-r25-proof").addEventListener("click", () => submitPaymentProof(25));
+      $("#submit-r100-proof").addEventListener("click", () => submitPaymentProof(100));
+      $("#copy-capitec-r25").addEventListener("click", () => copyCapitecAccount("#r25-status"));
+      $("#copy-capitec-r100").addEventListener("click", () => copyCapitecAccount("#r100-status"));
+      const gender = $("#gender");
+      const idNumber = $("#id-number");
+      const dateOfBirth = $("#date-of-birth");
+      const updateDetailsFromId = () => {
+        const value = idNumber.value.trim();
+        if (/^\d{13}$/.test(value)) {
+          const birthDate = getBirthDateFromId(value);
+          dateOfBirth.value = birthDate ? formatDateOfBirth(birthDate) : "";
+          gender.value = Number(value.slice(6, 10)) >= 5000 ? "Male" : "Female";
+        } else {
+          dateOfBirth.value = "";
+          gender.value = "";
+        }
+        updateGuardianConsent();
+      };
+      idNumber.addEventListener("input", updateDetailsFromId);
+      idNumber.addEventListener("change", updateDetailsFromId);
+      const matricYear = $("#matric-year");
+      for (let year = 2000; year <= new Date().getFullYear() + 10; year += 1) {
+        const option = document.createElement("option");
+        option.value = String(year);
+        option.textContent = String(year);
+        matricYear.append(option);
+      }
+      for (let index = 0; index < 7; index += 1) addSubjectRow();
+      const guardianConsent = $("#guardian-consent-wrap");
+      const updateGuardianConsent = () => {
+        if (!dateOfBirth.value) {
+          guardianConsent.hidden = true;
+          return;
+        }
+        const birthDate = parseDateOfBirth(dateOfBirth.value);
+        guardianConsent.hidden = !Number.isFinite(birthDate.getTime()) || getAge(birthDate) >= 18;
+      };
+      updateDetailsFromId();
+      updateGuardianConsent();
+      $("#add-subject").addEventListener("click", addSubjectRow);
+      $("#personal-next").addEventListener("click", () => {
+        if (!validatePersonalInfo()) return;
+        showStep(2);
+      });
+      $("#marks-next").addEventListener("click", () => {
+        if (!validateSubjects()) return;
+        showStep(3);
+      });
+      $("#check-qualifications").addEventListener("click", () => {
+        if (!validateRequiredFields(
+          [$("#dream1"), $("#dream2"), $("#dream3")],
+          "#courses-status",
+          "Enter all three dream courses to check your results."
+        )) return;
+        ["#dream1", "#dream2", "#dream3"].forEach((selector) => {
+          const input = $(selector);
+          input.value = correctDreamSpelling(input.value);
+        });
+        showResults();
+      });
+      $("#course-category-filter").addEventListener("change", () => {
+        renderOtherResults();
+      });
+      $("#show-all-courses").addEventListener("click", () => {
+        verificationFilter = "all";
+        $("#show-all-courses").setAttribute("aria-pressed", "true");
+        $("#show-verified-courses").setAttribute("aria-pressed", "false");
+        renderOtherResults();
+      });
+      $("#show-verified-courses").addEventListener("click", () => {
+        verificationFilter = "verified";
+        $("#show-all-courses").setAttribute("aria-pressed", "false");
+        $("#show-verified-courses").setAttribute("aria-pressed", "true");
+        renderOtherResults();
+      });
+      $("#edit-application").addEventListener("click", () => showStep(1));
+      $("#confirm-application").addEventListener("click", confirmApplication);
+      $$("[data-back]").forEach((button) => button.addEventListener("click", () => showStep(Number(button.dataset.back))));
+      $("#subjects-box").addEventListener("input", calculateAPS);
+      $("#subjects-box").addEventListener("change", calculateAPS);
+      calculateAPS();
+      const installButton = $("#install-app");
+      const installActions = $(".install-actions");
+      let installPrompt;
+      const isInstalled = () =>
+        window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1);
+      if (isInstalled()) {
+        installActions.hidden = true;
+      } else {
+        window.addEventListener("beforeinstallprompt", (event) => {
+          event.preventDefault();
+          installPrompt = event;
+          installActions.hidden = false;
+          installButton.hidden = false;
+        });
+        window.addEventListener("appinstalled", () => {
+          installPrompt = null;
+          installActions.hidden = true;
+        });
+        if (isIOS) {
+          installActions.hidden = false;
+          installButton.hidden = false;
+        }
+        installButton.addEventListener("click", async () => {
+          if (!installPrompt) {
+            if (isIOS) {
+              window.alert("To install ApplyNow, tap Share in Safari, then choose Add to Home Screen.");
+            }
+            return;
+          }
+          const prompt = installPrompt;
+          installPrompt = null;
+          installActions.hidden = true;
+          try {
+            await prompt.prompt();
+            await prompt.userChoice;
+          } catch (error) {
+            console.error("ApplyNow installation prompt failed:", error);
+            window.alert("ApplyNow could not open the installation prompt. Please try again later.");
+          }
+        });
+      }
+    }
+
+    initialize();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch((error) => {
+          console.error("ApplyNow service worker registration failed:", error);
+        });
+      });
+    }
+  })();
+  </script>
+</body>
+</html>
