@@ -1020,6 +1020,7 @@
       const button = isR25 ? $("#submit-r25-proof") : $("#submit-r100-proof");
       const statusSelector = isR25 ? "#r25-status" : "#r100-status";
       const unlockKey = isR25 ? "paidR25" : "paidR100";
+      if (button.disabled) return;
       const file = fileInput.files[0];
       if (!file) {
         updatePaymentStatus(statusSelector, "Choose a JPG, PNG or PDF receipt before submitting.", true);
@@ -1057,7 +1058,7 @@
       formData.append("_subject", isR25
         ? `R25 RESULTS PROOF - ${fullName}`
         : `NEW APPLICATION - ${fullName} - ${selectedCourse.n}`);
-      formData.append("_replyto", personalInfo.email);
+      formData.append("_replyto", APPLICATION_EMAIL);
       formData.append("payment_amount", `R${amount}`);
       formData.append("payment_reference", fullName);
       formData.append("learner_name", fullName);
@@ -1118,8 +1119,8 @@
           updateResultsPaymentUI();
         } else {
           updatePaymentStatus("#r100-unlocked-message", saved
-            ? "Application details and proof were sent to Formspree. Access is unlocked in this browser; payment is not independently verified. The owner must review and manually apply."
-            : "Application details and proof were sent to Formspree. Access is unlocked for this session, but this browser could not remember the unlock. The owner must review and manually apply.");
+            ? "Application details, proof and three summaries were sent to Formspree. Access is unlocked in this browser; payment is not independently verified. The owner must review and manually apply."
+            : "Application details, proof and three summaries were sent to Formspree. Access is unlocked for this session, but this browser could not remember the unlock. The owner must review and manually apply.");
           updateApplicationPaymentUI();
         }
       } catch (error) {
@@ -2050,6 +2051,18 @@
       updateApplicationPaymentUI();
       $("#submit-r25-proof").addEventListener("click", () => submitPaymentProof(25));
       $("#submit-r100-proof").addEventListener("click", () => submitPaymentProof(100));
+      $("#proof-r25").addEventListener("change", () => {
+        if ($("#r25-consent").checked) submitPaymentProof(25);
+      });
+      $("#r25-consent").addEventListener("change", () => {
+        if ($("#r25-consent").checked && $("#proof-r25").files.length) submitPaymentProof(25);
+      });
+      $("#proof-r100").addEventListener("change", () => {
+        if ($("#r100-consent").checked) submitPaymentProof(100);
+      });
+      $("#r100-consent").addEventListener("change", () => {
+        if ($("#r100-consent").checked && $("#proof-r100").files.length) submitPaymentProof(100);
+      });
       $("#copy-capitec-r25").addEventListener("click", () => copyCapitecAccount("#r25-status"));
       $("#copy-capitec-r100").addEventListener("click", () => copyCapitecAccount("#r100-status"));
       const gender = $("#gender");
