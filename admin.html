@@ -4,196 +4,339 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>ApplyHub SA — Admin submissions</title>
+  <meta name="theme-color" content="#1746d1">
+  <title>ApplyHub SA — Admin requests</title>
   <style>
-    :root { color-scheme: light; font-family: Arial, sans-serif; font-size: 18px; color: #18233a; background: #f4f6fa; }
-    body { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; line-height: 1.55; }
+    :root { color-scheme: light; font-family: Arial, sans-serif; font-size: 17px; color: #18233a; background: #f4f6fa; }
+    * { box-sizing: border-box; }
+    body { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; line-height: 1.55; }
     h1 { margin: 0; font-size: clamp(1.7rem, 6vw, 2.2rem); }
-    h2 { font-size: 1.25rem; }
-    .warning, .status, .institution { margin-top: 16px; padding: 14px; border: 1px solid #d8dfed; border-radius: 10px; background: white; }
-    .warning { border-color: #f0d98a; color: #58491c; background: #fff9e7; }
-    .warning p, .status p { margin: 6px 0; }
-    .institution h2 { margin: 0 0 8px; }
-    .learner { padding: 10px 0; border-top: 1px solid #e5e9f1; }
-    .learner:first-of-type { border-top: 0; }
-    .learner p { margin: 4px 0; }
-    button, a { display: inline-block; margin: 8px 8px 0 0; padding: 12px 16px; border: 0; border-radius: 8px; color: white; background: #2454c6; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
-    a { color: #2454c6; background: transparent; }
-    a.inbox-link { color: white; background: #2454c6; }
-    input { min-height: 48px; padding: 8px 10px; font: inherit; }
-    button:focus-visible, a:focus-visible { outline: 3px solid #88aaff; outline-offset: 2px; }
+    h2 { margin: 0 0 8px; font-size: 1.2rem; }
+    .panel, .request { margin-top: 18px; padding: 18px; border: 1px solid #e1e7f1; border-radius: 12px; background: white; }
+    .request { box-shadow: 0 5px 18px rgba(21,45,99,.06); }
+    .hint { color: #59667d; font-size: .88rem; }
+    .field { display: grid; gap: 6px; max-width: 480px; margin: 12px 0; }
+    input { min-height: 46px; padding: 10px 12px; border: 1px solid #cbd5e4; border-radius: 8px; font: inherit; }
+    button, .button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; margin: 8px 8px 0 0; padding: 10px 15px; border: 0; border-radius: 8px; color: white; background: #2454c6; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+    button.secondary, .button.secondary { color: #2454c6; background: #edf2ff; }
+    button.danger { background: #a93636; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    a { color: #1746d1; }
+    .status { min-height: 1.3em; color: #59667d; overflow-wrap: anywhere; }
+    .request p { margin: 6px 0; overflow-wrap: anywhere; }
+    .request-actions { margin-top: 10px; }
+    .tag { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; color: #1238a8; background: #edf2ff; font-size: .78rem; font-weight: 700; }
     [hidden] { display: none !important; }
+    @media (max-width: 520px) { button, .button { width: 100%; margin-right: 0; } }
   </style>
 </head>
 <body>
   <header>
-    <h1>ApplyHub SA — Admin submissions</h1>
-    <div class="warning" role="alert">
-      <strong>Shared learner submissions:</strong>
-      <p>Application details and proof uploads are sent to the ApplyHub Formspree account. To see submissions from every device, open the account inbox and sign in with your Formspree account. This page cannot securely log in to Formspree or display its private submissions inside this static site.</p>
-      <a class="inbox-link" href="https://formspree.io/forms/mnppjadn/submissions" target="_blank" rel="noopener noreferrer">Open Formspree inbox (all devices)</a>
-      <p>The dashboard password below only gates the local preview on this device; it is not a secure account login and does not unlock or fetch Formspree submissions. For now, manually verify Capitec transfers and submit applications through official portals. The app does not verify bank payments or apply automatically.</p>
-      <p>Never enter or share your Formspree password on this page. Sign in only on the official Formspree website.</p>
-    </div>
+    <h1>ApplyHub SA — Admin requests</h1>
+    <p class="hint">Sign in with the authorized ApplyHub email. Check each transfer in Capitec account 2615455962 before approving. A receipt image alone is not proof of payment.</p>
   </header>
   <main>
-    <section id="locked" class="status">
-      <p id="auth-message" role="status">Optional: enter the local preview password to view this browser's queue. Use the Formspree inbox above for submissions from all devices.</p>
-      <form id="unlock-form">
-        <label for="admin-password">Local preview password</label>
-        <input id="admin-password" type="password" autocomplete="current-password" required>
-        <button type="submit">Open local preview</button>
-      </form>
-      <a href="./index.html">Return to ApplyNow</a>
+    <section class="panel" aria-labelledby="admin-login-title">
+      <h2 id="admin-login-title">Admin email-code sign-in</h2>
+      <p class="hint">Only info@applyhubsa.co.za is authorized by the database policy. No admin password is stored in this site.</p>
+      <label class="field" for="admin-email">Admin email
+        <input id="admin-email" type="email" autocomplete="email" value="info@applyhubsa.co.za" readonly>
+      </label>
+      <button id="send-code" type="button">Send one-time code</button>
+      <div id="code-panel" hidden>
+        <label class="field" for="admin-code">Code from email
+          <input id="admin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
+        </label>
+        <button id="verify-code" type="button">Verify and open requests</button>
+      </div>
+      <button class="secondary" id="refresh-requests" type="button" hidden>Refresh requests</button>
+      <button class="secondary" id="sign-out" type="button" hidden>Sign out</button>
+      <p class="status" id="admin-status" role="status" aria-live="polite"></p>
     </section>
-    <section id="dashboard" hidden>
-      <p class="status" id="queue-status" role="status"></p>
-      <div id="queue-groups"></div>
-      <button id="refresh-queue" type="button">Refresh queue</button>
-      <button id="lock-dashboard" type="button">Lock dashboard</button>
-      <a href="./index.html">Return to ApplyNow</a>
+    <section id="request-list" aria-label="Learner payment requests"></section>
+    <section class="panel">
+      <h2>Important</h2>
+      <p>Requests appear here from every device. Approval changes the learner's shared status; approved R25 results appear in that learner's account. R100 approval authorizes manual application assistance only—no university or NSFAS application is submitted automatically.</p>
+      <p>Approval updates the learner's private account. It does not submit applications automatically.</p>
+      <p>For data correction or deletion requests, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>.</p>
     </section>
   </main>
+  <script src="supabase-config.js"></script>
   <script>
     (() => {
       "use strict";
-      const ADMIN_PASSWORD = "ApplyHub2026!";
       const $ = (selector) => document.querySelector(selector);
+      const config = window.APPLYNOW_SUPABASE_CONFIG;
+      const hasSupabaseConfig =
+        config?.url === "https://uwjiqiweoquwkdxpvjts.supabase.co" &&
+        typeof config.anonKey === "string" &&
+        /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(config.anonKey);
+      let client = null;
 
-      function lockDashboard(message = "Local preview locked.") {
-        $("#dashboard").hidden = true;
-        $("#locked").hidden = false;
-        $("#auth-message").textContent = message;
+      function setStatus(message, isError = false) {
+        const status = $("#admin-status");
+        status.textContent = message;
+        status.style.color = isError ? "#a93636" : "#59667d";
       }
 
-      function readQueue() {
-        const stored = localStorage.getItem("applynow-batch-queue");
-        if (!stored) return [];
-        const queue = JSON.parse(stored);
-        if (!Array.isArray(queue)) throw new Error("The saved local queue is not a list. It was not changed.");
-        return queue;
-      }
-
-      function makeBatchEmail(institution, learners) {
-        const subject = `Course enquiry batch — ${institution}`;
-        const entries = learners.map((learner, index) =>
-          `${index + 1}. ${learner.learner} | APS ${learner.aps} | ${learner.course} | Contact: ${learner.phone}`
-        );
-        return [
-          `To: Look up the official admissions email for ${institution}`,
-          `From: info@applyhubsa.co.za`,
-          `Subject: ${subject}`,
-          "",
-          `Dear Admissions Team at ${institution},`,
-          "",
-          "Please advise whether space is available and confirm the exact requirements and application dates for these learner course enquiries:",
-          "",
-          ...entries,
-          "",
-          "Please reply to info@applyhubsa.co.za. These enquiries were prepared by ApplyHub SA; no message has been sent by the app.",
-          "",
-          "Regards,",
-          "ApplyHub SA",
-          "info@applyhubsa.co.za"
-        ].join("\n");
-      }
-
-      async function copyText(text) {
-        if (navigator.clipboard && window.isSecureContext) {
-          await navigator.clipboard.writeText(text);
+      async function sendCode() {
+        if (!client) {
+          setStatus("Email-code login requires the complete Supabase anon key in supabase-config.js.", true);
           return;
         }
-        const temporary = document.createElement("textarea");
-        temporary.value = text;
-        temporary.setAttribute("readonly", "");
-        temporary.style.position = "fixed";
-        temporary.style.opacity = "0";
-        document.body.append(temporary);
-        temporary.select();
-        const copied = document.execCommand("copy");
-        temporary.remove();
-        if (!copied) throw new Error("Clipboard access is unavailable. Open this page on a secure site or copy the text manually.");
-      }
-
-      function renderQueue() {
-        const container = $("#queue-groups");
-        container.replaceChildren();
-        let queue;
+        const email = $("#admin-email").value.trim().toLowerCase();
+        if (email !== "info@applyhubsa.co.za") {
+          setStatus("Admin sign-in is restricted to info@applyhubsa.co.za.", true);
+          return;
+        }
+        const button = $("#send-code");
+        button.disabled = true;
         try {
-          queue = readQueue();
-          queue.forEach((item) => {
-            if (!item || typeof item.institution !== "string" || typeof item.learner !== "string" ||
-                typeof item.course !== "string" || typeof item.phone !== "string") {
-              throw new Error("One or more queue entries are invalid. No records were removed.");
-            }
-          });
+          const { error } = await client.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+          if (error) throw error;
+          $("#code-panel").hidden = false;
+          setStatus("One-time code sent. Enter it here to continue.");
+          $("#admin-code").focus();
         } catch (error) {
-          console.error("ApplyHub could not read the local enquiry queue:", error);
-          $("#queue-status").textContent = `Could not read the local queue: ${error.message}`;
+          console.error("ApplyHub admin could not request a sign-in code:", error);
+          setStatus(`Could not send a sign-in code: ${error.message}`, true);
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      async function verifyCode() {
+        if (!client) return;
+        const email = $("#admin-email").value.trim().toLowerCase();
+        const token = $("#admin-code").value.trim();
+        if (!email || !token) {
+          setStatus("Enter the admin email and one-time code.", true);
           return;
         }
-        if (queue.length === 0) {
-          $("#queue-status").textContent = "No enquiries are saved in this browser. Learner submissions from other devices will not appear here.";
+        const button = $("#verify-code");
+        button.disabled = true;
+        try {
+          const { error } = await client.auth.verifyOtp({ email, token, type: "email" });
+          if (error) throw error;
+          await loadRequests();
+        } catch (error) {
+          console.error("ApplyHub admin sign-in failed:", error);
+          setStatus(`Could not verify the admin code or load requests: ${error.message}`, true);
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      function appendDetail(container, label, value) {
+        const paragraph = document.createElement("p");
+        const strong = document.createElement("strong");
+        strong.textContent = `${label}: `;
+        paragraph.append(strong, document.createTextNode(value || "Not provided"));
+        container.append(paragraph);
+      }
+
+      async function reviewRequest(request, status) {
+        if (status === "approved" &&
+            !window.confirm("Only approve after checking that the exact amount reached Capitec account 2615455962. Continue?")) return;
+        const note = status === "approved"
+          ? "Payment manually verified in Capitec by ApplyHub admin."
+          : "Request rejected. Contact info@applyhubsa.co.za if you need help.";
+        const buttonSet = $("#request-list");
+        buttonSet.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+        try {
+          const { data: { user }, error: userError } = await client.auth.getUser();
+          if (userError) throw userError;
+          const { data, error } = await client
+            .from("application_requests")
+            .update({
+              status,
+              reviewed_at: new Date().toISOString(),
+              reviewed_by: user.id,
+              review_note: note
+            })
+            .eq("id", request.id)
+            .eq("status", "pending")
+            .select("id");
+          if (error) throw error;
+          if (!data.length) throw new Error("This request was already reviewed or is no longer pending.");
+          setStatus(`${request.package_type} request updated to ${status}. The learner can see this on any device after signing in.`);
+          try {
+            await loadRequests();
+          } catch (refreshError) {
+            console.error("ApplyHub saved the review decision but could not refresh the list:", refreshError);
+            setStatus(`Decision saved as ${status}, but the list could not refresh: ${refreshError.message}`, true);
+          }
+        } catch (error) {
+          console.error("ApplyHub admin could not update a request:", error);
+          setStatus(`Could not update the request: ${error.message}`, true);
+          try {
+            await loadRequests();
+          } catch (refreshError) {
+            console.error("ApplyHub admin could not refresh after a failed decision:", refreshError);
+          }
+        }
+      }
+
+      async function renderRequest(request) {
+        const card = document.createElement("article");
+        card.className = "request";
+        const title = document.createElement("h2");
+        title.textContent = `${request.package_type} — ${request.status.toUpperCase()}`;
+        const tag = document.createElement("span");
+        tag.className = "tag";
+        tag.textContent = request.status === "pending" ? "CHECK CAPITEC" : "REVIEWED";
+        title.append(tag);
+        card.append(title);
+        appendDetail(card, "Submitted", new Date(request.created_at).toLocaleString());
+        appendDetail(card, "Full name", request.learner_full_name);
+        appendDetail(card, "Email", request.learner_email);
+        appendDetail(card, "Phone", request.learner_phone);
+        appendDetail(card, "South African ID", request.learner_id_number);
+        const learner = request.learner_data || {};
+        appendDetail(card, "Date of birth", learner.dateOfBirth);
+        appendDetail(card, "Gender", learner.gender);
+        appendDetail(card, "Alternative phone", learner.alternativePhone);
+        appendDetail(card, "Province", learner.province);
+        appendDetail(card, "District / municipality", learner.district);
+        appendDetail(card, "City / village", learner.cityVillage);
+        appendDetail(card, "School", learner.schoolName);
+        appendDetail(card, "Grade", learner.grade);
+        appendDetail(card, "Matric year", learner.matricYear);
+        appendDetail(card, "Amount", `R${request.amount} — reference: ${request.payment_reference}`);
+        appendDetail(card, "Course", request.course_requested);
+        appendDetail(card, "Other dream courses", Array.isArray(learner.dreamCourses) ? learner.dreamCourses.join("; ") : "");
+        appendDetail(card, "Universities", request.selected_universities.join("; "));
+        appendDetail(card, "NSFAS requested", request.nsfas_needed ? "Yes" : "No");
+        if (request.nsfas_checklist) appendDetail(card, "NSFAS checklist", request.nsfas_checklist);
+        appendDetail(card, "APS", String(request.aps));
+        appendDetail(card, "Subject results", request.subject_results.map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
+        if (request.review_note) appendDetail(card, "Admin note", request.review_note);
+
+        const { data: proof, error: proofError } = await client.storage
+          .from("payment-proofs")
+          .createSignedUrl(request.receipt_path, 600);
+        if (proofError) {
+          console.error("ApplyHub admin could not open a private receipt link:", proofError);
+          appendDetail(card, "Proof", `Could not create a secure link: ${proofError.message}`);
+        } else {
+          const proofLink = document.createElement("a");
+          proofLink.href = proof.signedUrl;
+          proofLink.target = "_blank";
+          proofLink.rel = "noopener noreferrer";
+          proofLink.textContent = "Open private payment proof (link expires in 10 minutes)";
+          card.append(proofLink);
+        }
+
+        if (request.package_type === "R100") {
+          appendDetail(card, "Application assistance", "Manual processing only. No university or NSFAS application is filed automatically.");
+        }
+        if (request.status === "pending") {
+          const actions = document.createElement("div");
+          actions.className = "request-actions";
+          const approve = document.createElement("button");
+          approve.textContent = "APPROVE — payment checked";
+          approve.addEventListener("click", () => reviewRequest(request, "approved"));
+          const reject = document.createElement("button");
+          reject.className = "danger";
+          reject.textContent = "Reject request";
+          reject.addEventListener("click", () => reviewRequest(request, "rejected"));
+          actions.append(approve, reject);
+          card.append(actions);
+        }
+        return card;
+      }
+
+      async function loadRequests() {
+        if (!client) {
+          setStatus("Email-code login requires the complete Supabase anon key in supabase-config.js.", true);
           return;
         }
-        const groups = new Map();
-        queue.forEach((item) => {
-          if (!groups.has(item.institution)) groups.set(item.institution, []);
-          groups.get(item.institution).push(item);
-        });
-        $("#queue-status").textContent = `${queue.length} local ${queue.length === 1 ? "enquiry" : "enquiries"} saved in this browser.`;
-        groups.forEach((learners, institution) => {
-          const section = document.createElement("section");
-          section.className = "institution";
-          const heading = document.createElement("h2");
-          heading.textContent = `${institution} (${learners.length})`;
-          section.append(heading);
-          learners.forEach((learner) => {
-            const row = document.createElement("div");
-            row.className = "learner";
-            const text = document.createElement("p");
-            text.textContent = `${learner.learner} — APS ${learner.aps} — ${learner.course} — ${learner.phone}`;
-            const date = document.createElement("p");
-            date.textContent = `Saved: ${learner.createdAt ? new Date(learner.createdAt).toLocaleString() : "Date not recorded"}; Status: ${learner.status || "Awaiting manual enquiry"}`;
-            row.append(text, date);
-            section.append(row);
-          });
-          const copy = document.createElement("button");
-          copy.type = "button";
-          copy.textContent = `Copy batch email for ${institution}`;
-          copy.addEventListener("click", async () => {
-            try {
-              await copyText(makeBatchEmail(institution, learners));
-              $("#queue-status").textContent = `Batch email for ${institution} copied. Paste, review, add the official admissions address, and send manually from info@applyhubsa.co.za.`;
-            } catch (error) {
-              console.error("ApplyHub could not copy the batch email:", error);
-              $("#queue-status").textContent = error.message;
-            }
-          });
-          section.append(copy);
-          container.append(section);
+        setStatus("Loading shared payment requests…");
+        const { data: admin, error: adminError } = await client.rpc("is_applynow_admin");
+        if (adminError) throw adminError;
+        if (!admin) throw new Error("This email is not authorized as an ApplyHub admin.");
+        const { data, error } = await client
+          .from("application_requests")
+          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,review_note")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+
+        const list = $("#request-list");
+        list.replaceChildren();
+        for (const request of data) list.append(await renderRequest(request));
+        $("#code-panel").hidden = true;
+        $("#refresh-requests").hidden = false;
+        $("#sign-out").hidden = false;
+        $("#send-code").hidden = true;
+        setStatus(data.length ? `${data.length} shared request(s) loaded. Approve only after verifying payment in Capitec.` : "No learner requests have been submitted yet.");
+      }
+
+      function restoreAdminSession() {
+        client.auth.getSession().then(({ data: { session }, error }) => {
+          if (error) throw error;
+          if (session) {
+            $("#admin-email").value = session.user.email || "info@applyhubsa.co.za";
+            loadRequests().catch((requestError) => {
+              console.error("ApplyHub admin could not load requests:", requestError);
+              setStatus(`Could not load requests: ${requestError.message}`, true);
+            });
+          }
+        }).catch((error) => {
+          console.error("ApplyHub admin could not restore its session:", error);
+          setStatus(`Could not restore admin session: ${error.message}`, true);
         });
       }
 
-      function unlockDashboard(event) {
-        event.preventDefault();
-        const entered = $("#admin-password").value;
-        if (entered !== ADMIN_PASSWORD) {
-          $("#admin-password").value = "";
-          lockDashboard("Incorrect local preview password. The shared Formspree inbox is available above.");
-          $("#admin-password").focus();
+      function loadSupabaseSdk() {
+        if (!hasSupabaseConfig) {
+          setStatus("Email-code login requires the complete Supabase anon key in supabase-config.js.", true);
           return;
         }
-        $("#admin-password").value = "";
-        $("#locked").hidden = true;
-        $("#dashboard").hidden = false;
-        renderQueue();
+        const script = document.createElement("script");
+        script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js";
+        script.async = true;
+        script.onload = () => {
+          try {
+            if (!window.supabase?.createClient) throw new Error("Supabase client library did not initialize.");
+            client = window.supabase.createClient(config.url, config.anonKey);
+            restoreAdminSession();
+          } catch (error) {
+            console.error("ApplyHub admin could not initialize Supabase:", error);
+            setStatus(`Secure admin access could not start: ${error.message}`, true);
+          }
+        };
+        script.onerror = () => {
+          setStatus("Could not load the secure account service. Check your internet connection and try again.", true);
+        };
+        document.head.append(script);
       }
 
-      $("#unlock-form").addEventListener("submit", unlockDashboard);
-      $("#refresh-queue").addEventListener("click", renderQueue);
-      $("#lock-dashboard").addEventListener("click", () => lockDashboard());
-      lockDashboard("Optional: enter the local preview password to view this browser's queue. Use the Formspree inbox above for submissions from all devices.");
+      $("#send-code").addEventListener("click", sendCode);
+      $("#verify-code").addEventListener("click", verifyCode);
+      $("#admin-code").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") verifyCode();
+      });
+      $("#refresh-requests").addEventListener("click", () => {
+        loadRequests().catch((error) => {
+          console.error("ApplyHub admin could not refresh requests:", error);
+          setStatus(`Could not refresh requests: ${error.message}`, true);
+        });
+      });
+      $("#sign-out").addEventListener("click", async () => {
+        try {
+          const { error } = await client.auth.signOut();
+          if (error) throw error;
+          $("#request-list").replaceChildren();
+          $("#refresh-requests").hidden = true;
+          $("#sign-out").hidden = true;
+          $("#send-code").hidden = false;
+          setStatus("You are signed out.");
+        } catch (error) {
+          console.error("ApplyHub admin could not sign out:", error);
+          setStatus(`Could not sign out: ${error.message}`, true);
+        }
+      });
+      loadSupabaseSdk();
     })();
   </script>
 </body>

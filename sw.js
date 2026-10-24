@@ -1,8 +1,8 @@
-const CACHE = "applynow-v16";
+const CACHE = "applynow-v20";
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE)
-      .then(cache => cache.addAll(["./", "./index.html", "./admin.html", "./manifest.json", "./icon.png", "./icon-192.png"]))
+      .then(cache => cache.addAll(["./", "./index.html", "./admin.html", "./supabase-config.js", "./manifest.json", "./icon.png", "./icon-192.png"]))
       .then(() => self.skipWaiting())
   );
 });

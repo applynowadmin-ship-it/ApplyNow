@@ -175,6 +175,12 @@
     .aps-number { color: var(--blue); font-size: 1.8rem; font-weight: 900; }
     .hint { color: var(--muted); font-size: .79rem; }
     .status { min-height: 1.2em; margin: 8px 0 0; color: var(--red); font-size: .82rem; }
+    .account-panel { margin-bottom: 18px; }
+    .account-panel[hidden], .request-item[hidden] { display: none; }
+    .request-item { margin-top: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcff; }
+    .request-item h3 { margin: 0 0 8px; font-size: 1rem; }
+    .request-item p { margin: 5px 0; font-size: .86rem; }
+    .request-results { margin: 10px 0 0; padding-left: 20px; font-size: .84rem; }
     .results-heading { margin: 22px 0 12px; }
     .results-heading h2 { margin: 0; font-size: 1.2rem; }
     .results-heading p { margin: 5px 0 0; color: var(--muted); font-size: .86rem; }
@@ -261,9 +267,29 @@
   </header>
 
   <main>
+    <section class="panel account-panel" id="learner-account" aria-labelledby="learner-account-title">
+      <h2 id="learner-account-title">Check your request or approved results</h2>
+      <p class="intro">Use the same email address as your application. We will send a one-time code. Your requests and approved results can then be viewed on any device.</p>
+      <div class="field">
+        <label for="account-email">Email address</label>
+        <input id="account-email" type="email" autocomplete="email" maxlength="150">
+      </div>
+      <div class="actions">
+        <button class="button" id="send-account-code" type="button">Send one-time code</button>
+        <button class="button secondary" id="sign-out-account" type="button" hidden>Sign out</button>
+      </div>
+      <div class="field" id="account-code-wrap" hidden>
+        <label for="account-code">One-time email code</label>
+        <input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
+        <button class="button full" id="verify-account-code" type="button">Verify email</button>
+      </div>
+      <p class="status" id="account-status" role="status" aria-live="polite"></p>
+      <div id="learner-requests" aria-live="polite"></div>
+    </section>
+
     <section class="panel step" id="step1" aria-labelledby="step1-title">
       <h1 id="step1-title">Personal Information</h1>
-      <p class="intro">Complete all fields to continue. Your details are used in this browser for results. Uploaded payment proof sends the details described in the privacy notice to Formspree.</p>
+      <p class="intro">Complete all fields to continue. Your preliminary results are calculated on this device. Submitted requests and proof are stored in your private ApplyNow account.</p>
       <div class="form-grid">
         <div class="field">
           <label for="full-names">Full Names (as per ID)</label>
@@ -338,9 +364,21 @@
           </select>
         </div>
       </div>
+      <fieldset class="institution-picker" aria-labelledby="service-package-title">
+        <legend id="service-package-title">Choose your package</legend>
+        <label class="institution-option">
+          <input id="package-r25" type="radio" name="service-package" value="25" checked>
+          <span><strong>R25 — View Results Only</strong><br>Unlock your qualification results after Capitec payment is manually verified.</span>
+        </label>
+        <label class="institution-option">
+          <input id="package-r100" type="radio" name="service-package" value="100">
+          <span><strong>R100 — Full Application Including NSFAS</strong><br>University application assistance and NSFAS help after Capitec payment is manually verified.</span>
+        </label>
+      </fieldset>
+      <p class="hint">Your package choice is kept only while this page is open. Sign in with your email code to submit and check requests across devices.</p>
       <section class="consent-box" aria-labelledby="nsfas-help-title">
         <h2 id="nsfas-help-title">NSFAS 2026 + Bursaries - We Help You Apply</h2>
-        <p>Get these documents ready. This page does not upload them; it only sends the R25 payment proof and your details if you request help.</p>
+        <p>Get these documents ready. This page does not upload them unless you choose an application assistance package and attach a receipt.</p>
         <ul class="nsfas-checklist">
           <li><label><input id="nsfas-doc-id" type="checkbox"> Certified ID</label></li>
           <li><label><input id="nsfas-doc-results" type="checkbox"> Matric results</label></li>
@@ -349,22 +387,22 @@
         </ul>
         <p class="hint">NSFAS application dates can change or close. Check the official NSFAS website to confirm the 2026 application window. ApplyHub SA does not guarantee funding or acceptance.</p>
         <p><a href="https://www.nsfas.org.za/" target="_blank" rel="noopener noreferrer">Visit the official NSFAS website</a></p>
-        <button class="button full" id="start-nsfas-help" type="button">Start NSFAS Application (R25 fee includes this)</button>
+        <button class="button full" id="start-nsfas-help" type="button">Choose R100 Full Application + NSFAS</button>
         <p class="status" id="nsfas-intent-status" role="status" aria-live="polite"></p>
       </section>
       <aside class="consent-box" aria-labelledby="privacy-title">
         <h2 id="privacy-title">Privacy and consent</h2>
         <p>This independent guide is not a university, college, NSFAS or government service. Your profile and marks are processed in this browser to calculate an estimate. Results cover only the sample courses currently included in this guide, not every South African institution or course.</p>
-        <p>When you submit proof, the receipt is sent to Formspree. For an NSFAS request, your ID and learner details, marks and checklist are also sent. For R100 help, your ID and application details are sent. Formspree may store these submissions and has its own privacy terms. ApplyHub SA uses them to respond to your request; details are shared with an institution only when needed to prepare an application with your permission. Do not use a shared or public device.</p>
-        <p>This MVP unlocks features after Formspree accepts a proof submission; it does not verify that a bank transfer happened. The unlock is stored in this browser and can be bypassed or lost. ApplyHub SA must verify payment and manually submit any application. No application is filed automatically and no 24-hour turnaround is guaranteed.</p>
-        <p>For privacy questions or to ask ApplyHub SA to correct or delete its copy, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a> (ApplyHub account: applynowadmin-ship-it). Formspree copies may need to be deleted separately. Messages already sent may remain in your or the recipient's email/WhatsApp account.</p>
+        <p>When Supabase is configured and available, a package request stores your ID and learner details, marks, receipt and selected institutions in your private account so you can check the request on another device. If account setup or storage is unavailable, the app will show an error and will not confirm that your request was submitted. Package B includes your NSFAS checklist. ApplyHub SA uses the information to handle your request; details are shared with an institution only when needed to prepare an application with your permission.</p>
+        <p>Email one-time codes protect access to your account. Keep your email account secure and do not use a shared or public device. Uploading a receipt does not verify that a bank transfer happened. ApplyHub SA must check the Capitec account and approve your request before results unlock or application work starts. Applications are submitted manually; no application is filed automatically and no 24-hour turnaround is guaranteed.</p>
+        <p>For privacy questions or to ask ApplyHub SA to correct or delete your request, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>.</p>
         <label class="consent-check" for="privacy-consent">
           <input id="privacy-consent" type="checkbox" required>
           <span>I have read this notice and consent to using my details for these results.</span>
         </label>
         <label class="consent-check" id="guardian-consent-wrap" for="guardian-consent" hidden>
           <input id="guardian-consent" type="checkbox">
-          <span>I am under 18 and confirm that my parent or legal guardian has read this notice and agrees to my use of this service and sharing my details and uploaded payment proof with Formspree and ApplyHub SA.</span>
+          <span>I am under 18 and confirm that my parent or legal guardian has read this notice and agrees to my use of this service and sharing my details and uploaded payment proof with Supabase and ApplyHub SA.</span>
         </label>
       </aside>
       <p class="status" id="personal-status" role="alert"></p>
@@ -408,28 +446,33 @@
       <p class="status" id="courses-status" role="alert"></p>
       <div class="actions">
         <button class="button secondary" type="button" data-back="2">Back</button>
-        <button class="button full" id="check-qualifications" type="button">CHECK MY FREE GUIDE RESULTS</button>
+        <button class="button full" id="check-qualifications" type="button">CONTINUE TO YOUR PACKAGE</button>
       </div>
     </section>
 
     <section class="panel step" id="step4" aria-labelledby="step4-title" hidden>
       <h1 id="step4-title">Your preliminary course guide results</h1>
-      <section class="consent-box payment-box" id="r25-payment-box" aria-labelledby="r25-title">
-        <h2 id="r25-title">Unlock Results — R25</h2>
+      <section class="consent-box payment-box" id="results-payment-box" aria-labelledby="results-payment-title" hidden>
+        <h2 id="results-payment-title">R25 — View Results Only</h2>
         <p>Transfer R25 to Capitec account <strong>2615455962</strong>, branch code <strong>470010</strong>. Use your full name as the payment reference.</p>
         <button class="button secondary" id="copy-capitec-r25" type="button">Copy Capitec account number</button>
-        <p class="hint">Select your receipt, then submit it to unlock results in this browser. This MVP does not confirm that money reached the account; the owner must check the transfer. Do not upload a receipt containing information you do not want Formspree to receive.</p>
+        <p class="hint">Upload your receipt to request access. A receipt does not prove that the transfer reached the account. Results remain locked until payment is manually verified and access is provided by ApplyHub SA.</p>
         <label class="field" for="proof-r25">Upload R25 proof (JPG, PNG or PDF; max 10 MB)</label>
         <input id="proof-r25" type="file" accept="image/jpeg,image/png,application/pdf">
-        <label class="consent-check" for="r25-consent">
-          <input id="r25-consent" type="checkbox">
-          <span>I agree to send my name, phone, email and receipt to Formspree. If I requested NSFAS help, I also agree to send my ID, school details, marks and checklist to ApplyHub SA through Formspree.</span>
+        <label class="consent-check" for="consent-r25">
+          <input id="consent-r25" type="checkbox">
+          <span>I consent to storing my learner details, results and receipt in my private Supabase account. If I am under 18, my parent/guardian has agreed.</span>
         </label>
-        <button class="button full" id="submit-r25-proof" type="button">Upload R25 Proof &amp; Unlock Results</button>
+        <button class="button full" id="submit-r25-proof" type="button">Submit R25 Proof for Verification</button>
         <p class="status" id="r25-status" role="status" aria-live="polite"></p>
       </section>
-      <p class="aps-disclaimer" id="r25-unlocked-message" role="status" aria-live="polite" hidden></p>
-      <div id="paid-results" hidden>
+      <section class="consent-box payment-box" id="r100-package-prompt" hidden aria-labelledby="r100-package-prompt-title">
+        <h2 id="r100-package-prompt-title">R100 — Full Application Including NSFAS</h2>
+        <p>Continue to select a university and submit your R100 Capitec payment proof. Payment must be manually checked before application work begins.</p>
+        <button class="button full" id="continue-r100-package" type="button">Continue with R100 University + NSFAS</button>
+      </section>
+      <p class="aps-disclaimer" id="r25-pending-message" role="status" aria-live="polite" hidden></p>
+      <div id="qualification-results" hidden>
         <p class="intro" id="results-intro"></p>
         <p class="aps-disclaimer" id="catalogue-status-banner"></p>
         <div class="personal-summary" id="personal-results" aria-label="Your personal information"></div>
@@ -483,41 +526,30 @@
     <section class="panel step" id="step5" aria-labelledby="step5-title" hidden>
       <h1 id="step5-title">Request application assistance</h1>
       <p class="intro" id="application-course-title"></p>
-      <section class="consent-box payment-box" id="r100-payment-box" aria-labelledby="r100-title">
-        <h2 id="r100-title">R100 — Apply for me</h2>
+      <section class="consent-box payment-box" id="application-payment-box" aria-labelledby="package-title">
+        <h2 id="package-title">R100 — Full Application Including NSFAS</h2>
         <p>Transfer R100 to Capitec account <strong>2615455962</strong>, branch code <strong>470010</strong>. Use your full name as the payment reference.</p>
         <button class="button secondary" id="copy-capitec-r100" type="button">Copy Capitec account number</button>
-        <p>Choose the public universities/TVET colleges you want help with, and whether you want NSFAS assistance. Select a receipt and submit it. The details and receipt will be sent to Formspree.</p>
+        <p class="hint">This package includes university application assistance and NSFAS help. Uploading a receipt sends a request; payment must be manually verified before work starts.</p>
         <fieldset class="institution-picker">
-          <legend>Universities to apply to (select all that apply)</legend>
+          <legend>University to apply to (select all that apply)</legend>
           <div class="institution-options" id="university-options"></div>
         </fieldset>
         <div class="field">
           <label for="other-university">Other university (optional)</label>
           <input id="other-university" maxlength="120" placeholder="Enter another institution">
         </div>
-        <fieldset class="institution-picker">
-          <legend>TVET colleges to apply to (select all that apply)</legend>
-          <div class="institution-options" id="college-options"></div>
-        </fieldset>
-        <div class="field">
-          <label for="other-college">Other college (optional)</label>
-          <input id="other-college" maxlength="120" placeholder="Enter another college">
-        </div>
-        <label class="consent-check" for="nsfas-requested">
-          <input id="nsfas-requested" type="checkbox">
-          <span>I also want help with an NSFAS funding application.</span>
+        <p class="hint">Your learner details and NSFAS checklist are saved with this request in your private account.</p>
+        <label class="field" for="proof-application">Upload R100 proof (JPG, PNG or PDF; max 10 MB)</label>
+        <input id="proof-application" type="file" accept="image/jpeg,image/png,application/pdf">
+        <label class="consent-check" for="package-consent">
+          <input id="package-consent" type="checkbox">
+          <span>I consent to storing my learner details, selected university, NSFAS checklist and receipt in my private Supabase account. If I am under 18, my parent/guardian has agreed.</span>
         </label>
-        <label class="field" for="proof-r100">Upload R100 proof (JPG, PNG or PDF; max 10 MB)</label>
-        <input id="proof-r100" type="file" accept="image/jpeg,image/png,application/pdf">
-        <label class="consent-check" for="r100-consent">
-          <input id="r100-consent" type="checkbox">
-          <span>I consent to sending my full learner details (including ID number), marks, selected institutions and receipt file to Formspree and ApplyHub SA for this assistance request. If I am under 18, my parent/guardian has agreed.</span>
-        </label>
-        <button class="button full" id="submit-r100-proof" type="button">Pay R100 &amp; Send My Application Details</button>
-        <p class="status" id="r100-status" role="status" aria-live="polite"></p>
+        <button class="button full" id="submit-application-proof" type="button">Submit R100 Proof for Verification</button>
+        <p class="status" id="application-payment-status" role="status" aria-live="polite"></p>
       </section>
-      <p class="aps-disclaimer" id="r100-unlocked-message" role="status" aria-live="polite" hidden></p>
+      <p class="aps-disclaimer" id="application-payment-confirmation" role="status" aria-live="polite" hidden></p>
       <div class="personal-summary" id="application-personal" aria-label="Your application information"></div>
       <div id="application-confirmation" hidden></div>
       <div class="actions" id="application-actions">
@@ -529,15 +561,21 @@
 
   <footer class="privacy-footer" aria-labelledby="popia-title">
     <h2 id="popia-title">POPIA Privacy Notice</h2>
-    <p>We collect learner details and proof only to process the service you request. Submissions are sent to Formspree (form mnppjadn) and ApplyHub SA for handling; Formspree may store them under its own privacy terms. We do not publish or sell your information. We share details with an institution only when needed to prepare an application and with your permission. Ask ApplyHub SA to delete its copy at <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a> (account: applynowadmin-ship-it). Ask Formspree separately to delete its copy. You may also request correction or ask questions at that email address.</p>
+    <p>We collect learner details and proof only to process the service you request. Supabase is the intended private store for your account, request and payment proof; submissions are accepted only when the Supabase connection and required database setup are working. We do not publish or sell your information. We share details with a university only when needed to prepare an application and with your permission. Ask ApplyHub SA to correct or delete its copy at <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>.</p>
   </footer>
 
+  <script src="supabase-config.js"></script>
   <script>
   (() => {
     "use strict";
     const APPLICATION_WHATSAPP = "27798375864";
     const APPLICATION_EMAIL = "info@applyhubsa.co.za";
-    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mnppjadn";
+    const supabaseConfig = window.APPLYNOW_SUPABASE_CONFIG;
+    const hasSupabaseConfig =
+      supabaseConfig?.url === "https://uwjiqiweoquwkdxpvjts.supabase.co" &&
+      typeof supabaseConfig.anonKey === "string" &&
+      /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(supabaseConfig.anonKey);
+    let supabaseClient = null;
     const PUBLIC_UNIVERSITIES = [
       "Cape Peninsula University of Technology (CPUT)", "Central University of Technology (CUT)",
       "Durban University of Technology (DUT)", "Mangosuthu University of Technology (MUT)",
@@ -836,9 +874,10 @@
     let studentAPS = 0;
     let subjectSequence = 0;
     let selectedCourse = null;
-    let nsfasRequested = false;
+    let applicationRequestSubmitted = false;
+    let requestedPackage = 25;
+    let pendingSubmissionType = null;
     let verificationFilter = "all";
-    const sessionPaymentUnlocks = new Set();
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
     const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (char) => ({
@@ -857,44 +896,213 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    function hasPaymentUnlock(key) {
-      if (sessionPaymentUnlocks.has(key)) return true;
-      try {
-        return localStorage.getItem(key) === "true";
-      } catch (error) {
-        console.error(`ApplyNow could not read ${key} from local storage:`, error);
-        return false;
-      }
-    }
-
-    function savePaymentUnlock(key) {
-      sessionPaymentUnlocks.add(key);
-      try {
-        localStorage.setItem(key, "true");
-        return true;
-      } catch (error) {
-        console.error(`ApplyNow could not save ${key} in local storage:`, error);
-        return false;
-      }
-    }
-
     function updateResultsPaymentUI() {
-      const unlocked = hasPaymentUnlock("paidR25");
-      $("#r25-payment-box").hidden = unlocked;
-      $("#r25-unlocked-message").hidden = !unlocked;
-      $("#paid-results").hidden = !unlocked;
-      if (unlocked && !$("#r25-unlocked-message").textContent) {
-        updatePaymentStatus("#r25-unlocked-message", "Results are marked unlocked in this browser. This is not confirmation that payment was received.");
-      }
+      const packageAmount = getSelectedPackage();
+      $("#results-payment-box").hidden = packageAmount !== 25;
+      $("#r100-package-prompt").hidden = packageAmount !== 100;
+      $("#qualification-results").hidden = true;
     }
 
     function updateApplicationPaymentUI() {
-      const unlocked = hasPaymentUnlock("paidR100");
-      $("#r100-payment-box").hidden = unlocked;
-      $("#r100-unlocked-message").hidden = !unlocked;
-      $("#confirm-application").hidden = !unlocked;
-      if (unlocked && !$("#r100-unlocked-message").textContent) {
-        updatePaymentStatus("#r100-unlocked-message", "Application preparation is marked unlocked in this browser. This is not confirmation that payment was received.");
+      $("#confirm-application").hidden = true;
+    }
+
+    function getSelectedPackage() {
+      return requestedPackage;
+    }
+
+    function updatePackageUI() {
+      updateResultsPaymentUI();
+    }
+
+    function setAccountStatus(message, isError = false) {
+      updatePaymentStatus("#account-status", message, isError);
+    }
+
+    function loadSupabaseSdk() {
+      if (!hasSupabaseConfig) {
+        initializeLearnerAccount();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4/dist/umd/supabase.min.js";
+      script.async = true;
+      script.onload = () => {
+        try {
+          if (!window.supabase?.createClient) throw new Error("Supabase client library did not initialize.");
+          supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+          initializeLearnerAccount();
+        } catch (error) {
+          console.error("ApplyNow could not initialize Supabase:", error);
+          setAccountStatus(`Shared accounts could not start: ${error.message}`, true);
+        }
+      };
+      script.onerror = () => {
+        setAccountStatus("Could not load the secure account service. Check your internet connection and try again.", true);
+      };
+      document.head.append(script);
+    }
+
+    async function requestAccountCode(email, submissionType = null) {
+      if (!supabaseClient) {
+        throw new Error("Email sign-in is unavailable because supabase-config.js does not contain a complete Supabase anon key.");
+      }
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail) throw new Error("Enter the email address used on your request.");
+
+      const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (session) {
+        if (session.user.email?.toLowerCase() !== normalizedEmail) {
+          throw new Error("You are signed in with a different email. Sign out first, then use the email on this request.");
+        }
+        if (submissionType) pendingSubmissionType = submissionType;
+        await loadLearnerRequests();
+        return true;
+      }
+
+      pendingSubmissionType = submissionType;
+      const { error } = await supabaseClient.auth.signInWithOtp({
+        email: normalizedEmail,
+        options: { shouldCreateUser: true }
+      });
+      if (error) throw error;
+      $("#account-email").value = normalizedEmail;
+      $("#account-code-wrap").hidden = false;
+      $("#account-code").value = "";
+      $("#account-code").focus();
+      setAccountStatus("A one-time code was sent. Enter it here to continue. This does not verify payment.");
+      return false;
+    }
+
+    async function verifyAccountCode() {
+      if (!supabaseClient) {
+        setAccountStatus("Email sign-in is unavailable because supabase-config.js does not contain a complete Supabase anon key.", true);
+        return;
+      }
+      const email = $("#account-email").value.trim().toLowerCase();
+      const token = $("#account-code").value.trim();
+      if (!email || !token) {
+        setAccountStatus("Enter the email address and the code sent to that email.", true);
+        return;
+      }
+      const button = $("#verify-account-code");
+      button.disabled = true;
+      setAccountStatus("Verifying email code…");
+      try {
+        const { error } = await supabaseClient.auth.verifyOtp({ email, token, type: "email" });
+        if (error) throw error;
+        $("#account-code-wrap").hidden = true;
+      } catch (error) {
+        console.error("ApplyNow could not verify the email code:", error);
+        setAccountStatus(`Could not verify your email code: ${error.message}`, true);
+        return;
+      } finally {
+        button.disabled = false;
+      }
+      try {
+        setAccountStatus("Email verified. Loading your requests…");
+        await loadLearnerRequests();
+        const pendingType = pendingSubmissionType;
+        pendingSubmissionType = null;
+        if (pendingType === "r25") await submitR25Proof();
+        if (pendingType === "r100") await submitApplicationProof();
+      } catch (error) {
+        console.error("ApplyNow could not load the signed-in learner's requests:", error);
+        setAccountStatus(`Your email is verified, but shared request storage is unavailable: ${error.message}`, true);
+      }
+    }
+
+    async function requireLearnerAccount(submissionType) {
+      try {
+        return await requestAccountCode(personalInfo.email, submissionType);
+      } catch (error) {
+        console.error("ApplyNow could not authenticate the learner:", error);
+        setAccountStatus(error.message, true);
+        return false;
+      }
+    }
+
+    async function loadLearnerRequests() {
+      if (!supabaseClient) return;
+      const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      const container = $("#learner-requests");
+      container.replaceChildren();
+      if (!session) return;
+
+      $("#account-email").value = session.user.email || "";
+      $("#sign-out-account").hidden = false;
+      $("#send-account-code").hidden = true;
+      const { data, error } = await supabaseClient
+        .from("application_requests")
+        .select("id,package_type,amount,status,course_requested,selected_universities,nsfas_needed,aps,results_snapshot,created_at,review_note")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      if (!data.length) {
+        setAccountStatus("Signed in. No package requests are linked to this email yet.");
+        return;
+      }
+      setAccountStatus("Signed in. Your requests and payment decisions are shared across devices.");
+      data.forEach((request) => {
+        const item = document.createElement("article");
+        item.className = "request-item";
+        const heading = document.createElement("h3");
+        heading.textContent = `${request.package_type} request — ${request.status.toUpperCase()}`;
+        const details = document.createElement("p");
+        details.textContent = `Submitted ${new Date(request.created_at).toLocaleString()}${request.course_requested ? ` · Course: ${request.course_requested}` : ""}`;
+        item.append(heading, details);
+        if (request.status === "pending") {
+          const pending = document.createElement("p");
+          pending.textContent = "Your receipt is only a request. ApplyHub must verify the transfer in Capitec before unlocking results or starting application work.";
+          item.append(pending);
+        } else if (request.status === "rejected") {
+          const rejected = document.createElement("p");
+          rejected.textContent = request.review_note || "This request was not approved. Contact info@applyhubsa.co.za for help.";
+          item.append(rejected);
+        } else if (request.package_type === "R25") {
+          const results = Array.isArray(request.results_snapshot) ? request.results_snapshot : [];
+          const headingText = document.createElement("p");
+          headingText.textContent = `Payment verified. Your preliminary guide results (estimated APS ${request.aps}) are available:`;
+          const list = document.createElement("ul");
+          list.className = "request-results";
+          results.forEach((result) => {
+            const entry = document.createElement("li");
+            entry.textContent = `${result.course} — ${result.institution}: ${result.eligibility}`;
+            list.append(entry);
+          });
+          item.append(headingText, list);
+          if (!results.length) {
+            const empty = document.createElement("p");
+            empty.textContent = "No course result snapshot was saved for this request. Contact info@applyhubsa.co.za.";
+            item.append(empty);
+          }
+        } else {
+          const approved = document.createElement("p");
+          approved.textContent = "Payment verified. Your university and NSFAS assistance request is approved for manual processing. No application has been filed automatically.";
+          item.append(approved);
+        }
+        if (request.review_note && request.status !== "rejected") {
+          const note = document.createElement("p");
+          note.textContent = `ApplyHub note: ${request.review_note}`;
+          item.append(note);
+        }
+        container.append(item);
+      });
+    }
+
+    async function initializeLearnerAccount() {
+      if (!supabaseClient) {
+        setAccountStatus("Email-code sign-in is unavailable because supabase-config.js does not contain a complete Supabase anon key.", true);
+        return;
+      }
+      try {
+        const { data: { session }, error } = await supabaseClient.auth.getSession();
+        if (error) throw error;
+        if (session) await loadLearnerRequests();
+      } catch (error) {
+        console.error("ApplyNow could not load the learner account:", error);
+        setAccountStatus(`Could not load your shared requests: ${error.message}`, true);
       }
     }
 
@@ -918,15 +1126,11 @@
 
     function getSelectedInstitutions() {
       const universities = $$('input[name="universities"]:checked').map((input) => input.value);
-      const colleges = $$('input[name="colleges"]:checked').map((input) => input.value);
       const otherUniversity = $("#other-university").value.trim();
-      const otherCollege = $("#other-college").value.trim();
       if (otherUniversity) universities.push(otherUniversity);
-      if (otherCollege) colleges.push(otherCollege);
       return {
         universities,
-        colleges,
-        nsfas: nsfasRequested || $("#nsfas-requested").checked
+        nsfas: getSelectedPackage() === 100
       };
     }
 
@@ -959,7 +1163,7 @@
         "DOCUMENT CHECKLIST",
         getNsfasChecklistText(),
         "",
-        "R25 payment proof was submitted through Formspree. Verify the bank transfer before beginning any application."
+        "A payment receipt was attached to the private request. Verify the bank transfer before beginning any application."
       ].join("\n");
     }
 
@@ -992,7 +1196,6 @@
       const selections = getSelectedInstitutions();
       return [
         `Universities: ${selections.universities.join("; ") || "None selected"}`,
-        `TVET colleges: ${selections.colleges.join("; ") || "None selected"}`,
         `NSFAS assistance requested: ${selections.nsfas ? "Yes" : "No"}`
       ].join("\n");
     }
@@ -1012,7 +1215,7 @@
       ].join("\n");
       const safeName = `${personalInfo.surname}-${personalInfo.fullNames}`.toLowerCase()
         .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "learner";
-      return [
+      const summaries = [
         {
           filename: `${safeName}-university-application-summary.txt`,
           content: [
@@ -1020,26 +1223,92 @@
             ...selections.universities.map((name) => `- ${name}`),
             selections.universities.length ? "" : "No university selected."
           ].join("\n")
-        },
-        {
-          filename: `${safeName}-college-application-summary.txt`,
-          content: [
-            common, "", "TVET COLLEGE APPLICATIONS",
-            ...selections.colleges.map((name) => `- ${name}`),
-            selections.colleges.length ? "" : "No TVET college selected."
-          ].join("\n")
-        },
-        {
+        }
+      ];
+      if (selections.nsfas) {
+        summaries.push({
           filename: `${safeName}-nsfas-application-summary.txt`,
           content: [
             common, "", "NSFAS APPLICATION",
             `NSFAS assistance requested: ${selections.nsfas ? "Yes" : "No"}`,
             selections.nsfas
-              ? `Preferred study institutions: ${[...selections.universities, ...selections.colleges].join("; ") || "Not selected"}`
+              ? `Preferred study institutions: ${selections.universities.join("; ") || "Not selected"}`
               : "No NSFAS request was selected."
           ].join("\n")
+        });
+      }
+      return summaries;
+    }
+
+    function buildResultsSnapshot() {
+      return getFilteredCourses().map((course) => {
+        const eligibility = getCourseEligibility(course);
+        return {
+          course: course.n,
+          institution: course.uni,
+          eligibility: getEligibilityLabel(eligibility, course).label
+        };
+      });
+    }
+
+    async function savePaymentRequest(amount, file) {
+      const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+      if (sessionError) throw sessionError;
+      if (!session) throw new Error("Verify your email before submitting this request.");
+      if (session.user.email?.toLowerCase() !== personalInfo.email.toLowerCase()) {
+        throw new Error("The signed-in email must match the email in the learner details.");
+      }
+
+      const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const receiptPath = `${session.user.id}/${crypto.randomUUID()}-${safeFilename}`;
+      const { error: uploadError } = await supabaseClient.storage
+        .from("payment-proofs")
+        .upload(receiptPath, file, { contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+
+      const fullName = `${personalInfo.fullNames} ${personalInfo.surname}`;
+      const selections = getSelectedInstitutions();
+      const learnerData = {
+        ...personalInfo,
+        subjects: getSubjects().map(({ name, mark }) => ({ name, mark })),
+        dreamCourses: [$("#dream1").value.trim(), $("#dream2").value.trim(), $("#dream3").value.trim()],
+        selectedCourse,
+        requestedAt: new Date().toISOString()
+      };
+      const request = {
+        user_id: session.user.id,
+        package_type: `R${amount}`,
+        amount,
+        learner_full_name: fullName,
+        learner_email: personalInfo.email,
+        learner_phone: personalInfo.phone,
+        learner_id_number: personalInfo.idNumber,
+        learner_data: learnerData,
+        course_requested: selectedCourse?.n || $("#dream1").value.trim(),
+        selected_universities: amount === 100 ? selections.universities : [],
+        nsfas_needed: amount === 100,
+        nsfas_checklist: amount === 100 ? getNsfasChecklistText() : "",
+        aps: studentAPS,
+        subject_results: learnerData.subjects,
+        results_snapshot: amount === 25 ? buildResultsSnapshot() : [],
+        payment_reference: fullName,
+        receipt_path: receiptPath
+      };
+      const { data, error } = await supabaseClient
+        .from("application_requests")
+        .insert(request)
+        .select("id,package_type,status,created_at")
+        .single();
+      if (error) {
+        const { error: cleanupError } = await supabaseClient.storage
+          .from("payment-proofs")
+          .remove([receiptPath]);
+        if (cleanupError) {
+          console.error("ApplyNow could not remove an unlinked payment proof:", cleanupError);
         }
-      ];
+        throw error;
+      }
+      return data;
     }
 
     function updatePaymentStatus(selector, message, isError = false) {
@@ -1071,149 +1340,110 @@
       }
     }
 
-    async function submitPaymentProof(amount) {
-      const isR25 = amount === 25;
-      const fileInput = isR25 ? $("#proof-r25") : $("#proof-r100");
-      const consent = isR25 ? $("#r25-consent") : $("#r100-consent");
-      const button = isR25 ? $("#submit-r25-proof") : $("#submit-r100-proof");
-      const statusSelector = isR25 ? "#r25-status" : "#r100-status";
-      const unlockKey = isR25 ? "paidR25" : "paidR100";
+    async function submitR25Proof() {
+      const file = $("#proof-r25").files[0];
+      const button = $("#submit-r25-proof");
+      const statusSelector = "#r25-status";
       if (button.disabled) return;
-      const file = fileInput.files[0];
       if (!file) {
         updatePaymentStatus(statusSelector, "Choose a JPG, PNG or PDF receipt before submitting.", true);
-        fileInput.focus();
+        $("#proof-r25").focus();
         return;
       }
       if (!["image/jpeg", "image/png", "application/pdf"].includes(file.type) || file.size > 10 * 1024 * 1024) {
         updatePaymentStatus(statusSelector, "Receipt must be a JPG, PNG or PDF file no larger than 10 MB.", true);
-        fileInput.focus();
+        $("#proof-r25").focus();
         return;
       }
-      if (!consent.checked) {
-        updatePaymentStatus(statusSelector, "Confirm consent to send the receipt and stated learner details to Formspree.", true);
-        consent.focus();
+      if (!$("#consent-r25").checked) {
+        updatePaymentStatus(statusSelector, "Confirm consent to store your request and payment proof securely.", true);
+        $("#consent-r25").focus();
         return;
       }
-      if (!isR25) {
-        const selections = getSelectedInstitutions();
-        if (!selections.universities.length && !selections.colleges.length && !selections.nsfas) {
-          updatePaymentStatus(statusSelector, "Select at least one university, college, or NSFAS assistance.", true);
-          $("#university-options input").focus();
-          return;
-        }
-      }
-      if (hasPaymentUnlock(unlockKey)) {
-        updatePaymentStatus(statusSelector, "This browser already has this access unlocked.");
-        isR25 ? updateResultsPaymentUI() : updateApplicationPaymentUI();
+      if (!await requireLearnerAccount("r25")) {
+        updatePaymentStatus(statusSelector, "Check the account section above and follow its sign-in message before submitting.");
         return;
       }
 
       button.disabled = true;
-      updatePaymentStatus(statusSelector, `Submitting the R${amount} proof to Formspree…`);
-      const fullName = `${personalInfo.fullNames} ${personalInfo.surname}`;
-      const formData = new FormData();
-      formData.append("_subject", isR25
-        ? `${getSelectedInstitutions().nsfas ? "NSFAS 2026 HELP + " : ""}R25 PROOF - ${fullName}`
-        : `NEW APPLICATION - ${fullName} - ${selectedCourse.n}`);
-      formData.append("_replyto", APPLICATION_EMAIL);
-      formData.append("payment_amount", `R${amount}`);
-      formData.append("payment_reference", fullName);
-      formData.append("learner_name", fullName);
-      formData.append("learner_phone", personalInfo.phone);
-      formData.append("learner_email", personalInfo.email);
-      formData.append("support_email", APPLICATION_EMAIL);
-      formData.append("payment_proof", file, file.name);
-      if (isR25) {
-        const nsfasHelpRequested = getSelectedInstitutions().nsfas;
-        formData.append("submission_type", nsfasHelpRequested
-          ? "R25 results unlock and NSFAS 2026 help request - not bank verified"
-          : "R25 results unlock proof - not bank verified");
-        formData.append("nsfas_help_requested", nsfasHelpRequested ? "Yes - R25 fee includes assistance" : "No");
-        if (nsfasHelpRequested) {
-          formData.append("learner_id_number", personalInfo.idNumber);
-          formData.append("date_of_birth", personalInfo.dateOfBirth);
-          formData.append("gender", personalInfo.gender);
-          formData.append("alternative_phone", personalInfo.alternativePhone);
-          formData.append("province", personalInfo.province);
-          formData.append("district", personalInfo.district);
-          formData.append("town_or_village", personalInfo.cityVillage);
-          formData.append("school", personalInfo.schoolName);
-          formData.append("grade", personalInfo.grade);
-          formData.append("matric_year", personalInfo.matricYear);
-          formData.append("aps", String(studentAPS));
-          formData.append("subject_results", getSubjects().map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
-          formData.append("nsfas_document_checklist", getNsfasChecklistText());
-          const nsfasSummary = buildNsfasSummary();
-          formData.append("nsfas_application_summary", nsfasSummary);
-          formData.append(
-            "nsfas_application_summary_file",
-            new Blob([nsfasSummary], { type: "text/plain" }),
-            `${personalInfo.surname.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "learner"}-nsfas-2026-help-summary.txt`
-          );
+      updatePaymentStatus(statusSelector, "Saving your R25 request and private receipt…");
+      try {
+        await savePaymentRequest(25, file);
+        let refreshError = "";
+        try {
+          await loadLearnerRequests();
+        } catch (error) {
+          console.error("ApplyNow saved the R25 request but could not refresh the account list:", error);
+          refreshError = ` The request is saved, but the account list could not refresh: ${error.message}`;
         }
-      } else {
-        formData.append("submission_type", "R100 application assistance proof - not bank verified");
-        formData.append("learner_id_number", personalInfo.idNumber);
-        formData.append("date_of_birth", personalInfo.dateOfBirth);
-        formData.append("gender", personalInfo.gender);
-        formData.append("alternative_phone", personalInfo.alternativePhone);
-        formData.append("province", personalInfo.province);
-        formData.append("district", personalInfo.district);
-        formData.append("town_or_village", personalInfo.cityVillage);
-        formData.append("school", personalInfo.schoolName);
-        formData.append("grade", personalInfo.grade);
-        formData.append("matric_year", personalInfo.matricYear);
-        formData.append("aps", String(studentAPS));
-        formData.append("course_requested", selectedCourse.n);
-        formData.append("course_institution", selectedCourse.uni);
-        formData.append("other_courses", [$("#dream1").value.trim(), $("#dream2").value.trim(), $("#dream3").value.trim()].join("; "));
-        formData.append("subject_results", getSubjects().map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
-        formData.append("university_selections", getSelectedInstitutions().universities.join("; "));
-        formData.append("college_selections", getSelectedInstitutions().colleges.join("; "));
-        formData.append("nsfas_requested", getSelectedInstitutions().nsfas ? "Yes" : "No");
-        formData.append("application_summary", `${getLearnerSummary()}\n\n${getApplicationSelectionsText()}`);
-        buildApplicationSummaries().forEach((summary) => {
-          formData.append("application_summary_file", new Blob([summary.content], { type: "text/plain" }), summary.filename);
-        });
+        updatePaymentStatus(statusSelector,
+          `R25 request is saved and pending manual Capitec verification. Results unlock only after admin approval.${refreshError}`);
+        $("#r25-pending-message").hidden = false;
+        $("#r25-pending-message").textContent =
+          "Your request is available in your account on any device. ApplyHub must verify the Capitec transfer and approve it before results unlock.";
+      } catch (error) {
+        console.error("ApplyNow could not submit R25 payment proof:", error);
+        updatePaymentStatus(statusSelector, `Could not submit the proof: ${error.message}`, true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function submitApplicationProof() {
+      const amount = getSelectedPackage();
+      if (amount !== 100) {
+        updatePaymentStatus("#application-payment-status", "Select the R100 package on the Personal Information page.", true);
+        return;
+      }
+      const file = $("#proof-application").files[0];
+      const button = $("#submit-application-proof");
+      const statusSelector = "#application-payment-status";
+      if (button.disabled) return;
+      if (!getSelectedInstitutions().universities.length) {
+        updatePaymentStatus(statusSelector, "Select at least one university to apply to.", true);
+        $("#university-options input").focus();
+        return;
+      }
+      if (!file) {
+        updatePaymentStatus(statusSelector, "Choose a JPG, PNG or PDF receipt before submitting.", true);
+        $("#proof-application").focus();
+        return;
+      }
+      if (!["image/jpeg", "image/png", "application/pdf"].includes(file.type) || file.size > 10 * 1024 * 1024) {
+        updatePaymentStatus(statusSelector, "Receipt must be a JPG, PNG or PDF file no larger than 10 MB.", true);
+        $("#proof-application").focus();
+        return;
+      }
+      if (!$("#package-consent").checked) {
+        updatePaymentStatus(statusSelector, "Confirm consent to store your request and payment proof securely.", true);
+        $("#package-consent").focus();
+        return;
+      }
+      if (!await requireLearnerAccount("r100")) {
+        updatePaymentStatus(statusSelector, "Check the account section above and follow its sign-in message before submitting.");
+        return;
       }
 
+      button.disabled = true;
+      updatePaymentStatus(statusSelector, "Saving your R100 request and private receipt…");
       try {
-        const response = await fetch(FORMSPREE_ENDPOINT, {
-          method: "POST",
-          headers: { Accept: "application/json" },
-          body: formData
-        });
-        let result = null;
+        await savePaymentRequest(100, file);
+        applicationRequestSubmitted = true;
+        let refreshError = "";
         try {
-          result = await response.json();
+          await loadLearnerRequests();
         } catch (error) {
-          console.error("ApplyNow received a non-JSON Formspree response:", error);
+          console.error("ApplyNow saved the R100 request but could not refresh the account list:", error);
+          refreshError = ` The request is saved, but the account list could not refresh: ${error.message}`;
         }
-        if (!response.ok || !result || result.ok !== true) {
-          const details = result?.errors?.map((item) => item.message).filter(Boolean).join(" ") ||
-            `Formspree did not confirm receipt (HTTP ${response.status}).`;
-          throw new Error(details);
-        }
-        const saved = savePaymentUnlock(unlockKey);
-        if (isR25) {
-          const nsfasHelpRequested = getSelectedInstitutions().nsfas;
-          const message = nsfasHelpRequested
-            ? "R25 proof and NSFAS 2026 help request sent to Formspree. Results are unlocked in this browser. The 2026 NSFAS window may be closed; payment and application status are not verified."
-            : "Proof submission received. Results are unlocked in this browser. Payment is not independently verified.";
-          updatePaymentStatus("#r25-unlocked-message", saved
-            ? message
-            : `${message} This browser could not remember the unlock.`);
-          updateResultsPaymentUI();
-        } else {
-          updatePaymentStatus("#r100-unlocked-message", saved
-            ? "Application details, proof and three summaries were sent to Formspree. Access is unlocked in this browser; payment is not independently verified. The owner must review and manually apply."
-            : "Application details, proof and three summaries were sent to Formspree. Access is unlocked for this session, but this browser could not remember the unlock. The owner must review and manually apply.");
-          updateApplicationPaymentUI();
-        }
+        $("#application-payment-confirmation").hidden = false;
+        updatePaymentStatus("#application-payment-confirmation",
+          `Your request is saved and pending manual Capitec verification. The admin must approve it before application assistance starts.${refreshError}`);
+        updatePaymentStatus(statusSelector, "R100 request saved. No application has been submitted.");
+        updateApplicationPaymentUI();
       } catch (error) {
-        console.error(`ApplyNow could not submit the R${amount} proof:`, error);
-        updatePaymentStatus(statusSelector, `Could not submit the proof, so access was not unlocked: ${error.message}`, true);
+        console.error("ApplyNow could not submit the application proof:", error);
+        updatePaymentStatus(statusSelector, `Could not submit the proof: ${error.message}`, true);
       } finally {
         button.disabled = false;
       }
@@ -1233,8 +1463,8 @@
     }
 
     function prepareApplicationFiles() {
-      if (!hasPaymentUnlock("paidR100")) {
-        updatePaymentStatus("#r100-status", "Submit the R100 proof before preparing application files.", true);
+      if (!applicationRequestSubmitted) {
+        updatePaymentStatus("#application-payment-status", "Submit your package request before preparing application files.", true);
         return;
       }
       const selections = getSelectedInstitutions();
@@ -1244,9 +1474,8 @@
         `New application assistance request: ${personalInfo.fullNames} ${personalInfo.surname}.`,
         `Course: ${selectedCourse.n}; estimated APS: ${studentAPS}.`,
         `Selected universities: ${selections.universities.join(", ") || "none"}.`,
-        `Selected colleges: ${selections.colleges.join(", ") || "none"}.`,
         `NSFAS assistance: ${selections.nsfas ? "yes" : "no"}.`,
-        "Details and receipt were submitted through Formspree; please verify payment before applying."
+        "Details and receipt are stored in the private request; please verify payment before applying."
       ].join(" ");
       const confirmation = $("#application-confirmation");
       confirmation.replaceChildren();
@@ -1255,7 +1484,7 @@
       const heading = document.createElement("h2");
       heading.textContent = "Application preparation files are ready";
       const explanation = document.createElement("p");
-      explanation.textContent = "Three summary files were downloaded to this device and attached to the Formspree submission for the owner. That submission is not proof that payment reached the account, and this app has not submitted applications to any portal. ApplyHub SA must verify payment and complete each application manually; timing is not guaranteed.";
+      explanation.textContent = "Summary files were downloaded to this device. This receipt submission is not proof that payment reached the account, and this app has not submitted applications to any portal. ApplyHub SA must verify payment and complete each application manually; timing is not guaranteed.";
       const whatsappLink = document.createElement("a");
       whatsappLink.className = "button full";
       whatsappLink.href = `https://wa.me/${APPLICATION_WHATSAPP}?text=${encodeURIComponent(whatsappText)}`;
@@ -2073,15 +2302,15 @@
     function showApplication(course) {
       selectedCourse = course;
       $("#application-course-title").textContent = `Application assistance for: ${course.n} at ${course.uni}`;
-      $("#r100-consent").checked = false;
-      $("#proof-r100").value = "";
-      $("#r100-status").textContent = "";
-      $("#r100-unlocked-message").textContent = "";
-      $("#r100-unlocked-message").style.color = "";
+      applicationRequestSubmitted = false;
+      $("#package-consent").checked = false;
+      $("#proof-application").value = "";
+      $("#application-payment-status").textContent = "";
+      $("#application-payment-confirmation").textContent = "";
+      $("#application-payment-confirmation").hidden = true;
       $("#other-university").value = "";
-      $("#other-college").value = "";
-      $("#nsfas-requested").checked = nsfasRequested;
-      $$('input[name="universities"], input[name="colleges"]').forEach((input) => { input.checked = false; });
+      $$('input[name="universities"]').forEach((input) => { input.checked = false; });
+      updatePackageUI();
       const container = $("#application-personal");
       container.replaceChildren();
       [
@@ -2125,8 +2354,8 @@
         prepareApplicationFiles();
       } catch (error) {
         console.error("ApplyNow could not prepare the application summaries:", error);
-        updatePaymentStatus("#r100-unlocked-message", `Could not prepare application files: ${error.message}`, true);
-        $("#r100-unlocked-message").hidden = false;
+        updatePaymentStatus("#application-payment-confirmation", `Could not prepare application files: ${error.message}`, true);
+        $("#application-payment-confirmation").hidden = false;
       }
     }
 
@@ -2134,25 +2363,54 @@
       $("#catalogue-scope").textContent =
         `${GUIDE_DISCLAIMER} It is not a complete list of South African options. Each course is checked independently, so a failed subject does not disqualify you from unrelated courses.`;
       renderInstitutionOptions("#university-options", PUBLIC_UNIVERSITIES, "universities");
-      renderInstitutionOptions("#college-options", PUBLIC_TVET_COLLEGES, "colleges");
+      $("#send-account-code").addEventListener("click", async () => {
+        try {
+          await requestAccountCode($("#account-email").value);
+        } catch (error) {
+          console.error("ApplyNow could not send a learner sign-in code:", error);
+          setAccountStatus(`Could not send a one-time code: ${error.message}`, true);
+        }
+      });
+      $("#verify-account-code").addEventListener("click", verifyAccountCode);
+      $("#sign-out-account").addEventListener("click", async () => {
+        if (!supabaseClient) return;
+        try {
+          const { error } = await supabaseClient.auth.signOut();
+          if (error) throw error;
+          pendingSubmissionType = null;
+          $("#account-code-wrap").hidden = true;
+          $("#sign-out-account").hidden = true;
+          $("#send-account-code").hidden = false;
+          $("#learner-requests").replaceChildren();
+          setAccountStatus("You are signed out.");
+        } catch (error) {
+          console.error("ApplyNow could not sign out the learner:", error);
+          setAccountStatus(`Could not sign out: ${error.message}`, true);
+        }
+      });
+      $("#account-code").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") verifyAccountCode();
+      });
+      loadSupabaseSdk();
       updateResultsPaymentUI();
       updateApplicationPaymentUI();
-      $("#submit-r25-proof").addEventListener("click", () => submitPaymentProof(25));
-      $("#submit-r100-proof").addEventListener("click", () => submitPaymentProof(100));
-      $("#proof-r25").addEventListener("change", () => {
-        if ($("#r25-consent").checked) submitPaymentProof(25);
-      });
-      $("#r25-consent").addEventListener("change", () => {
-        if ($("#r25-consent").checked && $("#proof-r25").files.length) submitPaymentProof(25);
-      });
-      $("#proof-r100").addEventListener("change", () => {
-        if ($("#r100-consent").checked) submitPaymentProof(100);
-      });
-      $("#r100-consent").addEventListener("change", () => {
-        if ($("#r100-consent").checked && $("#proof-r100").files.length) submitPaymentProof(100);
-      });
+      $("#submit-r25-proof").addEventListener("click", submitR25Proof);
+      $("#submit-application-proof").addEventListener("click", submitApplicationProof);
       $("#copy-capitec-r25").addEventListener("click", () => copyCapitecAccount("#r25-status"));
-      $("#copy-capitec-r100").addEventListener("click", () => copyCapitecAccount("#r100-status"));
+      $("#copy-capitec-r100").addEventListener("click", () => copyCapitecAccount("#application-payment-status"));
+      $$('input[name="service-package"]').forEach((input) => {
+        input.addEventListener("change", () => {
+          requestedPackage = getSelectedPackage();
+          updatePackageUI();
+        });
+      });
+      $("#continue-r100-package").addEventListener("click", () => {
+        requestedPackage = 100;
+        $("#package-r100").checked = true;
+        updatePackageUI();
+        showApplication({ n: $("#dream1").value.trim(), uni: "Selected university" });
+      });
+      updatePackageUI();
       const gender = $("#gender");
       const idNumber = $("#id-number");
       const dateOfBirth = $("#date-of-birth");
@@ -2195,18 +2453,16 @@
         showStep(2);
       });
       $("#start-nsfas-help").addEventListener("click", () => {
-        nsfasRequested = true;
-        $("#nsfas-requested").checked = true;
+        requestedPackage = 100;
+        $("#package-r100").checked = true;
+        updatePackageUI();
         if (!validatePersonalInfo()) {
           $("#nsfas-intent-status").textContent =
-            "To start NSFAS help, complete the learner details above and continue through your marks and course choices. The R25 proof step will send your NSFAS request.";
+            "To request NSFAS help, complete the learner details above and continue through your marks and course choices. Choose Package B (R100) on the application assistance page.";
           return;
         }
         $("#nsfas-intent-status").textContent = "";
         showStep(2);
-      });
-      $("#nsfas-requested").addEventListener("change", (event) => {
-        nsfasRequested = event.currentTarget.checked;
       });
       $("#marks-next").addEventListener("click", () => {
         if (!validateSubjects()) return;
