@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
-  <title>ApplyHub SA — Local enquiry queue</title>
+  <title>ApplyHub SA — Admin submissions</title>
   <style>
-    :root { color-scheme: light; font-family: Arial, sans-serif; color: #18233a; background: #f4f6fa; }
-    body { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; }
-    h1 { margin: 0; font-size: 1.6rem; }
-    h2 { font-size: 1.1rem; }
+    :root { color-scheme: light; font-family: Arial, sans-serif; font-size: 18px; color: #18233a; background: #f4f6fa; }
+    body { max-width: 980px; margin: 0 auto; padding: 24px 16px 48px; line-height: 1.55; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 6vw, 2.2rem); }
+    h2 { font-size: 1.25rem; }
     .warning, .status, .institution { margin-top: 16px; padding: 14px; border: 1px solid #d8dfed; border-radius: 10px; background: white; }
     .warning { border-color: #f0d98a; color: #58491c; background: #fff9e7; }
     .warning p, .status p { margin: 6px 0; }
@@ -17,30 +17,32 @@
     .learner { padding: 10px 0; border-top: 1px solid #e5e9f1; }
     .learner:first-of-type { border-top: 0; }
     .learner p { margin: 4px 0; }
-    button, a { display: inline-block; margin: 8px 8px 0 0; padding: 10px 13px; border: 0; border-radius: 8px; color: white; background: #2454c6; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+    button, a { display: inline-block; margin: 8px 8px 0 0; padding: 12px 16px; border: 0; border-radius: 8px; color: white; background: #2454c6; font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
     a { color: #2454c6; background: transparent; }
+    a.inbox-link { color: white; background: #2454c6; }
+    input { min-height: 48px; padding: 8px 10px; font: inherit; }
     button:focus-visible, a:focus-visible { outline: 3px solid #88aaff; outline-offset: 2px; }
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <header>
-    <h1>ApplyHub SA — Local enquiry queue</h1>
+    <h1>ApplyHub SA — Admin submissions</h1>
     <div class="warning" role="alert">
-      <strong>Not secure or shared:</strong>
-      <p>This GitHub Pages page has no server authentication. Its password is visible in the public source code and can be bypassed. The local queue below only shows records saved in this browser; it does not collect submissions from other devices.</p>
-      <p>Application details, proof uploads and three text application summaries submitted from learners' devices are sent to the configured Formspree account. Review/download them there, verify each bank payment, and submit applications manually through official institution portals. This app does not apply automatically or guarantee a turnaround time.</p>
-      <a href="https://formspree.io/forms/mnppjadn/submissions" target="_blank" rel="noopener noreferrer">Open Formspree submissions inbox</a>
-      <p>Local batch copying prepares text only; it does not send email or submit an application. Verify requirements and addresses on official institution websites.</p>
+      <strong>Shared learner submissions:</strong>
+      <p>Application details and proof uploads are sent to the ApplyHub Formspree account. To see submissions from every device, open the account inbox and sign in with your Formspree account. This page cannot securely log in to Formspree or display its private submissions inside this static site.</p>
+      <a class="inbox-link" href="https://formspree.io/forms/mnppjadn/submissions" target="_blank" rel="noopener noreferrer">Open Formspree inbox (all devices)</a>
+      <p>The dashboard password below only gates the local preview on this device; it is not a secure account login and does not unlock or fetch Formspree submissions. For now, manually verify Capitec transfers and submit applications through official portals. The app does not verify bank payments or apply automatically.</p>
+      <p>Never enter or share your Formspree password on this page. Sign in only on the official Formspree website.</p>
     </div>
   </header>
   <main>
     <section id="locked" class="status">
-      <p id="auth-message" role="status">Enter the local dashboard password to view this browser's queue.</p>
+      <p id="auth-message" role="status">Optional: enter the local preview password to view this browser's queue. Use the Formspree inbox above for submissions from all devices.</p>
       <form id="unlock-form">
-        <label for="admin-password">Dashboard password</label>
+        <label for="admin-password">Local preview password</label>
         <input id="admin-password" type="password" autocomplete="current-password" required>
-        <button type="submit">Unlock dashboard</button>
+        <button type="submit">Open local preview</button>
       </form>
       <a href="./index.html">Return to ApplyNow</a>
     </section>
@@ -58,7 +60,7 @@
       const ADMIN_PASSWORD = "ApplyHub2026!";
       const $ = (selector) => document.querySelector(selector);
 
-      function lockDashboard(message = "Dashboard locked.") {
+      function lockDashboard(message = "Local preview locked.") {
         $("#dashboard").hidden = true;
         $("#locked").hidden = false;
         $("#auth-message").textContent = message;
@@ -178,7 +180,7 @@
         const entered = $("#admin-password").value;
         if (entered !== ADMIN_PASSWORD) {
           $("#admin-password").value = "";
-          lockDashboard("Incorrect password. Dashboard remains locked.");
+          lockDashboard("Incorrect local preview password. The shared Formspree inbox is available above.");
           $("#admin-password").focus();
           return;
         }
@@ -191,7 +193,7 @@
       $("#unlock-form").addEventListener("submit", unlockDashboard);
       $("#refresh-queue").addEventListener("click", renderQueue);
       $("#lock-dashboard").addEventListener("click", () => lockDashboard());
-      lockDashboard("Enter the local dashboard password to view this browser's queue.");
+      lockDashboard("Optional: enter the local preview password to view this browser's queue. Use the Formspree inbox above for submissions from all devices.");
     })();
   </script>
 </body>
