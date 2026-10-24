@@ -97,6 +97,11 @@
     .institution-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 4px 12px; max-height: 230px; overflow-y: auto; }
     .institution-option { display: flex; gap: 8px; align-items: flex-start; padding: 4px 0; font-size: .8rem; }
     .institution-option input { flex: 0 0 auto; width: 17px; height: 17px; margin: 1px 0 0; }
+    .nsfas-checklist { display: grid; gap: 8px; margin: 12px 0; padding: 0; list-style: none; }
+    .nsfas-checklist label { display: flex; gap: 10px; align-items: center; min-height: 42px; font-size: .92rem; font-weight: 700; }
+    .nsfas-checklist input { width: 20px; height: 20px; }
+    .privacy-footer { width: min(850px, 100%); margin: 0 auto; padding: 20px 14px 32px; color: var(--muted); font-size: .82rem; }
+    .privacy-footer h2 { color: var(--ink); font-size: 1rem; }
     .subject-row select, .subject-row input {
       display: block;
       width: 100%;
@@ -112,7 +117,7 @@
     .actions { display: flex; gap: 10px; margin-top: 20px; }
     .button {
       display: inline-flex;
-      min-height: 46px;
+      min-height: 54px;
       align-items: center;
       justify-content: center;
       padding: 11px 17px;
@@ -333,12 +338,26 @@
           </select>
         </div>
       </div>
+      <section class="consent-box" aria-labelledby="nsfas-help-title">
+        <h2 id="nsfas-help-title">NSFAS 2026 + Bursaries - We Help You Apply</h2>
+        <p>Get these documents ready. This page does not upload them; it only sends the R25 payment proof and your details if you request help.</p>
+        <ul class="nsfas-checklist">
+          <li><label><input id="nsfas-doc-id" type="checkbox"> Certified ID</label></li>
+          <li><label><input id="nsfas-doc-results" type="checkbox"> Matric results</label></li>
+          <li><label><input id="nsfas-doc-income" type="checkbox"> Parent proof of income</label></li>
+          <li><label><input id="nsfas-doc-consent" type="checkbox"> Signed consent form</label></li>
+        </ul>
+        <p class="hint">NSFAS application dates can change or close. Check the official NSFAS website to confirm the 2026 application window. ApplyHub SA does not guarantee funding or acceptance.</p>
+        <p><a href="https://www.nsfas.org.za/" target="_blank" rel="noopener noreferrer">Visit the official NSFAS website</a></p>
+        <button class="button full" id="start-nsfas-help" type="button">Start NSFAS Application (R25 fee includes this)</button>
+        <p class="status" id="nsfas-intent-status" role="status" aria-live="polite"></p>
+      </section>
       <aside class="consent-box" aria-labelledby="privacy-title">
         <h2 id="privacy-title">Privacy and consent</h2>
         <p>This independent guide is not a university, college, NSFAS or government service. Your profile and marks are processed in this browser to calculate an estimate. Results cover only the sample courses currently included in this guide, not every South African institution or course.</p>
-        <p>When you submit R25 proof, your name, phone, email and receipt file are sent to Formspree. When you submit R100 proof, your personal details (including ID number), school marks, selected institutions and receipt file are sent to Formspree and may be stored in that service/account. Formspree file uploads may require a paid plan. Only submit information if you and, where applicable, your parent/guardian agree to this external processing. Do not use a shared or public device.</p>
+        <p>When you submit proof, the receipt is sent to Formspree. For an NSFAS request, your ID and learner details, marks and checklist are also sent. For R100 help, your ID and application details are sent. Formspree may store these submissions and has its own privacy terms. ApplyHub SA uses them to respond to your request; details are shared with an institution only when needed to prepare an application with your permission. Do not use a shared or public device.</p>
         <p>This MVP unlocks features after Formspree accepts a proof submission; it does not verify that a bank transfer happened. The unlock is stored in this browser and can be bypassed or lost. ApplyHub SA must verify payment and manually submit any application. No application is filed automatically and no 24-hour turnaround is guaranteed.</p>
-        <p>For privacy questions, or to request correction or deletion of details you have sent, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>. Messages already sent may remain in your or the recipient's email/WhatsApp account and cannot be removed by this page. Only provide information you are comfortable sharing.</p>
+        <p>For privacy questions or to ask ApplyHub SA to correct or delete its copy, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a> (ApplyHub account: applynowadmin-ship-it). Formspree copies may need to be deleted separately. Messages already sent may remain in your or the recipient's email/WhatsApp account.</p>
         <label class="consent-check" for="privacy-consent">
           <input id="privacy-consent" type="checkbox" required>
           <span>I have read this notice and consent to using my details for these results.</span>
@@ -404,7 +423,7 @@
         <input id="proof-r25" type="file" accept="image/jpeg,image/png,application/pdf">
         <label class="consent-check" for="r25-consent">
           <input id="r25-consent" type="checkbox">
-          <span>I agree to send my name, phone, email and receipt file to Formspree and ApplyHub SA for this R25 proof submission.</span>
+          <span>I agree to send my name, phone, email and receipt to Formspree. If I requested NSFAS help, I also agree to send my ID, school details, marks and checklist to ApplyHub SA through Formspree.</span>
         </label>
         <button class="button full" id="submit-r25-proof" type="button">Upload R25 Proof &amp; Unlock Results</button>
         <p class="status" id="r25-status" role="status" aria-live="polite"></p>
@@ -507,6 +526,11 @@
       </div>
     </section>
   </main>
+
+  <footer class="privacy-footer" aria-labelledby="popia-title">
+    <h2 id="popia-title">POPIA Privacy Notice</h2>
+    <p>We collect learner details and proof only to process the service you request. Submissions are sent to Formspree (form mnppjadn) and ApplyHub SA for handling; Formspree may store them under its own privacy terms. We do not publish or sell your information. We share details with an institution only when needed to prepare an application and with your permission. Ask ApplyHub SA to delete its copy at <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a> (account: applynowadmin-ship-it). Ask Formspree separately to delete its copy. You may also request correction or ask questions at that email address.</p>
+  </footer>
 
   <script>
   (() => {
@@ -812,6 +836,7 @@
     let studentAPS = 0;
     let subjectSequence = 0;
     let selectedCourse = null;
+    let nsfasRequested = false;
     let verificationFilter = "all";
     const sessionPaymentUnlocks = new Set();
     const $ = (selector, root = document) => root.querySelector(selector);
@@ -901,8 +926,41 @@
       return {
         universities,
         colleges,
-        nsfas: $("#nsfas-requested").checked
+        nsfas: nsfasRequested || $("#nsfas-requested").checked
       };
+    }
+
+    function getNsfasChecklistText() {
+      return [
+        `Certified ID ready: ${$("#nsfas-doc-id").checked ? "Yes" : "No"}`,
+        `Matric results ready: ${$("#nsfas-doc-results").checked ? "Yes" : "No"}`,
+        `Parent proof of income ready: ${$("#nsfas-doc-income").checked ? "Yes" : "No"}`,
+        `Signed consent form ready: ${$("#nsfas-doc-consent").checked ? "Yes" : "No"}`
+      ].join("\n");
+    }
+
+    function buildNsfasSummary() {
+      if (!personalInfo) throw new Error("Complete the learner details before preparing NSFAS help.");
+      return [
+        "APPLYHUB SA - NSFAS 2026 APPLICATION HELP REQUEST",
+        "This is a request for assistance, not an NSFAS submission or funding approval.",
+        "Check the official NSFAS website to confirm that the 2026 application window is open.",
+        "",
+        `Full name: ${personalInfo.fullNames} ${personalInfo.surname}`,
+        `South African ID number: ${personalInfo.idNumber}`,
+        `Phone / WhatsApp: ${personalInfo.phone}`,
+        `Email: ${personalInfo.email}`,
+        `Province: ${personalInfo.province}`,
+        `School: ${personalInfo.schoolName}`,
+        `Grade: ${personalInfo.grade}`,
+        `Matric year: ${personalInfo.matricYear}`,
+        `Estimated APS: ${studentAPS}`,
+        "",
+        "DOCUMENT CHECKLIST",
+        getNsfasChecklistText(),
+        "",
+        "R25 payment proof was submitted through Formspree. Verify the bank transfer before beginning any application."
+      ].join("\n");
     }
 
     function getLearnerSummary() {
@@ -1056,7 +1114,7 @@
       const fullName = `${personalInfo.fullNames} ${personalInfo.surname}`;
       const formData = new FormData();
       formData.append("_subject", isR25
-        ? `R25 RESULTS PROOF - ${fullName}`
+        ? `${getSelectedInstitutions().nsfas ? "NSFAS 2026 HELP + " : ""}R25 PROOF - ${fullName}`
         : `NEW APPLICATION - ${fullName} - ${selectedCourse.n}`);
       formData.append("_replyto", APPLICATION_EMAIL);
       formData.append("payment_amount", `R${amount}`);
@@ -1067,7 +1125,33 @@
       formData.append("support_email", APPLICATION_EMAIL);
       formData.append("payment_proof", file, file.name);
       if (isR25) {
-        formData.append("submission_type", "R25 results unlock proof - not bank verified");
+        const nsfasHelpRequested = getSelectedInstitutions().nsfas;
+        formData.append("submission_type", nsfasHelpRequested
+          ? "R25 results unlock and NSFAS 2026 help request - not bank verified"
+          : "R25 results unlock proof - not bank verified");
+        formData.append("nsfas_help_requested", nsfasHelpRequested ? "Yes - R25 fee includes assistance" : "No");
+        if (nsfasHelpRequested) {
+          formData.append("learner_id_number", personalInfo.idNumber);
+          formData.append("date_of_birth", personalInfo.dateOfBirth);
+          formData.append("gender", personalInfo.gender);
+          formData.append("alternative_phone", personalInfo.alternativePhone);
+          formData.append("province", personalInfo.province);
+          formData.append("district", personalInfo.district);
+          formData.append("town_or_village", personalInfo.cityVillage);
+          formData.append("school", personalInfo.schoolName);
+          formData.append("grade", personalInfo.grade);
+          formData.append("matric_year", personalInfo.matricYear);
+          formData.append("aps", String(studentAPS));
+          formData.append("subject_results", getSubjects().map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
+          formData.append("nsfas_document_checklist", getNsfasChecklistText());
+          const nsfasSummary = buildNsfasSummary();
+          formData.append("nsfas_application_summary", nsfasSummary);
+          formData.append(
+            "nsfas_application_summary_file",
+            new Blob([nsfasSummary], { type: "text/plain" }),
+            `${personalInfo.surname.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "learner"}-nsfas-2026-help-summary.txt`
+          );
+        }
       } else {
         formData.append("submission_type", "R100 application assistance proof - not bank verified");
         formData.append("learner_id_number", personalInfo.idNumber);
@@ -1113,9 +1197,13 @@
         }
         const saved = savePaymentUnlock(unlockKey);
         if (isR25) {
+          const nsfasHelpRequested = getSelectedInstitutions().nsfas;
+          const message = nsfasHelpRequested
+            ? "R25 proof and NSFAS 2026 help request sent to Formspree. Results are unlocked in this browser. The 2026 NSFAS window may be closed; payment and application status are not verified."
+            : "Proof submission received. Results are unlocked in this browser. Payment is not independently verified.";
           updatePaymentStatus("#r25-unlocked-message", saved
-            ? "Proof submission received. Results are unlocked in this browser. Payment is not independently verified."
-            : "Proof submission received. Results are unlocked for this session, but this browser could not remember the unlock.");
+            ? message
+            : `${message} This browser could not remember the unlock.`);
           updateResultsPaymentUI();
         } else {
           updatePaymentStatus("#r100-unlocked-message", saved
@@ -1992,7 +2080,7 @@
       $("#r100-unlocked-message").style.color = "";
       $("#other-university").value = "";
       $("#other-college").value = "";
-      $("#nsfas-requested").checked = false;
+      $("#nsfas-requested").checked = nsfasRequested;
       $$('input[name="universities"], input[name="colleges"]').forEach((input) => { input.checked = false; });
       const container = $("#application-personal");
       container.replaceChildren();
@@ -2105,6 +2193,20 @@
       $("#personal-next").addEventListener("click", () => {
         if (!validatePersonalInfo()) return;
         showStep(2);
+      });
+      $("#start-nsfas-help").addEventListener("click", () => {
+        nsfasRequested = true;
+        $("#nsfas-requested").checked = true;
+        if (!validatePersonalInfo()) {
+          $("#nsfas-intent-status").textContent =
+            "To start NSFAS help, complete the learner details above and continue through your marks and course choices. The R25 proof step will send your NSFAS request.";
+          return;
+        }
+        $("#nsfas-intent-status").textContent = "";
+        showStep(2);
+      });
+      $("#nsfas-requested").addEventListener("change", (event) => {
+        nsfasRequested = event.currentTarget.checked;
       });
       $("#marks-next").addEventListener("click", () => {
         if (!validateSubjects()) return;
