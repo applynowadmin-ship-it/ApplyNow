@@ -8,7 +8,7 @@ alter table public.applynow_admin_emails enable row level security;
 revoke all on public.applynow_admin_emails from anon, authenticated;
 
 insert into public.applynow_admin_emails (email)
-values ('info@applyhubsa.co.za')
+values ('applynow.admin@gmail.com')
 on conflict (email) do nothing;
 
 create or replace function public.is_applynow_admin()

@@ -38,9 +38,9 @@
   <main>
     <section class="panel" aria-labelledby="admin-login-title">
       <h2 id="admin-login-title">Admin email-code sign-in</h2>
-      <p class="hint">Only info@applyhubsa.co.za is authorized by the database policy. No admin password is stored in this site.</p>
+      <p class="hint">Only applynow.admin@gmail.com is authorized by the database policy. No admin password is stored in this site.</p>
       <label class="field" for="admin-email">Admin email
-        <input id="admin-email" type="email" autocomplete="email" value="info@applyhubsa.co.za" readonly>
+        <input id="admin-email" type="email" autocomplete="email" value="applynow.admin@gmail.com" readonly>
       </label>
       <button id="send-code" type="button">Send one-time code</button>
       <div id="code-panel" hidden>
@@ -58,7 +58,7 @@
       <h2>Important</h2>
       <p>Requests appear here from every device. Approval changes the learner's shared status; approved R25 results appear in that learner's account. R100 approval authorizes manual application assistance only—no university or NSFAS application is submitted automatically.</p>
       <p>Approval updates the learner's private account. It does not submit applications automatically.</p>
-      <p>For data correction or deletion requests, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>.</p>
+      <p>For data correction or deletion requests, contact <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
     </section>
   </main>
   <script src="supabase-config.js"></script>
@@ -85,8 +85,8 @@
           return;
         }
         const email = $("#admin-email").value.trim().toLowerCase();
-        if (email !== "info@applyhubsa.co.za") {
-          setStatus("Admin sign-in is restricted to info@applyhubsa.co.za.", true);
+        if (email !== "applynow.admin@gmail.com") {
+                  setStatus("Admin sign-in is restricted to applynow.admin@gmail.com.", true);
           return;
         }
         const button = $("#send-code");
@@ -140,7 +140,7 @@
             !window.confirm("Only approve after checking that the exact amount reached Capitec account 2615455962. Continue?")) return;
         const note = status === "approved"
           ? "Payment manually verified in Capitec by ApplyHub admin."
-          : "Request rejected. Contact info@applyhubsa.co.za if you need help.";
+          : "Request rejected. Contact applynow.admin@gmail.com if you need help.";
         const buttonSet = $("#request-list");
         buttonSet.querySelectorAll("button").forEach((button) => { button.disabled = true; });
         try {
@@ -174,6 +174,24 @@
           } catch (refreshError) {
             console.error("ApplyHub admin could not refresh after a failed decision:", refreshError);
           }
+        }
+      }
+
+      async function approveClient(request) {
+        const { error } = await client
+          .from("application_requests")
+          .update({ application_status: "approved", result_unlocked: true, payment_status: "paid" })
+          .eq("id", request.id);
+        if (error) {
+          console.error("ApplyHub admin could not approve a client:", error);
+          alert(`Could not approve: ${error.message}`);
+          return;
+        }
+        alert("Client Approved - Can now see results");
+        try {
+          await loadRequests();
+        } catch (refreshError) {
+          setStatus(`Approved, but the list could not refresh: ${refreshError.message}`, true);
         }
       }
 
@@ -233,16 +251,27 @@
         if (request.status === "pending") {
           const actions = document.createElement("div");
           actions.className = "request-actions";
-          const approve = document.createElement("button");
-          approve.textContent = "APPROVE — payment checked";
-          approve.addEventListener("click", () => reviewRequest(request, "approved"));
           const reject = document.createElement("button");
           reject.className = "danger";
           reject.textContent = "Reject request";
           reject.addEventListener("click", () => reviewRequest(request, "rejected"));
-          actions.append(approve, reject);
+          actions.append(reject);
           card.append(actions);
         }
+        const approveBox = document.createElement("div");
+        approveBox.className = "request-actions";
+        if (request.application_status === "approved") {
+          const done = document.createElement("strong");
+          done.style.color = "green";
+          done.textContent = "ALREADY APPROVED";
+          approveBox.append(done);
+        } else {
+          const approve = document.createElement("button");
+          approve.textContent = "APPROVE";
+          approve.addEventListener("click", () => approveClient(request));
+          approveBox.append(approve);
+        }
+        card.append(approveBox);
         return card;
       }
 
@@ -257,7 +286,7 @@
         if (!admin) throw new Error("This email is not authorized as an ApplyHub admin.");
         const { data, error } = await client
           .from("application_requests")
-          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,review_note")
+          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,review_note,application_status")
           .order("created_at", { ascending: false });
         if (error) throw error;
 
@@ -275,7 +304,7 @@
         client.auth.getSession().then(({ data: { session }, error }) => {
           if (error) throw error;
           if (session) {
-            $("#admin-email").value = session.user.email || "info@applyhubsa.co.za";
+            $("#admin-email").value = session.user.email || "applynow.admin@gmail.com";
             loadRequests().catch((requestError) => {
               console.error("ApplyHub admin could not load requests:", requestError);
               setStatus(`Could not load requests: ${requestError.message}`, true);

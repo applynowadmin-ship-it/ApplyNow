@@ -1,4 +1,4 @@
-const CACHE = "applynow-v20";
+const CACHE = "applynow-v21";
 self.addEventListener("install", event => {
   event.waitUntil(
     caches.open(CACHE)

@@ -395,7 +395,7 @@
         <p>This independent guide is not a university, college, NSFAS or government service. Your profile and marks are processed in this browser to calculate an estimate. Results cover only the sample courses currently included in this guide, not every South African institution or course.</p>
         <p>When Supabase is configured and available, a package request stores your ID and learner details, marks, receipt and selected institutions in your private account so you can check the request on another device. If account setup or storage is unavailable, the app will show an error and will not confirm that your request was submitted. Package B includes your NSFAS checklist. ApplyHub SA uses the information to handle your request; details are shared with an institution only when needed to prepare an application with your permission.</p>
         <p>Email one-time codes protect access to your account. Keep your email account secure and do not use a shared or public device. Uploading a receipt does not verify that a bank transfer happened. ApplyHub SA must check the Capitec account and approve your request before results unlock or application work starts. Applications are submitted manually; no application is filed automatically and no 24-hour turnaround is guaranteed.</p>
-        <p>For privacy questions or to ask ApplyHub SA to correct or delete your request, contact <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>.</p>
+        <p>For privacy questions or to ask ApplyHub SA to correct or delete your request, contact <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
         <label class="consent-check" for="privacy-consent">
           <input id="privacy-consent" type="checkbox" required>
           <span>I have read this notice and consent to using my details for these results.</span>
@@ -561,7 +561,7 @@
 
   <footer class="privacy-footer" aria-labelledby="popia-title">
     <h2 id="popia-title">POPIA Privacy Notice</h2>
-    <p>We collect learner details and proof only to process the service you request. Supabase is the intended private store for your account, request and payment proof; submissions are accepted only when the Supabase connection and required database setup are working. We do not publish or sell your information. We share details with a university only when needed to prepare an application and with your permission. Ask ApplyHub SA to correct or delete its copy at <a href="mailto:info@applyhubsa.co.za">info@applyhubsa.co.za</a>.</p>
+    <p>We collect learner details and proof only to process the service you request. Supabase is the intended private store for your account, request and payment proof; submissions are accepted only when the Supabase connection and required database setup are working. We do not publish or sell your information. We share details with a university only when needed to prepare an application and with your permission. Ask ApplyHub SA to correct or delete its copy at <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
   </footer>
 
   <script src="supabase-config.js"></script>
@@ -569,7 +569,7 @@
   (() => {
     "use strict";
     const APPLICATION_WHATSAPP = "27798375864";
-    const APPLICATION_EMAIL = "info@applyhubsa.co.za";
+    const APPLICATION_EMAIL = "applynow.admin@gmail.com";
     const supabaseConfig = window.APPLYNOW_SUPABASE_CONFIG;
     const hasSupabaseConfig =
       supabaseConfig?.url === "https://uwjiqiweoquwkdxpvjts.supabase.co" &&
@@ -1058,7 +1058,7 @@
           item.append(pending);
         } else if (request.status === "rejected") {
           const rejected = document.createElement("p");
-          rejected.textContent = request.review_note || "This request was not approved. Contact info@applyhubsa.co.za for help.";
+          rejected.textContent = request.review_note || "This request was not approved. Contact applynow.admin@gmail.com for help.";
           item.append(rejected);
         } else if (request.package_type === "R25") {
           const results = Array.isArray(request.results_snapshot) ? request.results_snapshot : [];
@@ -1074,7 +1074,7 @@
           item.append(headingText, list);
           if (!results.length) {
             const empty = document.createElement("p");
-            empty.textContent = "No course result snapshot was saved for this request. Contact info@applyhubsa.co.za.";
+            empty.textContent = "No course result snapshot was saved for this request. Contact applynow.admin@gmail.com.";
             item.append(empty);
           }
         } else {

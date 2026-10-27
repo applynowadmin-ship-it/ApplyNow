@@ -1,16 +1,16 @@
 # ApplyNow Supabase setup
 
-The site source is connected to project `uwjiqiweoquwkdxpvjts`. Email-code login and shared requests require a valid anon key in `supabase-config.js` and the database setup below. The key pasted in chat included explanatory text and was not a complete JWT, so the checked-in local config intentionally remains a placeholder until the exact key is available. Do not claim the service is live until a real request can be tested.
+The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The backend is not ready yet: a live check found that the private `payment-proofs` bucket does not exist. Do not claim the service is live until setup and an end-to-end request have been tested.
 
-## 1. Add the anon key
+## 1. Keep the public anon key configured
 
-In Supabase, open **Project Settings → API Keys** and copy the complete legacy anon key for this project. Replace `PASTE_THE_FULL_SUPABASE_PUBLISHABLE_KEY_HERE` in `supabase-config.js`. This browser key is public by design. Never put a service-role or secret key in this file.
+No key change is needed in `supabase-config.js`. The browser anon key is public by design. Never put a service-role or secret key in this file.
 
-Both `index.html` and `admin.html` load `supabase-config.js` before their application scripts. The admin screen permits OTP sign-in only for `info@applyhubsa.co.za`; database policies independently enforce admin access.
+Both `index.html` and `admin.html` load `supabase-config.js` before their application scripts. The admin screen permits OTP sign-in only for `applynow.admin@gmail.com`; database policies independently enforce admin access.
 
 ## 2. Create the database and private proof storage
 
-Open the Supabase **SQL Editor** and run `supabase/schema.sql`. It creates the request table, row-level security policies, private proof bucket, and admin authorization for `info@applyhubsa.co.za`.
+Open the Supabase **SQL Editor** and run `supabase/schema.sql`. It creates the request table, row-level security policies, private proof bucket, and admin authorization for `applynow.admin@gmail.com`.
 
 ## 3. Enable email-code sign-in
 
