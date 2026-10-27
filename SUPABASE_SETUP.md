@@ -1,6 +1,6 @@
 # ApplyNow Supabase setup
 
-The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The backend is not ready yet: a live check found that the private `payment-proofs` bucket does not exist. Do not claim the service is live until setup and an end-to-end request have been tested.
+The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The database tables and private `payment-proofs` bucket exist. Do not claim the service is live until an end-to-end request has been tested. The authorized admin is `applynow.admin@gmail.com`.
 
 ## 1. Keep the public anon key configured
 
@@ -14,7 +14,7 @@ Open the Supabase **SQL Editor** and run `supabase/schema.sql`. It creates the r
 
 ## 3. Enable email-code sign-in
 
-In **Authentication → Providers → Email**, enable email sign-in and configure the email template to include the one-time token (`{{ .Token }}`). Configure a production SMTP provider under **Authentication → SMTP Settings**. Add `https://eclectic-blini-35e236.netlify.app/**` to allowed redirect URLs.
+In **Authentication → Providers → Email**, enable email sign-in and configure the email template to include the one-time token (`{{ .Token }}`). Configure a production SMTP provider under **Authentication → SMTP Settings**. Set **Authentication → URL Configuration → Site URL** to the host that serves the installed app and add `<that host>/**` to the redirect URLs. Do not leave it on localhost. The template must use `{{ .Token }}`, not `{{ .ConfirmationURL }}`, or learners receive a link and see `access_denied`.
 
 ## 4. Deploy and verify
 
