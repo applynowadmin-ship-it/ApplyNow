@@ -16,7 +16,11 @@ Open the Supabase **SQL Editor** and run `supabase/schema.sql`. It creates the r
 
 In **Authentication → Providers → Email**, enable email sign-in and configure the email template to include the one-time token (`{{ .Token }}`). Configure a production SMTP provider under **Authentication → SMTP Settings**. Set **Authentication → URL Configuration → Site URL** to the host that serves the installed app and add `<that host>/**` to the redirect URLs. Do not leave it on localhost. The template must use `{{ .Token }}`, not `{{ .ConfirmationURL }}`, or learners receive a link and see `access_denied`.
 
-## 4. Deploy and verify
+## 4. Course guide email function
+
+Approving a request calls the `send-course-guide` Edge Function, which emails the learner their course guide. It is limited to 20 emails per hour (`RATE_LIMIT_PER_HOUR` in `supabase/functions/send-course-guide/index.ts`). Deploy it with `supabase functions deploy send-course-guide` and set secrets `RESEND_API_KEY` and `GUIDE_FROM_EMAIL` (a sender verified in Resend). Without them, approval still succeeds and the admin sees that the email was not sent.
+
+## 5. Deploy and verify
 
 Commit and push only after adding the real anon key and running the SQL. Confirm that one learner can request a code, submit a pending R25/R100 request with a private receipt, and that the admin can sign in, view the proof, and approve only after checking Capitec account `2615455962`. Approval is shared with the learner's account. The app does not submit university or NSFAS applications automatically.
 

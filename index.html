@@ -175,6 +175,8 @@
     .aps-number { color: var(--blue); font-size: 1.8rem; font-weight: 900; }
     .hint { color: var(--muted); font-size: .79rem; }
     .status { min-height: 1.2em; margin: 8px 0 0; color: var(--red); font-size: .82rem; }
+    .verify-banner { margin: 0 0 14px; padding: 12px 14px; border-radius: 9px; color: #fff; background: #c62828; font-weight: 800; }
+    body.email-locked .step { display: none !important; }
     .account-panel { margin-bottom: 18px; }
     .account-panel[hidden], .request-item[hidden] { display: none; }
     .request-item { margin-top: 12px; padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: #fbfcff; }
@@ -248,7 +250,7 @@
     }
   </style>
 </head>
-<body>
+<body class="email-locked">
   <header class="site-header">
     <div class="header-inner">
       <p class="brand">ApplyNow</p>
@@ -267,21 +269,21 @@
   </header>
 
   <main>
+    <div class="verify-banner" id="verify-banner" role="alert">❌ Please verify your email at top first to continue</div>
     <section class="panel account-panel" id="learner-account" aria-labelledby="learner-account-title">
-      <h2 id="learner-account-title">Check your request or approved results</h2>
-      <p class="intro">Use the same email address as your application. We will send a one-time code. Your requests and approved results can then be viewed on any device.</p>
+      <h2 id="learner-account-title">Verify your email to start</h2>
+      <p class="intro">Enter your email address and tap "Send Link". We will email you a sign-in link. The application form unlocks only after your email is verified.</p>
       <div class="field">
         <label for="account-email">Email address</label>
         <input id="account-email" type="email" autocomplete="email" maxlength="150">
       </div>
       <div class="actions">
-        <button class="button" id="send-account-code" type="button">Send one-time code</button>
+        <button class="button" id="send-account-code" type="button">Send Link</button>
         <button class="button secondary" id="sign-out-account" type="button" hidden>Sign out</button>
       </div>
       <div class="field" id="account-code-wrap" hidden>
-        <label for="account-code">One-time email code</label>
-        <input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
-        <button class="button full" id="verify-account-code" type="button">Verify email</button>
+        <p class="hint">Waiting for you to click link in email...</p>
+        <button class="button secondary full" id="resend-account-link" type="button">Resend link</button>
       </div>
       <p class="status" id="account-status" role="status" aria-live="polite"></p>
       <div id="learner-requests" aria-live="polite"></div>
@@ -877,6 +879,9 @@
     let applicationRequestSubmitted = false;
     let requestedPackage = 25;
     let pendingSubmissionType = null;
+    let isEmailVerified = false;
+    let awaitingMagicLink = false;
+    const SITE_URL = "https://applynowadmin-ship-it.github.io/ApplyNow/";
     let verificationFilter = "all";
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -919,6 +924,24 @@
       updatePaymentStatus("#account-status", message, isError);
     }
 
+    function setEmailVerified(verified, email = "") {
+      isEmailVerified = verified === true;
+      document.body.classList.toggle("email-locked", !isEmailVerified);
+      $("#verify-banner").hidden = isEmailVerified;
+      const formEmail = $("#email");
+      if (isEmailVerified && email) {
+        formEmail.value = email;
+        formEmail.readOnly = true;
+      } else {
+        formEmail.readOnly = false;
+      }
+    }
+
+    function maskIdNumber(idNumber) {
+      const id = String(idNumber || "");
+      return id.length >= 8 ? `${id.slice(0, 4)}****${id.slice(-3)}` : "****";
+    }
+
     function loadSupabaseSdk() {
       if (!hasSupabaseConfig) {
         initializeLearnerAccount();
@@ -931,6 +954,11 @@
         try {
           if (!window.supabase?.createClient) throw new Error("Supabase client library did not initialize.");
           supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
+          supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === "SIGNED_IN" && session) {
+              setTimeout(() => handleSignedIn(session), 0);
+            }
+          });
           initializeLearnerAccount();
         } catch (error) {
           console.error("ApplyNow could not initialize Supabase:", error);
@@ -964,49 +992,26 @@
       pendingSubmissionType = submissionType;
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: normalizedEmail,
-        options: { shouldCreateUser: true }
+        options: { shouldCreateUser: true, emailRedirectTo: SITE_URL }
       });
       if (error) throw error;
+      awaitingMagicLink = true;
       $("#account-email").value = normalizedEmail;
       $("#account-code-wrap").hidden = false;
-      $("#account-code").value = "";
-      $("#account-code").focus();
-      setAccountStatus("A one-time code was sent. Enter it here to continue. This does not verify payment.");
+      setAccountStatus(`✅ Link sent to ${normalizedEmail} — Go check email and click BLUE 'Sign in' link. Then come back to this page, it will auto-unlock.`);
       return false;
     }
 
-    async function verifyAccountCode() {
-      if (!supabaseClient) {
-        setAccountStatus("Email sign-in is unavailable because supabase-config.js does not contain a complete Supabase anon key.", true);
-        return;
-      }
-      const email = $("#account-email").value.trim().toLowerCase();
-      const token = $("#account-code").value.trim();
-      if (!email || !token) {
-        setAccountStatus("Enter the email address and the code sent to that email.", true);
-        return;
-      }
-      const button = $("#verify-account-code");
-      button.disabled = true;
-      setAccountStatus("Verifying email code…");
-      try {
-        const { error } = await supabaseClient.auth.verifyOtp({ email, token, type: "email" });
-        if (error) throw error;
-        $("#account-code-wrap").hidden = true;
-      } catch (error) {
-        console.error("ApplyNow could not verify the email code:", error);
-        setAccountStatus(`Could not verify your email code: ${error.message}`, true);
-        return;
-      } finally {
-        button.disabled = false;
+    async function handleSignedIn(session) {
+      const wasVerified = isEmailVerified;
+      setEmailVerified(true, session?.user?.email || "");
+      $("#account-code-wrap").hidden = true;
+      if (!wasVerified && (awaitingMagicLink || /access_token|code=/.test(window.location.href))) {
+        awaitingMagicLink = false;
+        alert("Email verified! Continue application");
       }
       try {
-        setAccountStatus("Email verified. Loading your requests…");
         await loadLearnerRequests();
-        const pendingType = pendingSubmissionType;
-        pendingSubmissionType = null;
-        if (pendingType === "r25") await submitR25Proof();
-        if (pendingType === "r100") await submitApplicationProof();
       } catch (error) {
         console.error("ApplyNow could not load the signed-in learner's requests:", error);
         setAccountStatus(`Your email is verified, but shared request storage is unavailable: ${error.message}`, true);
@@ -1029,14 +1034,20 @@
       if (sessionError) throw sessionError;
       const container = $("#learner-requests");
       container.replaceChildren();
-      if (!session) return;
+      if (!session) {
+        setEmailVerified(false);
+        return;
+      }
+      setEmailVerified(true, session.user.email || "");
+      const sessionEmail = (session.user.email || "").toLowerCase();
 
       $("#account-email").value = session.user.email || "";
       $("#sign-out-account").hidden = false;
       $("#send-account-code").hidden = true;
       const { data, error } = await supabaseClient
         .from("application_requests")
-        .select("id,package_type,amount,status,course_requested,selected_universities,nsfas_needed,aps,results_snapshot,created_at,review_note")
+        .select("id,package_type,amount,status,is_paid,learner_id_number,course_requested,selected_universities,nsfas_needed,aps,results_snapshot,created_at,review_note")
+        .ilike("learner_email", sessionEmail.replace(/[\\%_]/g, "\\$&"))
         .order("created_at", { ascending: false });
       if (error) throw error;
       if (!data.length) {
@@ -1048,11 +1059,11 @@
         const item = document.createElement("article");
         item.className = "request-item";
         const heading = document.createElement("h3");
-        heading.textContent = `${request.package_type} request — ${request.status.toUpperCase()}`;
+        heading.textContent = `${request.package_type} request — ${request.status.replace(/_/g, " ").toUpperCase()}`;
         const details = document.createElement("p");
-        details.textContent = `Submitted ${new Date(request.created_at).toLocaleString()}${request.course_requested ? ` · Course: ${request.course_requested}` : ""}`;
+        details.textContent = `Submitted ${new Date(request.created_at).toLocaleString()} · ID: ${maskIdNumber(request.learner_id_number)}${request.course_requested ? ` · Course: ${request.course_requested}` : ""}`;
         item.append(heading, details);
-        if (request.status === "pending") {
+        if (request.status === "pending" || request.status === "pending_payment_review") {
           const pending = document.createElement("p");
           pending.textContent = "Your receipt is only a request. ApplyHub must verify the transfer in Capitec before unlocking results or starting application work.";
           item.append(pending);
@@ -1279,8 +1290,10 @@
         user_id: session.user.id,
         package_type: `R${amount}`,
         amount,
+        status: "pending_payment_review",
+        is_paid: false,
         learner_full_name: fullName,
-        learner_email: personalInfo.email,
+        learner_email: personalInfo.email.trim().toLowerCase(),
         learner_phone: personalInfo.phone,
         learner_id_number: personalInfo.idNumber,
         learner_data: learnerData,
@@ -1360,8 +1373,11 @@
         $("#consent-r25").focus();
         return;
       }
+      if (!isEmailVerified) {
+        alert("Please verify email first");
+        return;
+      }
       if (!await requireLearnerAccount("r25")) {
-        updatePaymentStatus(statusSelector, "Check the account section above and follow its sign-in message before submitting.");
         return;
       }
 
@@ -1369,18 +1385,7 @@
       updatePaymentStatus(statusSelector, "Saving your R25 request and private receipt…");
       try {
         await savePaymentRequest(25, file);
-        let refreshError = "";
-        try {
-          await loadLearnerRequests();
-        } catch (error) {
-          console.error("ApplyNow saved the R25 request but could not refresh the account list:", error);
-          refreshError = ` The request is saved, but the account list could not refresh: ${error.message}`;
-        }
-        updatePaymentStatus(statusSelector,
-          `R25 request is saved and pending manual Capitec verification. Results unlock only after admin approval.${refreshError}`);
-        $("#r25-pending-message").hidden = false;
-        $("#r25-pending-message").textContent =
-          "Your request is available in your account on any device. ApplyHub must verify the Capitec transfer and approve it before results unlock.";
+        window.location.href = "thank-you.html";
       } catch (error) {
         console.error("ApplyNow could not submit R25 payment proof:", error);
         updatePaymentStatus(statusSelector, `Could not submit the proof: ${error.message}`, true);
@@ -1419,8 +1424,11 @@
         $("#package-consent").focus();
         return;
       }
+      if (!isEmailVerified) {
+        alert("Please verify email first");
+        return;
+      }
       if (!await requireLearnerAccount("r100")) {
-        updatePaymentStatus(statusSelector, "Check the account section above and follow its sign-in message before submitting.");
         return;
       }
 
@@ -1429,18 +1437,7 @@
       try {
         await savePaymentRequest(100, file);
         applicationRequestSubmitted = true;
-        let refreshError = "";
-        try {
-          await loadLearnerRequests();
-        } catch (error) {
-          console.error("ApplyNow saved the R100 request but could not refresh the account list:", error);
-          refreshError = ` The request is saved, but the account list could not refresh: ${error.message}`;
-        }
-        $("#application-payment-confirmation").hidden = false;
-        updatePaymentStatus("#application-payment-confirmation",
-          `Your request is saved and pending manual Capitec verification. The admin must approve it before application assistance starts.${refreshError}`);
-        updatePaymentStatus(statusSelector, "R100 request saved. No application has been submitted.");
-        updateApplicationPaymentUI();
+        window.location.href = "thank-you.html";
       } catch (error) {
         console.error("ApplyNow could not submit the application proof:", error);
         updatePaymentStatus(statusSelector, `Could not submit the proof: ${error.message}`, true);
@@ -2368,16 +2365,16 @@
           await requestAccountCode($("#account-email").value);
         } catch (error) {
           console.error("ApplyNow could not send a learner sign-in code:", error);
-          setAccountStatus(`Could not send a one-time code: ${error.message}`, true);
+          setAccountStatus(`Could not send the link: ${error.message}`, true);
         }
       });
-      $("#verify-account-code").addEventListener("click", verifyAccountCode);
       $("#sign-out-account").addEventListener("click", async () => {
         if (!supabaseClient) return;
         try {
           const { error } = await supabaseClient.auth.signOut();
           if (error) throw error;
           pendingSubmissionType = null;
+          setEmailVerified(false);
           $("#account-code-wrap").hidden = true;
           $("#sign-out-account").hidden = true;
           $("#send-account-code").hidden = false;
@@ -2388,8 +2385,17 @@
           setAccountStatus(`Could not sign out: ${error.message}`, true);
         }
       });
-      $("#account-code").addEventListener("keydown", (event) => {
-        if (event.key === "Enter") verifyAccountCode();
+      $("#resend-account-link").addEventListener("click", async () => {
+        const button = $("#resend-account-link");
+        button.disabled = true;
+        try {
+          await requestAccountCode($("#account-email").value);
+        } catch (error) {
+          console.error("ApplyNow could not resend the sign-in link:", error);
+          setAccountStatus(`Could not resend the link: ${error.message}`, true);
+        } finally {
+          setTimeout(() => { button.disabled = false; }, 30000);
+        }
       });
       loadSupabaseSdk();
       updateResultsPaymentUI();

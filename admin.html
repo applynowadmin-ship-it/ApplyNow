@@ -27,6 +27,9 @@
     .request-actions { margin-top: 10px; }
     .tag { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; color: #1238a8; background: #edf2ff; font-size: .78rem; font-weight: 700; }
     [hidden] { display: none !important; }
+    table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    th, td { padding: 6px 8px; border-bottom: 1px solid #e1e7f1; text-align: left; overflow-wrap: anywhere; }
+    #pending-table { overflow-x: auto; }
     @media (max-width: 520px) { button, .button { width: 100%; margin-right: 0; } }
   </style>
 </head>
@@ -42,7 +45,7 @@
       <label class="field" for="admin-email">Admin email
         <input id="admin-email" type="email" autocomplete="email" value="applynow.admin@gmail.com" readonly>
       </label>
-      <button id="send-code" type="button">Send one-time code</button>
+      <button id="send-code" type="button">Send Link</button>
       <div id="code-panel" hidden>
         <label class="field" for="admin-code">Code from email
           <input id="admin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
@@ -53,6 +56,7 @@
       <button class="secondary" id="sign-out" type="button" hidden>Sign out</button>
       <p class="status" id="admin-status" role="status" aria-live="polite"></p>
     </section>
+    <section class="panel" id="pending-table" aria-label="Pending payment review"></section>
     <section id="request-list" aria-label="Learner payment requests"></section>
     <section class="panel">
       <h2>Important</h2>
@@ -92,11 +96,12 @@
         const button = $("#send-code");
         button.disabled = true;
         try {
-          const { error } = await client.auth.signInWithOtp({ email, options: { shouldCreateUser: true } });
+          const { error } = await client.auth.signInWithOtp({
+            email,
+            options: { shouldCreateUser: true, emailRedirectTo: "https://applynowadmin-ship-it.github.io/ApplyNow/admin.html" }
+          });
           if (error) throw error;
-          $("#code-panel").hidden = false;
-          setStatus("One-time code sent. Enter it here to continue.");
-          $("#admin-code").focus();
+          setStatus(`✅ Link sent to ${email} — click the BLUE 'Sign in' link in your email. This page will unlock automatically.`);
         } catch (error) {
           console.error("ApplyHub admin could not request a sign-in code:", error);
           setStatus(`Could not send a sign-in code: ${error.message}`, true);
@@ -141,8 +146,8 @@
         const note = status === "approved"
           ? "Payment manually verified in Capitec by ApplyHub admin."
           : "Request rejected. Contact applynow.admin@gmail.com if you need help.";
-        const buttonSet = $("#request-list");
-        buttonSet.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+        const buttonSet = document.querySelectorAll("#request-list button, #pending-table button");
+        buttonSet.forEach((button) => { button.disabled = true; });
         try {
           const { data: { user }, error: userError } = await client.auth.getUser();
           if (userError) throw userError;
@@ -150,16 +155,30 @@
             .from("application_requests")
             .update({
               status,
+              is_paid: status === "approved",
               reviewed_at: new Date().toISOString(),
               reviewed_by: user.id,
               review_note: note
             })
             .eq("id", request.id)
-            .eq("status", "pending")
+            .in("status", ["pending", "pending_payment_review"])
             .select("id");
           if (error) throw error;
           if (!data.length) throw new Error("This request was already reviewed or is no longer pending.");
-          setStatus(`${request.package_type} request updated to ${status}. The learner can see this on any device after signing in.`);
+          let emailNote = "";
+          if (status === "approved") {
+            const { data: emailResult, error: emailError } = await client.functions.invoke("send-course-guide", {
+              body: { requestId: request.id }
+            });
+            if (emailError || emailResult?.error) {
+              console.error("ApplyHub admin could not send the course guide email:", emailError || emailResult);
+              emailNote = ` Course guide email NOT sent: ${emailResult?.error || emailError.message}`;
+              alert(`Approved, but${emailNote.replace(" Course", " course")}`);
+            } else {
+              emailNote = " Course guide email sent.";
+            }
+          }
+          setStatus(`${request.package_type} request updated to ${status}.${emailNote}`, Boolean(emailNote && emailNote.includes("NOT")));
           try {
             await loadRequests();
           } catch (refreshError) {
@@ -177,32 +196,14 @@
         }
       }
 
-      async function approveClient(request) {
-        const { error } = await client
-          .from("application_requests")
-          .update({ application_status: "approved", result_unlocked: true, payment_status: "paid" })
-          .eq("id", request.id);
-        if (error) {
-          console.error("ApplyHub admin could not approve a client:", error);
-          alert(`Could not approve: ${error.message}`);
-          return;
-        }
-        alert("Client Approved - Can now see results");
-        try {
-          await loadRequests();
-        } catch (refreshError) {
-          setStatus(`Approved, but the list could not refresh: ${refreshError.message}`, true);
-        }
-      }
-
       async function renderRequest(request) {
         const card = document.createElement("article");
         card.className = "request";
         const title = document.createElement("h2");
-        title.textContent = `${request.package_type} — ${request.status.toUpperCase()}`;
+        title.textContent = `${request.package_type} — ${request.status.replace(/_/g, " ").toUpperCase()}`;
         const tag = document.createElement("span");
         tag.className = "tag";
-        tag.textContent = request.status === "pending" ? "CHECK CAPITEC" : "REVIEWED";
+        tag.textContent = isPendingReview(request) ? "CHECK CAPITEC" : "REVIEWED";
         title.append(tag);
         card.append(title);
         appendDetail(card, "Submitted", new Date(request.created_at).toLocaleString());
@@ -248,31 +249,63 @@
         if (request.package_type === "R100") {
           appendDetail(card, "Application assistance", "Manual processing only. No university or NSFAS application is filed automatically.");
         }
-        if (request.status === "pending") {
+        if (isPendingReview(request)) {
           const actions = document.createElement("div");
           actions.className = "request-actions";
+          const approve = document.createElement("button");
+          approve.textContent = "Approve";
+          approve.addEventListener("click", () => reviewRequest(request, "approved"));
           const reject = document.createElement("button");
           reject.className = "danger";
           reject.textContent = "Reject request";
           reject.addEventListener("click", () => reviewRequest(request, "rejected"));
-          actions.append(reject);
+          actions.append(approve, reject);
           card.append(actions);
         }
-        const approveBox = document.createElement("div");
-        approveBox.className = "request-actions";
-        if (request.application_status === "approved") {
-          const done = document.createElement("strong");
-          done.style.color = "green";
-          done.textContent = "ALREADY APPROVED";
-          approveBox.append(done);
-        } else {
-          const approve = document.createElement("button");
-          approve.textContent = "APPROVE";
-          approve.addEventListener("click", () => approveClient(request));
-          approveBox.append(approve);
-        }
-        card.append(approveBox);
         return card;
+      }
+
+      function isPendingReview(request) {
+        return request.status === "pending_payment_review" || request.status === "pending";
+      }
+
+      function renderPendingTable(requests) {
+        const container = $("#pending-table");
+        container.replaceChildren();
+        const heading = document.createElement("h2");
+        heading.textContent = `Pending payment review (${requests.length})`;
+        container.append(heading);
+        if (!requests.length) {
+          const empty = document.createElement("p");
+          empty.className = "hint";
+          empty.textContent = "No requests are waiting for payment review.";
+          container.append(empty);
+          return;
+        }
+        const table = document.createElement("table");
+        const head = table.createTHead().insertRow();
+        ["Submitted", "Name", "Email", "Package", "Status", "Paid", ""].forEach((label) => {
+          const th = document.createElement("th");
+          th.textContent = label;
+          head.append(th);
+        });
+        const body = table.createTBody();
+        requests.forEach((request) => {
+          const row = body.insertRow();
+          [
+            new Date(request.created_at).toLocaleString(),
+            request.learner_full_name,
+            request.learner_email,
+            request.package_type,
+            request.status,
+            request.is_paid ? "Yes" : "No"
+          ].forEach((value) => { row.insertCell().textContent = value; });
+          const approve = document.createElement("button");
+          approve.textContent = "Approve";
+          approve.addEventListener("click", () => reviewRequest(request, "approved"));
+          row.insertCell().append(approve);
+        });
+        container.append(table);
       }
 
       async function loadRequests() {
@@ -286,11 +319,12 @@
         if (!admin) throw new Error("This email is not authorized as an ApplyHub admin.");
         const { data, error } = await client
           .from("application_requests")
-          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,review_note,application_status")
+          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,          review_note,is_paid")
           .order("created_at", { ascending: false });
         if (error) throw error;
 
-        const list = $("#request-list");
+                  renderPendingTable(data.filter(isPendingReview));
+                  const list = $("#request-list");
         list.replaceChildren();
         for (const request of data) list.append(await renderRequest(request));
         $("#code-panel").hidden = true;
@@ -328,6 +362,14 @@
           try {
             if (!window.supabase?.createClient) throw new Error("Supabase client library did not initialize.");
             client = window.supabase.createClient(config.url, config.anonKey);
+            client.auth.onAuthStateChange((event, session) => {
+              if (event === "SIGNED_IN" && session) {
+                setTimeout(() => loadRequests().catch((requestError) => {
+                  console.error("ApplyHub admin could not load requests:", requestError);
+                  setStatus(`Could not load requests: ${requestError.message}`, true);
+                }), 0);
+              }
+            });
             restoreAdminSession();
           } catch (error) {
             console.error("ApplyHub admin could not initialize Supabase:", error);
