@@ -9,10 +9,10 @@ revoke all on public.applynow_admin_emails from anon, authenticated;
 
 -- Replace only the admin authorization list. This does not delete auth users or learner data.
 delete from public.applynow_admin_emails
-where lower(email) <> 'applynowteam@gmail.com';
+where lower(email) <> 'applynow.admin@gmail.com';
 
 insert into public.applynow_admin_emails (email)
-values ('applynowteam@gmail.com')
+values ('applynow.admin@gmail.com')
 on conflict (email) do update set email = excluded.email;
 
 create or replace function public.is_applynow_admin()

@@ -1,16 +1,16 @@
 # ApplyNow Supabase setup
 
-The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The database tables and private `payment-proofs` bucket exist. Do not claim the service is live until an end-to-end request has been tested. The only authorized admin is `applynowteam@gmail.com`.
+The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The database tables and private `payment-proofs` bucket exist. Do not claim the service is live until an end-to-end request has been tested. The only authorized admin is `applynow.admin@gmail.com`.
 
 ## 1. Keep the public anon key configured
 
 No key change is needed in `supabase-config.js`. The browser anon key is public by design. Never put a service-role or secret key in this file.
 
-Both `index.html` and `admin.html` load `supabase-config.js` before their application scripts. The admin screen permits OTP sign-in only for `applynowteam@gmail.com`; database policies independently enforce that restriction.
+Both `index.html` and `admin.html` load `supabase-config.js` before their application scripts. The admin screen permits OTP sign-in only for `applynow.admin@gmail.com`; database policies independently enforce that restriction.
 
 ## 2. Create the database and private proof storage
 
-Open the Supabase **SQL Editor** and run `supabase/schema.sql`. It creates the request table, row-level security policies, private proof bucket, and replaces the admin authorization list with only `applynowteam@gmail.com`. It does not delete auth users, test users, student records, requests, or uploaded proofs.
+Open the Supabase **SQL Editor** and run `supabase/schema.sql`. It creates the request table, row-level security policies, private proof bucket, and replaces the admin authorization list with only `applynow.admin@gmail.com`. It does not delete auth users, test users, student records, requests, or uploaded proofs.
 
 ## 3. Enable email OTP login
 

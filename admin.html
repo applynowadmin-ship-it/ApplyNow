@@ -59,9 +59,9 @@
   <main>
     <section class="panel" aria-labelledby="admin-login-title">
       <h2 id="admin-login-title">Admin email OTP verification</h2>
-      <p class="hint">Only applynowteam@gmail.com is authorized by the database policy. No admin password or sign-in link is used.</p>
+      <p class="hint">Only applynow.admin@gmail.com is authorized by the database policy. No admin password or sign-in link is used.</p>
       <label class="field" for="admin-email">Admin email
-        <input id="admin-email" type="email" autocomplete="email" value="applynowteam@gmail.com" readonly>
+        <input id="admin-email" type="email" autocomplete="email" value="applynow.admin@gmail.com" readonly>
       </label>
       <button id="send-code" type="button">Send OTP</button>
       <div id="code-panel" hidden>
@@ -80,7 +80,7 @@
       <h2>Important</h2>
       <p>Requests appear here from every device. Approval changes the learner's shared status; approved R25 results appear in that learner's account. R100 approval authorizes manual application assistance only—no institution or NSFAS application is submitted automatically.</p>
       <p>Approval updates the learner's private account. It does not submit applications automatically.</p>
-      <p>For data correction or deletion requests, contact <a href="mailto:applynowteam@gmail.com">applynowteam@gmail.com</a>.</p>
+      <p>For data correction or deletion requests, contact <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
     </section>
   </main>
   <script src="supabase-config.js"></script>
@@ -88,7 +88,7 @@
     (() => {
       "use strict";
       const $ = (selector) => document.querySelector(selector);
-      const ADMIN_EMAIL = "applynowteam@gmail.com";
+      const ADMIN_EMAIL = "applynow.admin@gmail.com";
       const config = window.APPLYNOW_SUPABASE_CONFIG;
       const hasSupabaseConfig =
         config?.url === "https://uwjiqiweoquwkdxpvjts.supabase.co" &&
@@ -177,7 +177,7 @@
             !window.confirm("Only approve after checking that the exact amount reached Capitec account 2615455962. Continue?")) return;
         const note = status === "approved"
           ? "Payment manually verified in Capitec by ApplyHub admin."
-          : "Request rejected. Contact applynowteam@gmail.com if you need help.";
+          : "Request rejected. Contact applynow.admin@gmail.com if you need help.";
         const buttonSet = document.querySelectorAll("#request-list button, #pending-table button");
         buttonSet.forEach((button) => { button.disabled = true; });
         try {

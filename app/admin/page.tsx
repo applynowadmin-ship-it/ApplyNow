@@ -11,7 +11,7 @@ type Client = {
   application_status?: string;
 };
 
-const ADMIN_EMAIL = "applynowteam@gmail.com";
+const ADMIN_EMAIL = "applynow.admin@gmail.com";
 
 export default function AdminPage() {
   const [clients, setClients] = useState<Client[]>([]);
