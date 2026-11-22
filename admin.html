@@ -24,45 +24,63 @@
     a { color: #1746d1; }
     .status { min-height: 1.3em; color: #59667d; overflow-wrap: anywhere; }
     .request p { margin: 6px 0; overflow-wrap: anywhere; }
-    .request-actions { margin-top: 10px; }
+    .student-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+    .student-summary div { padding: 12px; border-radius: 10px; background: #f4f7ff; }
+    .student-summary .wide { grid-column: 1 / -1; }
+    .student-summary span { display: block; color: #59667d; font-size: .72rem; font-weight: 700; text-transform: uppercase; }
+    .student-summary strong { display: block; margin-top: 2px; font-size: 1rem; overflow-wrap: anywhere; }
+    .student-summary .aps-value { color: #1746d1; font-size: 1.8rem; line-height: 1; }
+    .request-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+    .request-actions button { min-height: 58px; margin: 0; font-size: 1.05rem; }
+    .proof-link { display: flex; min-height: 52px; align-items: center; justify-content: center; margin-top: 10px; padding: 10px 14px; border: 1px solid #b9c9ee; border-radius: 10px; background: #edf2ff; font-weight: 700; text-align: center; }
+    .decision-success { margin-top: 14px; padding: 12px 14px; border-radius: 10px; color: #145b38; background: #e8f7ee; font-weight: 800; }
     .tag { display: inline-block; margin-left: 6px; padding: 2px 8px; border-radius: 999px; color: #1238a8; background: #edf2ff; font-size: .78rem; font-weight: 700; }
     [hidden] { display: none !important; }
     table { width: 100%; border-collapse: collapse; font-size: .85rem; }
     th, td { padding: 6px 8px; border-bottom: 1px solid #e1e7f1; text-align: left; overflow-wrap: anywhere; }
     #pending-table { overflow-x: auto; }
-    @media (max-width: 520px) { button, .button { width: 100%; margin-right: 0; } }
+    @media (max-width: 520px) {
+      body { padding: 16px 10px 36px; }
+      h1 { font-size: 1.65rem; }
+      button, .button { width: 100%; min-height: 54px; margin-right: 0; }
+      .panel, .request { padding: 15px; }
+      .request-actions { grid-template-columns: 1fr; }
+      .student-summary { grid-template-columns: 1fr; }
+      .student-summary .wide { grid-column: auto; }
+      table { min-width: 720px; }
+    }
   </style>
 </head>
 <body>
   <header>
     <h1>ApplyHub SA — Admin requests</h1>
-    <p class="hint">Sign in with the authorized ApplyHub email. Check each transfer in Capitec account 2615455962 before approving. A receipt image alone is not proof of payment.</p>
+    <p class="hint">Verify the authorized ApplyHub email with an OTP. Check each transfer in Capitec account 2615455962 before approving. A receipt image alone is not proof of payment.</p>
   </header>
   <main>
     <section class="panel" aria-labelledby="admin-login-title">
-      <h2 id="admin-login-title">Admin email-code sign-in</h2>
-      <p class="hint">Only applynow.admin@gmail.com is authorized by the database policy. No admin password is stored in this site.</p>
+      <h2 id="admin-login-title">Admin email OTP verification</h2>
+      <p class="hint">Only applynowteam@gmail.com is authorized by the database policy. No admin password or sign-in link is used.</p>
       <label class="field" for="admin-email">Admin email
-        <input id="admin-email" type="email" autocomplete="email" value="applynow.admin@gmail.com" readonly>
+        <input id="admin-email" type="email" autocomplete="email" value="applynowteam@gmail.com" readonly>
       </label>
-      <button id="send-code" type="button">Send Link</button>
+      <button id="send-code" type="button">Send OTP</button>
       <div id="code-panel" hidden>
-        <label class="field" for="admin-code">Code from email
+        <label class="field" for="admin-code">OTP from email
           <input id="admin-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
         </label>
-        <button id="verify-code" type="button">Verify and open requests</button>
+        <button id="verify-code" type="button">Verify OTP and open requests</button>
       </div>
       <button class="secondary" id="refresh-requests" type="button" hidden>Refresh requests</button>
       <button class="secondary" id="sign-out" type="button" hidden>Sign out</button>
       <p class="status" id="admin-status" role="status" aria-live="polite"></p>
     </section>
-    <section class="panel" id="pending-table" aria-label="Pending payment review"></section>
-    <section id="request-list" aria-label="Learner payment requests"></section>
+    <section class="panel" id="pending-table" aria-label="Pending payment review" hidden></section>
+    <section id="request-list" aria-label="Learner payment requests" hidden></section>
     <section class="panel">
       <h2>Important</h2>
-      <p>Requests appear here from every device. Approval changes the learner's shared status; approved R25 results appear in that learner's account. R100 approval authorizes manual application assistance only—no university or NSFAS application is submitted automatically.</p>
+      <p>Requests appear here from every device. Approval changes the learner's shared status; approved R25 results appear in that learner's account. R100 approval authorizes manual application assistance only—no institution or NSFAS application is submitted automatically.</p>
       <p>Approval updates the learner's private account. It does not submit applications automatically.</p>
-      <p>For data correction or deletion requests, contact <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
+      <p>For data correction or deletion requests, contact <a href="mailto:applynowteam@gmail.com">applynowteam@gmail.com</a>.</p>
     </section>
   </main>
   <script src="supabase-config.js"></script>
@@ -70,6 +88,7 @@
     (() => {
       "use strict";
       const $ = (selector) => document.querySelector(selector);
+      const ADMIN_EMAIL = "applynowteam@gmail.com";
       const config = window.APPLYNOW_SUPABASE_CONFIG;
       const hasSupabaseConfig =
         config?.url === "https://uwjiqiweoquwkdxpvjts.supabase.co" &&
@@ -83,50 +102,63 @@
         status.style.color = isError ? "#a93636" : "#59667d";
       }
 
-      async function sendCode() {
+      async function sendOtp() {
         if (!client) {
-          setStatus("Email-code login requires the complete Supabase anon key in supabase-config.js.", true);
+          setStatus("Email OTP access requires the complete Supabase anon key in supabase-config.js.", true);
           return;
         }
         const email = $("#admin-email").value.trim().toLowerCase();
-        if (email !== "applynow.admin@gmail.com") {
-                  setStatus("Admin sign-in is restricted to applynow.admin@gmail.com.", true);
+        if (email !== ADMIN_EMAIL) {
+          setStatus(`Admin access is restricted to ${ADMIN_EMAIL}.`, true);
           return;
         }
         const button = $("#send-code");
         button.disabled = true;
+        setStatus("Requesting an email OTP…");
         try {
           const { error } = await client.auth.signInWithOtp({
             email,
-            options: { shouldCreateUser: true, emailRedirectTo: "https://applynowadmin-ship-it.github.io/ApplyNow/admin.html" }
+            options: { shouldCreateUser: true }
           });
           if (error) throw error;
-          setStatus(`✅ Link sent to ${email} — click the BLUE 'Sign in' link in your email. This page will unlock automatically.`);
+          $("#code-panel").hidden = false;
+          $("#admin-code").value = "";
+          $("#admin-code").focus();
+          setStatus(`An OTP was sent to ${email}. Enter the numeric code here; do not use an email link.`);
         } catch (error) {
-          console.error("ApplyHub admin could not request a sign-in code:", error);
-          setStatus(`Could not send a sign-in code: ${error.message}`, true);
+          console.error("ApplyHub admin could not request an OTP:", error);
+          setStatus(`Could not send an OTP: ${error.message}`, true);
         } finally {
           button.disabled = false;
         }
       }
 
-      async function verifyCode() {
-        if (!client) return;
+      async function verifyAdminOtp() {
+        if (!client) {
+          setStatus("Email OTP access is not ready. Check the Supabase configuration and try again.", true);
+          return;
+        }
         const email = $("#admin-email").value.trim().toLowerCase();
         const token = $("#admin-code").value.trim();
         if (!email || !token) {
-          setStatus("Enter the admin email and one-time code.", true);
+          setStatus("Enter the OTP sent to the admin email address.", true);
           return;
         }
         const button = $("#verify-code");
         button.disabled = true;
+        setStatus("Verifying OTP…");
         try {
-          const { error } = await client.auth.verifyOtp({ email, token, type: "email" });
+          const { data, error } = await client.auth.verifyOtp({
+            email,
+            token,
+            type: "email"
+          });
           if (error) throw error;
+          if (!data.session) throw new Error("OTP verification did not create an admin session.");
           await loadRequests();
         } catch (error) {
-          console.error("ApplyHub admin sign-in failed:", error);
-          setStatus(`Could not verify the admin code or load requests: ${error.message}`, true);
+          console.error("ApplyHub admin OTP verification failed:", error);
+          setStatus(`Could not verify the OTP or load requests: ${error.message}`, true);
         } finally {
           button.disabled = false;
         }
@@ -145,7 +177,7 @@
             !window.confirm("Only approve after checking that the exact amount reached Capitec account 2615455962. Continue?")) return;
         const note = status === "approved"
           ? "Payment manually verified in Capitec by ApplyHub admin."
-          : "Request rejected. Contact applynow.admin@gmail.com if you need help.";
+          : "Request rejected. Contact applynowteam@gmail.com if you need help.";
         const buttonSet = document.querySelectorAll("#request-list button, #pending-table button");
         buttonSet.forEach((button) => { button.disabled = true; });
         try {
@@ -178,9 +210,11 @@
               emailNote = " Course guide email sent.";
             }
           }
-          setStatus(`${request.package_type} request updated to ${status}.${emailNote}`, Boolean(emailNote && emailNote.includes("NOT")));
+          const approvedMessage = status === "approved" ? "Approved and unlocked" : "Request rejected";
+          setStatus(`${approvedMessage}.${emailNote}`, Boolean(emailNote && emailNote.includes("NOT")));
           try {
             await loadRequests();
+            if (status === "approved") setStatus(`Approved and unlocked.${emailNote}`);
           } catch (refreshError) {
             console.error("ApplyHub saved the review decision but could not refresh the list:", refreshError);
             setStatus(`Decision saved as ${status}, but the list could not refresh: ${refreshError.message}`, true);
@@ -206,12 +240,29 @@
         tag.textContent = isPendingReview(request) ? "CHECK CAPITEC" : "REVIEWED";
         title.append(tag);
         card.append(title);
+        const learner = request.learner_data || {};
+        const summary = document.createElement("div");
+        summary.className = "student-summary";
+        [
+          ["Student name", request.learner_full_name, "wide", ""],
+          ["Email", request.learner_email, "wide", ""],
+          ["School", learner.schoolName, "wide", ""],
+          ["APS points", String(request.aps ?? 0), "", "aps-value"]
+        ].forEach(([label, value, layoutClass, valueClass]) => {
+          const detail = document.createElement("div");
+          if (layoutClass) detail.className = layoutClass;
+          const labelElement = document.createElement("span");
+          labelElement.textContent = label;
+          const valueElement = document.createElement("strong");
+          if (valueClass) valueElement.className = valueClass;
+          valueElement.textContent = value || "Not provided";
+          detail.append(labelElement, valueElement);
+          summary.append(detail);
+        });
+        card.append(summary);
         appendDetail(card, "Submitted", new Date(request.created_at).toLocaleString());
-        appendDetail(card, "Full name", request.learner_full_name);
-        appendDetail(card, "Email", request.learner_email);
         appendDetail(card, "Phone", request.learner_phone);
         appendDetail(card, "South African ID", request.learner_id_number);
-        const learner = request.learner_data || {};
         appendDetail(card, "Date of birth", learner.dateOfBirth);
         appendDetail(card, "Gender", learner.gender);
         appendDetail(card, "Alternative phone", learner.alternativePhone);
@@ -224,7 +275,7 @@
         appendDetail(card, "Amount", `R${request.amount} — reference: ${request.payment_reference}`);
         appendDetail(card, "Course", request.course_requested);
         appendDetail(card, "Other dream courses", Array.isArray(learner.dreamCourses) ? learner.dreamCourses.join("; ") : "");
-        appendDetail(card, "Universities", request.selected_universities.join("; "));
+        appendDetail(card, "Institutions", request.selected_universities.join("; "));
         appendDetail(card, "NSFAS requested", request.nsfas_needed ? "Yes" : "No");
         if (request.nsfas_checklist) appendDetail(card, "NSFAS checklist", request.nsfas_checklist);
         appendDetail(card, "APS", String(request.aps));
@@ -242,7 +293,8 @@
           proofLink.href = proof.signedUrl;
           proofLink.target = "_blank";
           proofLink.rel = "noopener noreferrer";
-          proofLink.textContent = "Open private payment proof (link expires in 10 minutes)";
+          proofLink.className = "proof-link";
+          proofLink.textContent = "Open payment proof (expires in 10 minutes)";
           card.append(proofLink);
         }
 
@@ -253,11 +305,11 @@
           const actions = document.createElement("div");
           actions.className = "request-actions";
           const approve = document.createElement("button");
-          approve.textContent = "Approve";
+          approve.textContent = "✓ APPROVE AND UNLOCK";
           approve.addEventListener("click", () => reviewRequest(request, "approved"));
           const reject = document.createElement("button");
           reject.className = "danger";
-          reject.textContent = "Reject request";
+          reject.textContent = "✕ REJECT";
           reject.addEventListener("click", () => reviewRequest(request, "rejected"));
           actions.append(approve, reject);
           card.append(actions);
@@ -301,7 +353,7 @@
             request.is_paid ? "Yes" : "No"
           ].forEach((value) => { row.insertCell().textContent = value; });
           const approve = document.createElement("button");
-          approve.textContent = "Approve";
+          approve.textContent = "Approve and unlock";
           approve.addEventListener("click", () => reviewRequest(request, "approved"));
           row.insertCell().append(approve);
         });
@@ -316,7 +368,18 @@
         setStatus("Loading shared payment requests…");
         const { data: admin, error: adminError } = await client.rpc("is_applynow_admin");
         if (adminError) throw adminError;
-        if (!admin) throw new Error("This email is not authorized as an ApplyHub admin.");
+        if (!admin) {
+          $("#request-list").replaceChildren();
+          $("#pending-table").replaceChildren();
+          $("#request-list").hidden = true;
+          $("#pending-table").hidden = true;
+          $("#refresh-requests").hidden = true;
+          $("#sign-out").hidden = true;
+          $("#send-code").hidden = false;
+          throw new Error(`Only ${ADMIN_EMAIL} can access the admin dashboard.`);
+        }
+        $("#request-list").hidden = false;
+        $("#pending-table").hidden = false;
         const { data, error } = await client
           .from("application_requests")
           .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,          review_note,is_paid")
@@ -338,7 +401,13 @@
         client.auth.getSession().then(({ data: { session }, error }) => {
           if (error) throw error;
           if (session) {
-            $("#admin-email").value = session.user.email || "applynow.admin@gmail.com";
+            $("#admin-email").value = ADMIN_EMAIL;
+            if (session.user.email?.toLowerCase() !== ADMIN_EMAIL) {
+              $("#request-list").hidden = true;
+              $("#pending-table").hidden = true;
+              setStatus(`Only ${ADMIN_EMAIL} can access the admin dashboard.`, true);
+              return;
+            }
             loadRequests().catch((requestError) => {
               console.error("ApplyHub admin could not load requests:", requestError);
               setStatus(`Could not load requests: ${requestError.message}`, true);
@@ -382,10 +451,10 @@
         document.head.append(script);
       }
 
-      $("#send-code").addEventListener("click", sendCode);
-      $("#verify-code").addEventListener("click", verifyCode);
+      $("#send-code").addEventListener("click", sendOtp);
+      $("#verify-code").addEventListener("click", verifyAdminOtp);
       $("#admin-code").addEventListener("keydown", (event) => {
-        if (event.key === "Enter") verifyCode();
+        if (event.key === "Enter") verifyAdminOtp();
       });
       $("#refresh-requests").addEventListener("click", () => {
         loadRequests().catch((error) => {
@@ -398,6 +467,9 @@
           const { error } = await client.auth.signOut();
           if (error) throw error;
           $("#request-list").replaceChildren();
+          $("#pending-table").replaceChildren();
+          $("#code-panel").hidden = true;
+          $("#admin-code").value = "";
           $("#refresh-requests").hidden = true;
           $("#sign-out").hidden = true;
           $("#send-code").hidden = false;

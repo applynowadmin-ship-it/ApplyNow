@@ -7,9 +7,13 @@ create table if not exists public.applynow_admin_emails (
 alter table public.applynow_admin_emails enable row level security;
 revoke all on public.applynow_admin_emails from anon, authenticated;
 
+-- Replace only the admin authorization list. This does not delete auth users or learner data.
+delete from public.applynow_admin_emails
+where lower(email) <> 'applynowteam@gmail.com';
+
 insert into public.applynow_admin_emails (email)
-values ('applynow.admin@gmail.com')
-on conflict (email) do nothing;
+values ('applynowteam@gmail.com')
+on conflict (email) do update set email = excluded.email;
 
 create or replace function public.is_applynow_admin()
 returns boolean

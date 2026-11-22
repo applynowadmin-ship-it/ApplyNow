@@ -161,10 +161,10 @@
       .subject-row .remove-subject { grid-column: auto; align-self: center; justify-self: center; }
     }
     .aps-box {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+      gap: 6px 12px;
       margin: 0 0 16px;
       padding: 14px 16px;
       border: 1px solid #dbe5ff;
@@ -172,7 +172,10 @@
       background: #f2f6ff;
     }
     .aps-box strong { color: #263c77; }
-    .aps-number { color: var(--blue); font-size: 1.8rem; font-weight: 900; }
+    .aps-number { grid-row: 1 / span 2; grid-column: 2; color: var(--blue); font-size: 2.4rem; font-weight: 900; }
+    .total-score { color: var(--muted); font-size: .85rem; }
+    .total-score strong { font-size: 1rem; }
+    .subject-warning { grid-column: 1 / -1; margin: 0 0 2px; color: var(--red); font-size: .78rem; font-weight: 700; }
     .hint { color: var(--muted); font-size: .79rem; }
     .status { min-height: 1.2em; margin: 8px 0 0; color: var(--red); font-size: .82rem; }
     .verify-banner { margin: 0 0 14px; padding: 12px 14px; border-radius: 9px; color: #fff; background: #c62828; font-weight: 800; }
@@ -269,21 +272,23 @@
   </header>
 
   <main>
-    <div class="verify-banner" id="verify-banner" role="alert">❌ Please verify your email at top first to continue</div>
+    <div class="verify-banner" id="verify-banner" role="alert" hidden>❌ Please verify your email at top first to continue</div>
     <section class="panel account-panel" id="learner-account" aria-labelledby="learner-account-title">
       <h2 id="learner-account-title">Verify your email to start</h2>
-      <p class="intro">Enter your email address and tap "Send Link". We will email you a sign-in link. The application form unlocks only after your email is verified.</p>
+      <p class="intro">Enter your email address and request a one-time password (OTP). Enter the OTP from your email to unlock the application form.</p>
       <div class="field">
         <label for="account-email">Email address</label>
         <input id="account-email" type="email" autocomplete="email" maxlength="150">
       </div>
       <div class="actions">
-        <button class="button" id="send-account-code" type="button">Send Link</button>
+        <button class="button" id="send-account-code" type="button">Send OTP</button>
         <button class="button secondary" id="sign-out-account" type="button" hidden>Sign out</button>
       </div>
       <div class="field" id="account-code-wrap" hidden>
-        <p class="hint">Waiting for you to click link in email...</p>
-        <button class="button secondary full" id="resend-account-link" type="button">Resend link</button>
+        <label for="account-code">One-time password (OTP) from email</label>
+        <input id="account-code" inputmode="numeric" autocomplete="one-time-code" maxlength="8">
+        <button class="button full" id="verify-account-code" type="button">Verify OTP</button>
+        <button class="button secondary full" id="resend-account-code" type="button">Resend OTP</button>
       </div>
       <p class="status" id="account-status" role="status" aria-live="polite"></p>
       <div id="learner-requests" aria-live="polite"></div>
@@ -374,7 +379,7 @@
         </label>
         <label class="institution-option">
           <input id="package-r100" type="radio" name="service-package" value="100">
-          <span><strong>R100 — Full Application Including NSFAS</strong><br>University application assistance and NSFAS help after Capitec payment is manually verified.</span>
+          <span><strong>R100 — Full Application Including NSFAS</strong><br>Institution application assistance and NSFAS help after Capitec payment is manually verified.</span>
         </label>
       </fieldset>
       <p class="hint">Your package choice is kept only while this page is open. Sign in with your email code to submit and check requests across devices.</p>
@@ -413,10 +418,11 @@
 
     <section class="panel step" id="step2" aria-labelledby="step2-title" hidden>
       <h1 id="step2-title">Enter your marks</h1>
-      <p class="intro">Enter marks from 0 to 100 for at least seven subjects. Life Orientation is excluded from your best six subjects for APS.</p>
+      <p class="intro">Select each subject and enter its mark from 0 to 100. Life Orientation is always excluded from both scores.</p>
       <div class="aps-box" aria-live="polite">
-        <strong>Your estimated APS <span class="hint">(best 6, excluding Life Orientation)</span></strong>
+        <strong>APS Score <span class="hint">(6 best subjects, excluding Life Orientation)</span></strong>
         <span class="aps-number" id="aps-show">0</span>
+        <span class="total-score">Total Score (all subjects excluding Life Orientation): <strong id="total-score-show">0</strong></span>
       </div>
       <div id="subjects-box"></div>
       <button class="button soft" id="add-subject" type="button">+ Add Subject</button>
@@ -470,7 +476,7 @@
       </section>
       <section class="consent-box payment-box" id="r100-package-prompt" hidden aria-labelledby="r100-package-prompt-title">
         <h2 id="r100-package-prompt-title">R100 — Full Application Including NSFAS</h2>
-        <p>Continue to select a university and submit your R100 Capitec payment proof. Payment must be manually checked before application work begins.</p>
+        <p>Continue to select institutions and submit your R100 Capitec payment proof. Payment must be manually checked before application work begins.</p>
         <button class="button full" id="continue-r100-package" type="button">Continue with R100 University + NSFAS</button>
       </section>
       <p class="aps-disclaimer" id="r25-pending-message" role="status" aria-live="polite" hidden></p>
@@ -496,7 +502,7 @@
       <p class="hint">Official-source status confirms the course name appears in a linked source; it does not confirm APS, admission or current availability.</p>
       <div class="results-heading">
         <h2>A) Your 3 dream courses</h2>
-        <p class="section-subtitle">Each match is checked against the preliminary APS and subject rules shown below.</p>
+        <p class="section-subtitle">Matches are compared with preliminary rules where available; some require checking the official prospectus.</p>
       </div>
       <div class="dream-results" id="dream-results"></div>
       <div class="results-heading">
@@ -532,13 +538,18 @@
         <h2 id="package-title">R100 — Full Application Including NSFAS</h2>
         <p>Transfer R100 to Capitec account <strong>2615455962</strong>, branch code <strong>470010</strong>. Use your full name as the payment reference.</p>
         <button class="button secondary" id="copy-capitec-r100" type="button">Copy Capitec account number</button>
-        <p class="hint">This package includes university application assistance and NSFAS help. Uploading a receipt sends a request; payment must be manually verified before work starts.</p>
+        <p class="hint">This package includes institution application assistance and NSFAS help. Uploading a receipt sends a request; payment must be manually verified before work starts.</p>
         <fieldset class="institution-picker">
-          <legend>University to apply to (select all that apply)</legend>
+          <legend>Public university to apply to (select all that apply)</legend>
           <div class="institution-options" id="university-options"></div>
         </fieldset>
+        <fieldset class="institution-picker">
+          <legend>Private institution to apply to (select all that apply)</legend>
+          <div class="institution-options" id="private-institution-options"></div>
+        </fieldset>
+        <p class="hint">Private institutions may charge tuition and application fees. Do not assume NSFAS funds private institutions; confirm funding directly with NSFAS and the institution.</p>
         <div class="field">
-          <label for="other-university">Other university (optional)</label>
+          <label for="other-university">Other institution (optional)</label>
           <input id="other-university" maxlength="120" placeholder="Enter another institution">
         </div>
         <p class="hint">Your learner details and NSFAS checklist are saved with this request in your private account.</p>
@@ -546,7 +557,7 @@
         <input id="proof-application" type="file" accept="image/jpeg,image/png,application/pdf">
         <label class="consent-check" for="package-consent">
           <input id="package-consent" type="checkbox">
-          <span>I consent to storing my learner details, selected university, NSFAS checklist and receipt in my private Supabase account. If I am under 18, my parent/guardian has agreed.</span>
+          <span>I consent to storing my learner details, selected institutions, NSFAS checklist and receipt in my private Supabase account. If I am under 18, my parent/guardian has agreed.</span>
         </label>
         <button class="button full" id="submit-application-proof" type="button">Submit R100 Proof for Verification</button>
         <p class="status" id="application-payment-status" role="status" aria-live="polite"></p>
@@ -563,7 +574,7 @@
 
   <footer class="privacy-footer" aria-labelledby="popia-title">
     <h2 id="popia-title">POPIA Privacy Notice</h2>
-    <p>We collect learner details and proof only to process the service you request. Supabase is the intended private store for your account, request and payment proof; submissions are accepted only when the Supabase connection and required database setup are working. We do not publish or sell your information. We share details with a university only when needed to prepare an application and with your permission. Ask ApplyHub SA to correct or delete its copy at <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
+    <p>We collect learner details and proof only to process the service you request. Supabase is the intended private store for your account, request and payment proof; submissions are accepted only when the Supabase connection and required database setup are working. We do not publish or sell your information. We share details with an institution only when needed to prepare an application and with your permission. Ask ApplyHub SA to correct or delete its copy at <a href="mailto:applynow.admin@gmail.com">applynow.admin@gmail.com</a>.</p>
   </footer>
 
   <script src="supabase-config.js"></script>
@@ -572,6 +583,7 @@
     "use strict";
     const APPLICATION_WHATSAPP = "27798375864";
     const APPLICATION_EMAIL = "applynow.admin@gmail.com";
+    const ADMIN_EMAIL = "applynowteam@gmail.com";
     const supabaseConfig = window.APPLYNOW_SUPABASE_CONFIG;
     const hasSupabaseConfig =
       supabaseConfig?.url === "https://uwjiqiweoquwkdxpvjts.supabase.co" &&
@@ -592,6 +604,11 @@
       "University of Venda (UNIVEN)", "University of Zululand (UniZulu)",
       "Vaal University of Technology (VUT)", "Walter Sisulu University (WSU)",
       "Tshwane University of Technology (TUT)"
+    ];
+    const PRIVATE_INSTITUTIONS = [
+      "Emeris (formerly Varsity College, MSA and Vega)",
+      "Rosebank International (formerly Rosebank College)",
+      "STADIO Higher Education"
     ];
     const PUBLIC_TVET_COLLEGES = [
       "Buffalo City TVET College", "Eastcape Midlands TVET College", "Ikhala TVET College",
@@ -615,9 +632,6 @@
     ];
 
     const SA_COURSES = [
-      {uni:"University of Limpopo (TEST CLOSED)",city:"Polokwane",sourceUrl:"https://www.ul.ac.za/",courses:[
-        {n:"Bachelor of Education - TEST CLOSED COURSE",aps:24,courseCategory:"Education",fac:"Education",status:"closed",openingDate:"2027-03-01",closingDate:"2026-09-30"}
-      ]},
       {uni:"University of Limpopo (UL)",city:"Polokwane",sourceUrl:"https://www.ul.ac.za/",courses:[
         {n:"Bachelor of Nursing",aps:26},{n:"MBChB Medicine",aps:35},{n:"BPharm Pharmacy",aps:32},{n:"BEd Foundation Teaching",aps:24},{n:"BEd Senior Phase",aps:24},{n:"BSc Computer Science",aps:30},{n:"Diploma IT",aps:22},{n:"BSc Agriculture",aps:24},{n:"LLB Law",aps:32},{n:"Bachelor of Social Work",aps:24,courseCategory:"Social Work",englishMinimum:50},{n:"Diploma Nursing",aps:24},{n:"BA Psychology",aps:24,courseCategory:"Health Sciences"}
       ]},
@@ -798,6 +812,28 @@
       if (/medicine|pharm|health|primary health|psychology/.test(courseName)) return "Health Sciences";
       return "Other";
     };
+    const PRIVATE_COURSES = [
+      {
+        uni:PRIVATE_INSTITUTIONS[0], campus:"Various campuses and online",
+        source:"https://www.emeris.ac.za/study/undergraduate",
+        courses:["Bachelor of Accounting", "Bachelor of Arts", "Higher Certificate in Legal Studies",
+          "Higher Certificate in Early Childhood Care and Education"]
+      },
+      {
+        uni:PRIVATE_INSTITUTIONS[1], campus:"Various campuses",
+        courses:[
+          {n:"Bachelor of IT in Business Systems", source:"https://www.rbi.ac.za/qualifications/bachelor-of-it-in-business-systems/"},
+          {n:"Higher Certificate in Information Technology in Support Services", source:"https://www.rbi.ac.za/qualifications/higher-certificate-in-information-technology-in-support-services/"}
+        ]
+      },
+      {
+        uni:PRIVATE_INSTITUTIONS[2], campus:"Various campuses; check programme page",
+        courses:[
+          {n:"Bachelor of Commerce Major in General", source:"https://stadio.ac.za/school-commerce/bachelor-commerce-major-general-cl"},
+          {n:"Bachelor of Commerce in Accounting", source:"https://stadio.ac.za/school-commerce/bachelor-commerce-accounting-sf"}
+        ]
+      }
+    ];
     const ALL_COURSES = [
       ...SA_COURSES.flatMap(({uni,city,sourceUrl,courses}) =>
         courses.map(({n,aps,apsApplicable,courseCategory,englishMinimum,closeTry,pathwayNote,infoNote,admissionNote,link,status,openingDate,closingDate,fac,apsExact,apsNote,verificationStatus,sourceNote,disclaimer}) => ({
@@ -829,7 +865,21 @@
         type:n.startsWith("Higher Certificate") ? "Higher Certificate" :
           n.startsWith("Diploma") ? "Diploma" :
             n.startsWith("Bachelor") ? "Bachelor" : "Degree"
-      })))
+      }))),
+      ...PRIVATE_COURSES.flatMap(({uni,campus,source,courses}) => courses.map((entry) => {
+        const n = typeof entry === "string" ? entry : entry.n;
+        const courseSource = typeof entry === "string" ? source : entry.source;
+        return {
+          n, uni, campus, source:courseSource, link:courseSource,
+          courseCategory:getCourseCategory(n), fac:"Check official programme page",
+          type:n.startsWith("Higher Certificate") ? "Higher Certificate" : "Bachelor",
+          aps:null, minimumAPS:null, apsApplicable:true, apsExact:false,
+          apsNote:"Entry requirements are not assessed; check the official programme page.",
+          verificationStatus:"verified",
+          sourceNote:"Official provider programme listing; course name verified",
+          disclaimer:"Private institution. Check current programme availability, accreditation, fees, funding and admission requirements with the provider."
+        };
+      }))
     ];
     const GUIDE_DISCLAIMER =
       `INDICATIVE CATALOGUE FOR GUIDANCE ONLY. This catalogue has ${ALL_COURSES.length} entries and is not a complete national catalogue. Some course names are linked to official prospectuses, but APS and admission requirements are not assessed for those entries. Check each institution's current prospectus before applying.`;
@@ -840,6 +890,9 @@
       return String(getMinimumAPS(course) ?? "Not supplied");
     };
     const getCourseDisplayStatus = (course, today = new Date()) => {
+      if (!course.openingDate || !course.closingDate) {
+        return { state: "verify", text: "Application dates not assessed - check with the institution." };
+      }
       const openingDate = new Date(`${course.openingDate}T00:00:00`);
       const closingDate = new Date(`${course.closingDate}T23:59:59`);
       if (course.status === "closed") {
@@ -878,10 +931,7 @@
     let selectedCourse = null;
     let applicationRequestSubmitted = false;
     let requestedPackage = 25;
-    let pendingSubmissionType = null;
     let isEmailVerified = false;
-    let awaitingMagicLink = false;
-    const SITE_URL = "https://applynowadmin-ship-it.github.io/ApplyNow/";
     let verificationFilter = "all";
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
@@ -927,11 +977,13 @@
     function setEmailVerified(verified, email = "") {
       isEmailVerified = verified === true;
       document.body.classList.toggle("email-locked", !isEmailVerified);
-      $("#verify-banner").hidden = isEmailVerified;
+      $("#learner-account").hidden = isEmailVerified;
+      $("#verify-banner").hidden = true;
       const formEmail = $("#email");
       if (isEmailVerified && email) {
         formEmail.value = email;
         formEmail.readOnly = true;
+        showStep(1);
       } else {
         formEmail.readOnly = false;
       }
@@ -956,7 +1008,9 @@
           supabaseClient = window.supabase.createClient(supabaseConfig.url, supabaseConfig.anonKey);
           supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === "SIGNED_IN" && session) {
-              setTimeout(() => handleSignedIn(session), 0);
+              setTimeout(() => {
+                if (!isEmailVerified) handleSignedIn(session);
+              }, 0);
             }
           });
           initializeLearnerAccount();
@@ -971,7 +1025,7 @@
       document.head.append(script);
     }
 
-    async function requestAccountCode(email, submissionType = null) {
+    async function requestAccountCode(email) {
       if (!supabaseClient) {
         throw new Error("Email sign-in is unavailable because supabase-config.js does not contain a complete Supabase anon key.");
       }
@@ -984,32 +1038,58 @@
         if (session.user.email?.toLowerCase() !== normalizedEmail) {
           throw new Error("You are signed in with a different email. Sign out first, then use the email on this request.");
         }
-        if (submissionType) pendingSubmissionType = submissionType;
         await loadLearnerRequests();
         return true;
       }
 
-      pendingSubmissionType = submissionType;
       const { error } = await supabaseClient.auth.signInWithOtp({
         email: normalizedEmail,
-        options: { shouldCreateUser: true, emailRedirectTo: SITE_URL }
+        options: { shouldCreateUser: true }
       });
       if (error) throw error;
-      awaitingMagicLink = true;
       $("#account-email").value = normalizedEmail;
       $("#account-code-wrap").hidden = false;
-      setAccountStatus(`✅ Link sent to ${normalizedEmail} — Go check email and click BLUE 'Sign in' link. Then come back to this page, it will auto-unlock.`);
+      $("#account-code").value = "";
+      $("#account-code").focus();
+      setAccountStatus(`A one-time code was sent to ${normalizedEmail}. Enter it here to verify your email.`);
       return false;
     }
 
-    async function handleSignedIn(session) {
-      const wasVerified = isEmailVerified;
-      setEmailVerified(true, session?.user?.email || "");
-      $("#account-code-wrap").hidden = true;
-      if (!wasVerified && (awaitingMagicLink || /access_token|code=/.test(window.location.href))) {
-        awaitingMagicLink = false;
-        alert("Email verified! Continue application");
+    async function verifyAccountCode() {
+      if (!supabaseClient) {
+        setAccountStatus("Email sign-in is unavailable. Check your connection and try again.", true);
+        return;
       }
+      const email = $("#account-email").value.trim().toLowerCase();
+      const token = $("#account-code").value.trim();
+      if (!email || !token) {
+        setAccountStatus("Enter the email address and the code sent to that email.", true);
+        return;
+      }
+      const button = $("#verify-account-code");
+      button.disabled = true;
+      setAccountStatus("Verifying email code…");
+      try {
+        const { data, error } = await supabaseClient.auth.verifyOtp({ email, token, type: "email" });
+        if (error) throw error;
+        if (!data.session) throw new Error("Email verification did not create a session. Please try again.");
+        await handleSignedIn(data.session);
+      } catch (error) {
+        console.error("ApplyNow could not verify the email code:", error);
+        setAccountStatus(`Could not verify your email code: ${error.message}`, true);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    async function handleSignedIn(session) {
+      const signedInEmail = (session?.user?.email || "").toLowerCase();
+      if (signedInEmail === ADMIN_EMAIL) {
+        window.location.replace("admin.html");
+        return;
+      }
+      setEmailVerified(true, signedInEmail);
+      $("#account-code-wrap").hidden = true;
       try {
         await loadLearnerRequests();
       } catch (error) {
@@ -1018,9 +1098,9 @@
       }
     }
 
-    async function requireLearnerAccount(submissionType) {
+    async function requireLearnerAccount() {
       try {
-        return await requestAccountCode(personalInfo.email, submissionType);
+        return await requestAccountCode(personalInfo.email);
       } catch (error) {
         console.error("ApplyNow could not authenticate the learner:", error);
         setAccountStatus(error.message, true);
@@ -1040,6 +1120,10 @@
       }
       setEmailVerified(true, session.user.email || "");
       const sessionEmail = (session.user.email || "").toLowerCase();
+      if (sessionEmail === ADMIN_EMAIL) {
+        window.location.replace("admin.html");
+        return;
+      }
 
       $("#account-email").value = session.user.email || "";
       $("#sign-out-account").hidden = false;
@@ -1051,7 +1135,7 @@
         .order("created_at", { ascending: false });
       if (error) throw error;
       if (!data.length) {
-        setAccountStatus("Signed in. No package requests are linked to this email yet.");
+        setAccountStatus("");
         return;
       }
       setAccountStatus("Signed in. Your requests and payment decisions are shared across devices.");
@@ -1090,7 +1174,7 @@
           }
         } else {
           const approved = document.createElement("p");
-          approved.textContent = "Payment verified. Your university and NSFAS assistance request is approved for manual processing. No application has been filed automatically.";
+          approved.textContent = "Payment verified. Your institution and NSFAS assistance request is approved for manual processing. No application has been filed automatically.";
           item.append(approved);
         }
         if (request.review_note && request.status !== "rejected") {
@@ -1110,7 +1194,8 @@
       try {
         const { data: { session }, error } = await supabaseClient.auth.getSession();
         if (error) throw error;
-        if (session) await loadLearnerRequests();
+        if (session) await handleSignedIn(session);
+        else setEmailVerified(false);
       } catch (error) {
         console.error("ApplyNow could not load the learner account:", error);
         setAccountStatus(`Could not load your shared requests: ${error.message}`, true);
@@ -1127,7 +1212,7 @@
         checkbox.type = "checkbox";
         checkbox.name = groupName;
         checkbox.value = institution;
-        checkbox.id = `${groupName}-${index}`;
+        checkbox.id = `${container.id}-${index}`;
         const text = document.createElement("span");
         text.textContent = institution;
         label.append(checkbox, text);
@@ -1206,7 +1291,7 @@
     function getApplicationSelectionsText() {
       const selections = getSelectedInstitutions();
       return [
-        `Universities: ${selections.universities.join("; ") || "None selected"}`,
+        `Institutions: ${selections.universities.join("; ") || "None selected"}`,
         `NSFAS assistance requested: ${selections.nsfas ? "Yes" : "No"}`
       ].join("\n");
     }
@@ -1230,9 +1315,9 @@
         {
           filename: `${safeName}-university-application-summary.txt`,
           content: [
-            common, "", "UNIVERSITY APPLICATIONS",
+            common, "", "INSTITUTION APPLICATIONS",
             ...selections.universities.map((name) => `- ${name}`),
-            selections.universities.length ? "" : "No university selected."
+            selections.universities.length ? "" : "No institution selected."
           ].join("\n")
         }
       ];
@@ -1377,7 +1462,7 @@
         alert("Please verify email first");
         return;
       }
-      if (!await requireLearnerAccount("r25")) {
+      if (!await requireLearnerAccount()) {
         return;
       }
 
@@ -1405,7 +1490,7 @@
       const statusSelector = "#application-payment-status";
       if (button.disabled) return;
       if (!getSelectedInstitutions().universities.length) {
-        updatePaymentStatus(statusSelector, "Select at least one university to apply to.", true);
+        updatePaymentStatus(statusSelector, "Select at least one institution to apply to.", true);
         $("#university-options input").focus();
         return;
       }
@@ -1428,7 +1513,7 @@
         alert("Please verify email first");
         return;
       }
-      if (!await requireLearnerAccount("r100")) {
+      if (!await requireLearnerAccount()) {
         return;
       }
 
@@ -1470,7 +1555,7 @@
       const whatsappText = [
         `New application assistance request: ${personalInfo.fullNames} ${personalInfo.surname}.`,
         `Course: ${selectedCourse.n}; estimated APS: ${studentAPS}.`,
-        `Selected universities: ${selections.universities.join(", ") || "none"}.`,
+        `Selected institutions: ${selections.universities.join(", ") || "none"}.`,
         `NSFAS assistance: ${selections.nsfas ? "yes" : "no"}.`,
         "Details and receipt are stored in the private request; please verify payment before applying."
       ].join(" ");
@@ -1505,7 +1590,8 @@
       row.innerHTML = `
         <div><label for="${subjectId}">Subject</label><select id="${subjectId}" class="subject-name" required>${options}</select></div>
         <div><label for="${markId}">Mark (%)</label><input id="${markId}" class="subject-mark" type="number" min="0" max="100" step="1" inputmode="numeric" placeholder="0–100" required></div>
-        <button class="remove-subject" type="button" aria-label="Remove subject">Remove</button>`;
+        <button class="remove-subject" type="button" aria-label="Remove subject">Remove</button>
+        <p class="subject-warning" role="alert" hidden>Please select subject</p>`;
       $(".remove-subject", row).addEventListener("click", () => {
         row.remove();
         calculateAPS();
@@ -1538,17 +1624,27 @@
 
     function calculateAPS() {
       const seenSubjects = new Set();
-      const eligibleMarks = getSubjects()
-        .filter((subject) => {
-          if (subject.name === "Life Orientation" || seenSubjects.has(subject.name)) return false;
-          seenSubjects.add(subject.name);
-          return true;
-        })
-        .map((subject) => subject.mark)
-        .sort((a, b) => b - a)
-        .slice(0, 6);
-      studentAPS = eligibleMarks.reduce((total, mark) => total + markToPoints(mark), 0);
+      const eligiblePoints = [];
+      $$(".subject-row").forEach((row) => {
+        const subject = $(".subject-name", row);
+        const markInput = $(".subject-mark", row);
+        const warning = $(".subject-warning", row);
+        const hasMark = markInput.value !== "";
+        const mark = Number(markInput.value);
+        const missingSubject = hasMark && !subject.value;
+        warning.hidden = !missingSubject;
+        if (missingSubject) subject.setAttribute("aria-invalid", "true");
+        else subject.removeAttribute("aria-invalid");
+        if (!subject.value || !hasMark || !Number.isFinite(mark) || mark < 0 || mark > 100) return;
+        if (subject.value === "Life Orientation" || seenSubjects.has(subject.value)) return;
+        seenSubjects.add(subject.value);
+        eligiblePoints.push(markToPoints(mark));
+      });
+      const totalScore = eligiblePoints.reduce((total, points) => total + points, 0);
+      studentAPS = eligiblePoints.sort((a, b) => b - a).slice(0, 6)
+        .reduce((total, points) => total + points, 0);
       $("#aps-show").textContent = String(studentAPS);
+      $("#total-score-show").textContent = String(totalScore);
       return studentAPS;
     }
 
@@ -2288,7 +2384,7 @@
     function showResults() {
       studentAPS = calculateAPS();
       $("#catalogue-status-banner").textContent =
-        `Note: Showing ${ALL_COURSES.length} indicative course entries; this is not yet a 500+ catalogue. Dates shown are indicative 2026 intake dates. The listed closing date has passed, so some courses may be closed. Late applications may still be considered; verify directly on the institution's official website.`;
+        `Note: Showing ${ALL_COURSES.length} indicative course entries; this is not yet a 500+ catalogue. Where shown, dates are indicative 2026 intake dates. Some courses may be closed; verify current dates directly with the institution.`;
       $("#results-intro").textContent = `${personalInfo.fullNames} ${personalInfo.surname}, your estimated APS is ${studentAPS}. ${GUIDE_DISCLAIMER} Admission is not guaranteed.`;
       renderPersonalInfo();
       renderDreamResults();
@@ -2360,20 +2456,24 @@
       $("#catalogue-scope").textContent =
         `${GUIDE_DISCLAIMER} It is not a complete list of South African options. Each course is checked independently, so a failed subject does not disqualify you from unrelated courses.`;
       renderInstitutionOptions("#university-options", PUBLIC_UNIVERSITIES, "universities");
+      renderInstitutionOptions("#private-institution-options", PRIVATE_INSTITUTIONS, "universities");
       $("#send-account-code").addEventListener("click", async () => {
         try {
           await requestAccountCode($("#account-email").value);
         } catch (error) {
           console.error("ApplyNow could not send a learner sign-in code:", error);
-          setAccountStatus(`Could not send the link: ${error.message}`, true);
+          setAccountStatus(`Could not send a one-time code: ${error.message}`, true);
         }
+      });
+      $("#verify-account-code").addEventListener("click", verifyAccountCode);
+      $("#account-code").addEventListener("keydown", (event) => {
+        if (event.key === "Enter") verifyAccountCode();
       });
       $("#sign-out-account").addEventListener("click", async () => {
         if (!supabaseClient) return;
         try {
           const { error } = await supabaseClient.auth.signOut();
           if (error) throw error;
-          pendingSubmissionType = null;
           setEmailVerified(false);
           $("#account-code-wrap").hidden = true;
           $("#sign-out-account").hidden = true;
@@ -2385,14 +2485,14 @@
           setAccountStatus(`Could not sign out: ${error.message}`, true);
         }
       });
-      $("#resend-account-link").addEventListener("click", async () => {
-        const button = $("#resend-account-link");
+      $("#resend-account-code").addEventListener("click", async () => {
+        const button = $("#resend-account-code");
         button.disabled = true;
         try {
           await requestAccountCode($("#account-email").value);
         } catch (error) {
-          console.error("ApplyNow could not resend the sign-in link:", error);
-          setAccountStatus(`Could not resend the link: ${error.message}`, true);
+          console.error("ApplyNow could not resend the sign-in code:", error);
+          setAccountStatus(`Could not resend the code: ${error.message}`, true);
         } finally {
           setTimeout(() => { button.disabled = false; }, 30000);
         }
@@ -2406,7 +2506,7 @@
       $("#copy-capitec-r100").addEventListener("click", () => copyCapitecAccount("#application-payment-status"));
       $$('input[name="service-package"]').forEach((input) => {
         input.addEventListener("change", () => {
-          requestedPackage = getSelectedPackage();
+          requestedPackage = Number(input.value);
           updatePackageUI();
         });
       });
@@ -2414,7 +2514,7 @@
         requestedPackage = 100;
         $("#package-r100").checked = true;
         updatePackageUI();
-        showApplication({ n: $("#dream1").value.trim(), uni: "Selected university" });
+        showApplication({ n: $("#dream1").value.trim(), uni: "Selected institution" });
       });
       updatePackageUI();
       const gender = $("#gender");
