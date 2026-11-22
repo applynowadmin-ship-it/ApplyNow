@@ -37,7 +37,7 @@ create table if not exists public.application_requests (
   user_id uuid not null references auth.users (id) on delete cascade,
   package_type text not null check (package_type in ('R25', 'R100')),
   amount integer not null check (amount in (25, 100)),
-  status text not null default 'pending_payment_review' check (status in ('pending', 'pending_payment_review', 'approved', 'rejected')),
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   is_paid boolean not null default false,
   guide_emailed_at timestamptz,
   learner_full_name text not null,
@@ -61,21 +61,20 @@ create table if not exists public.application_requests (
   constraint application_requests_package_amount_check
     check ((package_type = 'R25' and amount = 25) or (package_type = 'R100' and amount = 100)),
   constraint application_requests_pending_on_create_check
-    check ((status in ('pending', 'pending_payment_review') and reviewed_at is null and reviewed_by is null) or status not in ('pending', 'pending_payment_review'))
+    check ((status = 'pending' and reviewed_at is null and reviewed_by is null) or status <> 'pending')
 );
 
 -- Migration for databases created before the payment-review status existed.
 alter table public.application_requests add column if not exists is_paid boolean not null default false;
 alter table public.application_requests add column if not exists guide_emailed_at timestamptz;
-alter table public.application_requests alter column status set default 'pending_payment_review';
+alter table public.application_requests alter column status set default 'pending';
 alter table public.application_requests drop constraint if exists application_requests_status_check;
-alter table public.application_requests add constraint application_requests_status_check
-  check (status in ('pending', 'pending_payment_review', 'approved', 'rejected'));
 alter table public.application_requests drop constraint if exists application_requests_pending_on_create_check;
+update public.application_requests set status = 'pending' where status = 'pending_payment_review';
+alter table public.application_requests add constraint application_requests_status_check
+  check (status in ('pending', 'approved', 'rejected'));
 alter table public.application_requests add constraint application_requests_pending_on_create_check
-  check ((status in ('pending', 'pending_payment_review') and reviewed_at is null and reviewed_by is null)
-         or status not in ('pending', 'pending_payment_review'));
-update public.application_requests set status = 'pending_payment_review' where status = 'pending';
+  check ((status = 'pending' and reviewed_at is null and reviewed_by is null) or status <> 'pending');
 update public.application_requests set is_paid = true where status = 'approved';
 
 create index if not exists application_requests_user_created_idx
@@ -95,7 +94,7 @@ create policy "Learners insert their own pending requests"
   with check (
     user_id = (select auth.uid())
     and lower(learner_email) = lower((select auth.jwt() ->> 'email'))
-    and status = 'pending_payment_review'
+    and status = 'pending'
     and is_paid = false
     and reviewed_at is null
     and reviewed_by is null

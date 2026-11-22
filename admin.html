@@ -107,7 +107,8 @@
           setStatus("Email OTP access requires the complete Supabase anon key in supabase-config.js.", true);
           return;
         }
-        const email = $("#admin-email").value.trim().toLowerCase();
+        const emailInput = $("#admin-email");
+        const email = String(emailInput?.value || "").trim().toLowerCase();
         if (email !== ADMIN_EMAIL) {
           setStatus(`Admin access is restricted to ${ADMIN_EMAIL}.`, true);
           return;
@@ -138,14 +139,16 @@
           setStatus("Email OTP access is not ready. Check the Supabase configuration and try again.", true);
           return;
         }
-        const email = $("#admin-email").value.trim().toLowerCase();
-        const token = $("#admin-code").value.trim();
+        const emailInput = $("#admin-email");
+        const otpInput = $("#admin-code");
+        const email = String(emailInput?.value || "").trim().toLowerCase();
+        const token = String(otpInput?.value || "").trim();
         if (!email || !token) {
           setStatus("Enter the OTP sent to the admin email address.", true);
           return;
         }
         const button = $("#verify-code");
-        button.disabled = true;
+        if (button) button.disabled = true;
         setStatus("Verifying OTP…");
         try {
           const { data, error } = await client.auth.verifyOtp({
@@ -154,13 +157,18 @@
             type: "email"
           });
           if (error) throw error;
-          if (!data.session) throw new Error("OTP verification did not create an admin session.");
+          const { data: sessionData, error: sessionError } = await client.auth.getSession();
+          if (sessionError) throw sessionError;
+          const verifiedSession = data?.session || sessionData?.session;
+          if (!verifiedSession) throw new Error("OTP verification did not create an admin session. Request a new OTP and try again.");
+          const verifiedEmail = String(verifiedSession.user?.email || "").trim().toLowerCase();
+          if (verifiedEmail !== ADMIN_EMAIL) throw new Error(`Only ${ADMIN_EMAIL} can access the admin dashboard.`);
           await loadRequests();
         } catch (error) {
           console.error("ApplyHub admin OTP verification failed:", error);
           setStatus(`Could not verify the OTP or load requests: ${error.message}`, true);
         } finally {
-          button.disabled = false;
+          if (button) button.disabled = false;
         }
       }
 
@@ -193,7 +201,7 @@
               review_note: note
             })
             .eq("id", request.id)
-            .in("status", ["pending", "pending_payment_review"])
+            .eq("status", "pending")
             .select("id");
           if (error) throw error;
           if (!data.length) throw new Error("This request was already reviewed or is no longer pending.");
@@ -234,7 +242,8 @@
         const card = document.createElement("article");
         card.className = "request";
         const title = document.createElement("h2");
-        title.textContent = `${request.package_type} — ${request.status.replace(/_/g, " ").toUpperCase()}`;
+        const requestStatus = String(request.status || "pending");
+        title.textContent = `${request.package_type || "Request"} — ${requestStatus.replace(/_/g, " ").toUpperCase()}`;
         const tag = document.createElement("span");
         tag.className = "tag";
         tag.textContent = isPendingReview(request) ? "CHECK CAPITEC" : "REVIEWED";
@@ -275,11 +284,12 @@
         appendDetail(card, "Amount", `R${request.amount} — reference: ${request.payment_reference}`);
         appendDetail(card, "Course", request.course_requested);
         appendDetail(card, "Other dream courses", Array.isArray(learner.dreamCourses) ? learner.dreamCourses.join("; ") : "");
-        appendDetail(card, "Institutions", request.selected_universities.join("; "));
+        appendDetail(card, "Institutions", Array.isArray(request.selected_universities) ? request.selected_universities.join("; ") : "");
         appendDetail(card, "NSFAS requested", request.nsfas_needed ? "Yes" : "No");
         if (request.nsfas_checklist) appendDetail(card, "NSFAS checklist", request.nsfas_checklist);
         appendDetail(card, "APS", String(request.aps));
-        appendDetail(card, "Subject results", request.subject_results.map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
+        const subjectResults = Array.isArray(request.subject_results) ? request.subject_results : [];
+        appendDetail(card, "Subject results", subjectResults.map(({ name, mark }) => `${name}: ${mark}%`).join("; "));
         if (request.review_note) appendDetail(card, "Admin note", request.review_note);
 
         const { data: proof, error: proofError } = await client.storage
@@ -318,7 +328,7 @@
       }
 
       function isPendingReview(request) {
-        return request.status === "pending_payment_review" || request.status === "pending";
+        return String(request?.status || "") === "pending" || String(request?.status || "") === "pending_payment_review";
       }
 
       function renderPendingTable(requests) {
@@ -385,24 +395,27 @@
           .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,          review_note,is_paid")
           .order("created_at", { ascending: false });
         if (error) throw error;
-
-                  renderPendingTable(data.filter(isPendingReview));
-                  const list = $("#request-list");
+        const requests = Array.isArray(data) ? data : [];
+        renderPendingTable(requests.filter(isPendingReview));
+        const list = $("#request-list");
         list.replaceChildren();
-        for (const request of data) list.append(await renderRequest(request));
+        for (const request of requests) list.append(await renderRequest(request));
         $("#code-panel").hidden = true;
         $("#refresh-requests").hidden = false;
         $("#sign-out").hidden = false;
         $("#send-code").hidden = true;
-        setStatus(data.length ? `${data.length} shared request(s) loaded. Approve only after verifying payment in Capitec.` : "No learner requests have been submitted yet.");
+        setStatus(requests.length ? `${requests.length} shared request(s) loaded. Approve only after verifying payment in Capitec.` : "No learner requests have been submitted yet.");
       }
 
       function restoreAdminSession() {
-        client.auth.getSession().then(({ data: { session }, error }) => {
+        client.auth.getSession().then((result) => {
+          const error = result?.error;
+          const session = result?.data?.session;
           if (error) throw error;
           if (session) {
             $("#admin-email").value = ADMIN_EMAIL;
-            if (session.user.email?.toLowerCase() !== ADMIN_EMAIL) {
+            const sessionEmail = String(session.user?.email || "").trim().toLowerCase();
+            if (sessionEmail !== ADMIN_EMAIL) {
               $("#request-list").hidden = true;
               $("#pending-table").hidden = true;
               setStatus(`Only ${ADMIN_EMAIL} can access the admin dashboard.`, true);

@@ -1143,11 +1143,12 @@
         const item = document.createElement("article");
         item.className = "request-item";
         const heading = document.createElement("h3");
-        heading.textContent = `${request.package_type} request — ${request.status.replace(/_/g, " ").toUpperCase()}`;
+        const requestStatus = String(request.status || "pending");
+        heading.textContent = `${request.package_type || "Application"} request — ${requestStatus.replace(/_/g, " ").toUpperCase()}`;
         const details = document.createElement("p");
         details.textContent = `Submitted ${new Date(request.created_at).toLocaleString()} · ID: ${maskIdNumber(request.learner_id_number)}${request.course_requested ? ` · Course: ${request.course_requested}` : ""}`;
         item.append(heading, details);
-        if (request.status === "pending" || request.status === "pending_payment_review") {
+        if (requestStatus === "pending" || requestStatus === "pending_payment_review") {
           const pending = document.createElement("p");
           pending.textContent = "Your receipt is only a request. ApplyHub must verify the transfer in Capitec before unlocking results or starting application work.";
           item.append(pending);
@@ -1375,7 +1376,7 @@
         user_id: session.user.id,
         package_type: `R${amount}`,
         amount,
-        status: "pending_payment_review",
+        status: "pending",
         is_paid: false,
         learner_full_name: fullName,
         learner_email: personalInfo.email.trim().toLowerCase(),
