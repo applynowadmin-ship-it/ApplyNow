@@ -177,7 +177,7 @@
     .total-score strong { font-size: 1rem; }
     .subject-warning { grid-column: 1 / -1; margin: 0 0 2px; color: var(--red); font-size: .78rem; font-weight: 700; }
     .hint { color: var(--muted); font-size: .79rem; }
-    .status { min-height: 1.2em; margin: 8px 0 0; color: var(--red); font-size: .82rem; }
+    .status { min-height: 1.2em; margin: 8px 0 0; color: var(--red); font-size: .82rem; overflow-wrap: anywhere; }
     .verify-banner { margin: 0 0 14px; padding: 12px 14px; border-radius: 9px; color: #fff; background: #c62828; font-weight: 800; }
     body.email-locked .step { display: none !important; }
     .account-panel { margin-bottom: 18px; }
@@ -940,6 +940,11 @@
     })[char]);
 
     function showStep(step) {
+      try {
+        localStorage.setItem("applynow-current-step", String(step));
+      } catch (error) {
+        console.warn("ApplyNow could not save the current step:", error);
+      }
       $$(".step").forEach((section) => { section.hidden = section.id !== `step${step}`; });
       $$(".progress-item").forEach((item) => {
         const number = Number(item.dataset.progress);
@@ -983,7 +988,7 @@
       if (isEmailVerified && email) {
         formEmail.value = email;
         formEmail.readOnly = true;
-        showStep(1);
+        if (!restoreApplicationProgress()) showStep(1);
       } else {
         formEmail.readOnly = false;
       }
@@ -1038,7 +1043,6 @@
         if (session.user.email?.toLowerCase() !== normalizedEmail) {
           throw new Error("You are signed in with a different email. Sign out first, then use the email on this request.");
         }
-        await loadLearnerRequests();
         return true;
       }
 
@@ -1349,18 +1353,20 @@
     }
 
     async function savePaymentRequest(amount, file) {
-      const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
-      if (sessionError) throw sessionError;
-      if (!session) throw new Error("Verify your email before submitting this request.");
-      if (session.user.email?.toLowerCase() !== personalInfo.email.toLowerCase()) {
+      const sessionResult = await supabaseClient.auth.getSession();
+      if (sessionResult?.error) throw sessionResult.error;
+      const session = sessionResult?.data?.session;
+      if (!session?.user?.id) throw new Error("Verify your email before submitting this request.");
+      if (!personalInfo?.email) throw new Error("Complete your Personal Information before submitting this request.");
+      if (String(session.user.email || "").toLowerCase() !== personalInfo.email.toLowerCase()) {
         throw new Error("The signed-in email must match the email in the learner details.");
       }
 
       const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
       const receiptPath = `${session.user.id}/${crypto.randomUUID()}-${safeFilename}`;
       const { error: uploadError } = await supabaseClient.storage
-        .from("payment-proofs")
-        .upload(receiptPath, file, { contentType: file.type, upsert: false });
+        .from("proofs")
+        .upload(receiptPath, file, { contentType: file.type || "application/octet-stream", upsert: false });
       if (uploadError) throw uploadError;
 
       const fullName = `${personalInfo.fullNames} ${personalInfo.surname}`;
@@ -1391,7 +1397,8 @@
         subject_results: learnerData.subjects,
         results_snapshot: amount === 25 ? buildResultsSnapshot() : [],
         payment_reference: fullName,
-        receipt_path: receiptPath
+        receipt_path: receiptPath,
+        receipt_bucket: "proofs"
       };
       const { data, error } = await supabaseClient
         .from("application_requests")
@@ -1400,7 +1407,7 @@
         .single();
       if (error) {
         const { error: cleanupError } = await supabaseClient.storage
-          .from("payment-proofs")
+          .from("proofs")
           .remove([receiptPath]);
         if (cleanupError) {
           console.error("ApplyNow could not remove an unlinked payment proof:", cleanupError);
@@ -1410,10 +1417,85 @@
       return data;
     }
 
+    function formatSupabaseError(error) {
+      if (!error) return "Unknown Supabase error";
+      const details = {
+        message: error.message,
+        code: error.code,
+        details: error.details,
+        hint: error.hint,
+        status: error.status,
+        name: error.name
+      };
+      const compact = Object.fromEntries(Object.entries(details).filter(([, value]) => value != null && value !== ""));
+      return Object.keys(compact).length ? JSON.stringify(compact) : String(error);
+    }
+
     function updatePaymentStatus(selector, message, isError = false) {
       const status = $(selector);
       status.textContent = message;
       status.style.color = isError ? "var(--red)" : "var(--green)";
+    }
+
+    function saveApplicationProgress() {
+      try {
+        const packageConsent = $("#package-consent")?.checked === true;
+        const packageAmount = getSelectedPackage();
+        localStorage.setItem("applynow-application-progress", JSON.stringify({
+          step: 5,
+          packageAmount,
+          packageConsent,
+          applicationRequestSubmitted,
+          otherUniversity: $("#other-university")?.value || "",
+          institutions: $$("input[name=universities]:checked").map((input) => input.value),
+          personalInfo,
+          studentAPS,
+          selectedCourse
+        }));
+      } catch (error) {
+        console.warn("ApplyNow could not save application progress:", error);
+      }
+    }
+
+    function restoreApplicationProgress() {
+      try {
+        const raw = localStorage.getItem("applynow-application-progress");
+        if (!raw) return false;
+        const saved = JSON.parse(raw);
+        if (Number(saved?.step) !== 5 || !saved?.personalInfo || !saved?.selectedCourse) return false;
+        personalInfo = saved.personalInfo;
+        selectedCourse = saved.selectedCourse;
+        studentAPS = Number(saved.studentAPS) || 0;
+        requestedPackage = Number(saved.packageAmount) || 100;
+        $$("input[name=service-package]").forEach((input) => { input.checked = Number(input.value) === requestedPackage; });
+        showApplication(selectedCourse);
+        $("#package-consent").checked = saved.packageConsent === true;
+        $("#other-university").value = String(saved.otherUniversity || "");
+        const institutions = new Set(Array.isArray(saved.institutions) ? saved.institutions : []);
+        $$("input[name=universities]").forEach((input) => { input.checked = institutions.has(input.value); });
+        applicationRequestSubmitted = saved.applicationRequestSubmitted === true;
+        if (applicationRequestSubmitted) {
+          showWaitingScreen();
+        } else {
+          updatePaymentStatus("#application-payment-status", "Continue by selecting your proof and submitting it.");
+          showStep(5);
+        }
+        return true;
+      } catch (error) {
+        console.warn("ApplyNow could not restore application progress:", error);
+        return false;
+      }
+    }
+
+    function showWaitingScreen() {
+      const confirmation = $("#application-payment-confirmation");
+      confirmation.textContent = "Proof submitted, waiting for applynow.admin@gmail.com to approve";
+      confirmation.hidden = false;
+      updatePaymentStatus("#application-payment-status", "Proof submitted, waiting for applynow.admin@gmail.com to approve");
+      $("#submit-application-proof").disabled = true;
+      applicationRequestSubmitted = true;
+      saveApplicationProgress();
+      showStep(5);
     }
 
     async function copyCapitecAccount(statusSelector) {
@@ -1471,10 +1553,10 @@
       updatePaymentStatus(statusSelector, "Saving your R25 request and private receipt…");
       try {
         await savePaymentRequest(25, file);
-        window.location.href = "thank-you.html";
+        updatePaymentStatus(statusSelector, "Proof submitted, waiting for applynow.admin@gmail.com to approve");
       } catch (error) {
         console.error("ApplyNow could not submit R25 payment proof:", error);
-        updatePaymentStatus(statusSelector, `Could not submit the proof: ${error.message}`, true);
+        updatePaymentStatus(statusSelector, `Could not submit the proof: ${formatSupabaseError(error)}`, true);
       } finally {
         button.disabled = false;
       }
@@ -1521,14 +1603,16 @@
       button.disabled = true;
       updatePaymentStatus(statusSelector, "Saving your R100 request and private receipt…");
       try {
+        saveApplicationProgress();
         await savePaymentRequest(100, file);
-        applicationRequestSubmitted = true;
-        window.location.href = "thank-you.html";
+        showWaitingScreen();
       } catch (error) {
         console.error("ApplyNow could not submit the application proof:", error);
-        updatePaymentStatus(statusSelector, `Could not submit the proof: ${error.message}`, true);
+        updatePaymentStatus(statusSelector, `Could not submit the proof: ${formatSupabaseError(error)}`, true);
+        saveApplicationProgress();
+        showStep(5);
       } finally {
-        button.disabled = false;
+        if (!applicationRequestSubmitted) button.disabled = false;
       }
     }
 

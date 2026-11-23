@@ -54,6 +54,7 @@ create table if not exists public.application_requests (
   results_snapshot jsonb not null default '[]'::jsonb check (jsonb_typeof(results_snapshot) = 'array'),
   payment_reference text not null,
   receipt_path text not null,
+  receipt_bucket text not null default 'proofs' check (receipt_bucket in ('proofs', 'payment-proofs')),
   created_at timestamptz not null default now(),
   reviewed_at timestamptz,
   reviewed_by uuid references auth.users (id),
@@ -67,6 +68,13 @@ create table if not exists public.application_requests (
 -- Migration for databases created before the payment-review status existed.
 alter table public.application_requests add column if not exists is_paid boolean not null default false;
 alter table public.application_requests add column if not exists guide_emailed_at timestamptz;
+alter table public.application_requests add column if not exists receipt_bucket text;
+update public.application_requests set receipt_bucket = 'payment-proofs' where receipt_bucket is null;
+alter table public.application_requests alter column receipt_bucket set default 'proofs';
+alter table public.application_requests alter column receipt_bucket set not null;
+alter table public.application_requests drop constraint if exists application_requests_receipt_bucket_check;
+alter table public.application_requests add constraint application_requests_receipt_bucket_check
+  check (receipt_bucket in ('proofs', 'payment-proofs'));
 alter table public.application_requests alter column status set default 'pending';
 alter table public.application_requests drop constraint if exists application_requests_status_check;
 alter table public.application_requests drop constraint if exists application_requests_pending_on_create_check;
@@ -117,8 +125,8 @@ create policy "Only admins review requests"
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
-  'payment-proofs',
-  'payment-proofs',
+  'proofs',
+  'proofs',
   false,
   10485760,
   array['image/jpeg', 'image/png', 'application/pdf']
@@ -134,7 +142,7 @@ create policy "Learners upload proofs to their own folder"
   for insert
   to authenticated
   with check (
-    bucket_id = 'payment-proofs'
+    bucket_id = 'proofs'
     and (storage.foldername(name))[1] = (select auth.uid())::text
   );
 
@@ -144,7 +152,7 @@ create policy "Learners and admins read payment proofs"
   for select
   to authenticated
   using (
-    bucket_id = 'payment-proofs'
+    bucket_id = 'proofs'
     and (
       (storage.foldername(name))[1] = (select auth.uid())::text
       or (select public.is_applynow_admin())
@@ -157,6 +165,6 @@ create policy "Learners delete their own unlinked proofs"
   for delete
   to authenticated
   using (
-    bucket_id = 'payment-proofs'
+    bucket_id = 'proofs'
     and (storage.foldername(name))[1] = (select auth.uid())::text
   );

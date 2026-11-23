@@ -1,6 +1,6 @@
 # ApplyNow Supabase setup
 
-The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The database tables and private `payment-proofs` bucket exist. Do not claim the service is live until an end-to-end request has been tested. The only authorized admin is `applynow.admin@gmail.com`.
+The site source is connected to project `uwjiqiweoquwkdxpvjts`, and its public anon key is configured in `supabase-config.js`. The database tables and private `proofs` bucket exist. Do not claim the service is live until an end-to-end request has been tested. The only authorized admin is `applynow.admin@gmail.com`.
 
 ## 1. Keep the public anon key configured
 

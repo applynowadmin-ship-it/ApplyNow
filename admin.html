@@ -293,7 +293,7 @@
         if (request.review_note) appendDetail(card, "Admin note", request.review_note);
 
         const { data: proof, error: proofError } = await client.storage
-          .from("payment-proofs")
+          .from(request.receipt_bucket || "payment-proofs")
           .createSignedUrl(request.receipt_path, 600);
         if (proofError) {
           console.error("ApplyHub admin could not open a private receipt link:", proofError);
@@ -392,7 +392,7 @@
         $("#pending-table").hidden = false;
         const { data, error } = await client
           .from("application_requests")
-          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,created_at,          review_note,is_paid")
+          .select("id,package_type,amount,status,learner_full_name,learner_email,learner_phone,learner_id_number,learner_data,course_requested,selected_universities,nsfas_needed,nsfas_checklist,aps,subject_results,payment_reference,receipt_path,receipt_bucket,created_at,review_note,is_paid")
           .order("created_at", { ascending: false });
         if (error) throw error;
         const requests = Array.isArray(data) ? data : [];
